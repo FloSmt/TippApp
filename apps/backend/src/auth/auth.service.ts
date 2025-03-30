@@ -22,9 +22,9 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordMatch = await this.comparePasswords(loginDto.password, user.password);
     if (!isPasswordMatch) {
-      throw new UnauthorizedException('Invalid credenials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const newTokens = this.generateTokens({ sub: user.id, email: user.email });
@@ -43,7 +43,8 @@ export class AuthService {
     if (userAlreadyExists) {
       throw new ConflictException('Email already exists');
     }
-    const user = await this.userService.create(registerDto);
+    const passwordHash = await this.hashPassword(registerDto.password);
+    const user = await this.userService.create({ ...registerDto, password: passwordHash });
     const newTokens = this.generateTokens({ sub: user.id, email: user.email });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
@@ -69,13 +70,13 @@ export class AuthService {
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
-      userId,
+      userId: user.id,
       accessToken: newTokens.accessToken,
       refreshToken: newTokens.refreshToken
     };
   }
 
-  private generateTokens(payload: any): {accessToken: string, refreshToken: string} {
+  generateTokens(payload: any): {accessToken: string, refreshToken: string} {
     const newAccessToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') });
     const newRefreshToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') });
 
@@ -83,5 +84,13 @@ export class AuthService {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken
     }
+  }
+
+  async comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 10);
   }
 }

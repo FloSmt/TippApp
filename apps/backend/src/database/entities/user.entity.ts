@@ -35,9 +35,4 @@ export class User {
 
   @OneToMany(() => Tip, (tip) => tip.user)
   tips?: Tip[];
-
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
 }
