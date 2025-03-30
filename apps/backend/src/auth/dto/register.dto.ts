@@ -11,6 +11,7 @@ export class RegisterDto {
   email: string;
 
   @IsNotEmpty()
+  @IsString()
   @ApiProperty()
-  passwordHash: string;
+  password: string;
 }

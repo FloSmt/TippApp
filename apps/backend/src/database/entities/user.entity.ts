@@ -1,7 +1,9 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {TipgroupUser} from "./tipgroupUser.entity";
 import {Tip} from "./tip.entity";
 import {ApiProperty} from "@nestjs/swagger";
+import * as bcrypt from "bcrypt";
+import {async} from "rxjs";
 
 @Entity('users')
 export class User {
@@ -19,7 +21,7 @@ export class User {
 
   @Column()
   @ApiProperty()
-  passwordHash?: string;
+  password?: string;
 
   @Column( {nullable: true})
   refreshToken?: string;
@@ -33,4 +35,9 @@ export class User {
 
   @OneToMany(() => Tip, (tip) => tip.user)
   tips: Tip[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 }

@@ -5,6 +5,7 @@ import {RegisterDto} from "./dto/register.dto";
 import {LoginDto} from "./dto/login.dto";
 import {AuthResponseDto} from "./dto/auth-response.dto";
 import {ConfigService} from "@nestjs/config";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class AuthService {
@@ -18,22 +19,21 @@ export class AuthService {
     const user = await this.userService.findByEmail(loginDto.email);
 
     if (!user) {
-      throw new NotFoundException();
+      throw new UnauthorizedException('User not found');
     }
 
-    if (user?.passwordHash !== loginDto.passwordHash) {
-      throw new UnauthorizedException();
+    const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
+    if (!isPasswordMatch) {
+      throw new UnauthorizedException('Invalid credenials');
     }
 
-    const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') });
-
-    await this.userService.updateRefreshToken(user.id, refreshToken)
+    const newTokens = this.generateTokens({ sub: user.id, email: user.email });
+    await this.userService.updateRefreshToken(user.id, newTokens.refreshToken)
 
     return {
-      accessToken: accessToken,
-      refreshToken: refreshToken
+      userId: user.id,
+      accessToken: newTokens.accessToken,
+      refreshToken: newTokens.refreshToken
     };
   }
 
@@ -44,16 +44,13 @@ export class AuthService {
       throw new ConflictException('Email already exists');
     }
     const user = await this.userService.create(registerDto);
-
-    const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') });
-
-    await this.userService.updateRefreshToken(user.id, refreshToken);
+    const newTokens = this.generateTokens({ sub: user.id, email: user.email });
+    await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
-      accessToken: accessToken,
-      refreshToken: refreshToken
+      userId: user.id,
+      accessToken: newTokens.accessToken,
+      refreshToken: newTokens.refreshToken
     };
   }
 
@@ -68,15 +65,23 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refreshToken')
     }
 
-    const payload = { username: user.username, sub: user.id };
-    const newAccessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const newRefreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const newTokens = this.generateTokens({ username: user.username, sub: user.id });
+    await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
-    await this.userService.updateRefreshToken(user.id, newRefreshToken);
+    return {
+      userId,
+      accessToken: newTokens.accessToken,
+      refreshToken: newTokens.refreshToken
+    };
+  }
+
+  private generateTokens(payload: any): {accessToken: string, refreshToken: string} {
+    const newAccessToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') });
+    const newRefreshToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') });
 
     return {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken
-    };
+    }
   }
 }
