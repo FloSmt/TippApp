@@ -28,13 +28,13 @@ export class User {
 
   @CreateDateColumn()
   @ApiProperty()
-  createDate: Date;
+  createDate?: Date;
 
   @OneToMany(() => TipgroupUser, (tipgroupUser) => tipgroupUser.user)
-  tipgroups: TipgroupUser[];
+  tipgroups?: TipgroupUser[];
 
   @OneToMany(() => Tip, (tip) => tip.user)
-  tips: Tip[];
+  tips?: Tip[];
 
   @BeforeInsert()
   async hashPassword() {
