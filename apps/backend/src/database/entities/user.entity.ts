@@ -1,30 +1,38 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {TipgroupUser} from "./tipgroupUser.entity";
 import {Tip} from "./tip.entity";
+import {ApiProperty} from "@nestjs/swagger";
+import * as bcrypt from "bcrypt";
+import {async} from "rxjs";
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
 
   @Column()
+  @ApiProperty()
   email: string;
 
   @Column()
+  @ApiProperty()
   username: string;
 
   @Column()
-  passwordHash: string;
+  @ApiProperty()
+  password?: string;
 
-  @Column()
-  refreshToken: string;
+  @Column( {nullable: true})
+  refreshToken?: string;
 
   @CreateDateColumn()
-  createDate: Date;
+  @ApiProperty()
+  createDate?: Date;
 
   @OneToMany(() => TipgroupUser, (tipgroupUser) => tipgroupUser.user)
-  tipgroups: TipgroupUser[];
+  tipgroups?: TipgroupUser[];
 
   @OneToMany(() => Tip, (tip) => tip.user)
-  tips: Tip[];
+  tips?: Tip[];
 }

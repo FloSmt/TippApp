@@ -1,29 +1,30 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {Repository} from "typeorm";
 import {User} from "../../database/entities/user.entity";
+import {InjectRepository} from "@nestjs/typeorm";
+import {RegisterDto} from "../../auth/dto/register.dto";
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('USER_REPOSITORY')
+    @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.userRepository.findOneBy({ username });
+  async updateRefreshToken(userId: number, refreshToken: string): Promise<void> {
+    await this.userRepository.update(userId, { refreshToken });
   }
 
-  async create(username: string, password: string): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({ username, password: hashedPassword });
+  async findById(id: number): Promise<User | undefined> {
+    return this.userRepository.findOneBy({ id });
+  }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.userRepository.findOneBy({ email });
+  }
+
+  async create(registerDto: RegisterDto): Promise<User> {
+    const user = this.userRepository.create(registerDto);
     return this.userRepository.save(user);
-  }
-
-  async validateUser(username: string, pass: string): Promise<User | null> {
-    const user = await this.findOne(username);
-    if (user && await bcrypt.compare(pass, user.password)) {
-      return user;
-    }
-    return null;
   }
 }
