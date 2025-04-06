@@ -7,6 +7,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import dbConfigProduction from "./database/config/db.config.production";
 import * as process from "node:process";
 import * as path from "node:path";
+import {HttpModule} from "@nestjs/axios";
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import * as path from "node:path";
       useFactory: process.env.NODE_ENV === "production"? dbConfigProduction : dbConfig,
     }),
     UserModule,
-    AuthModule
+    AuthModule,
+    HttpModule
   ],
   controllers: [],
   providers: [],

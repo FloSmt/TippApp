@@ -1,13 +1,14 @@
-import {Controller, Post, Body, HttpStatus, HttpCode} from '@nestjs/common';
+import {Controller, Post, Body, HttpStatus, HttpCode, Get} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {LoginDto} from "./dto/login.dto";
 import {RegisterDto} from "./dto/register.dto";
 import {Public} from "../guards/jwt-auth.guard";
 import {ApiOperation, ApiParam, ApiResponse} from "@nestjs/swagger";
+import {ApiService} from "../api/api.service";
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private apiService:ApiService) {}
 
   @Public()
   @Post('login')
@@ -33,5 +34,12 @@ export class AuthController {
   @ApiResponse({status: 200})
   async refresh(@Body() body: {userId: number; refreshToken: string}) {
     return this.authService.refreshTokens(body.userId, body.refreshToken);
+  }
+
+
+  @Public()
+  @Get('test')
+  async test() {
+    return this.apiService.getAvailableGroups(2024, 'ucl24');
   }
 }

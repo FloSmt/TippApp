@@ -6,11 +6,14 @@ import {JwtModule} from "@nestjs/jwt";
 import {APP_GUARD} from "@nestjs/core";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {ConfigModule, ConfigService} from "@nestjs/config";
+import {ApiService} from "../api/api.service";
+import {HttpModule} from "@nestjs/axios";
 
 @Module({
   imports: [
     ConfigModule,
     UserModule,
+    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -21,6 +24,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
   ],
   providers: [
     AuthService,
+    ApiService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard
