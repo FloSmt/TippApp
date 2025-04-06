@@ -8,6 +8,7 @@ import dbConfigProduction from "./database/config/db.config.production";
 import * as process from "node:process";
 import * as path from "node:path";
 import {HttpModule} from "@nestjs/axios";
+import {ApiService} from "./api/api.service";
 
 @Module({
   imports: [
@@ -28,6 +29,6 @@ import {HttpModule} from "@nestjs/axios";
     HttpModule
   ],
   controllers: [],
-  providers: [],
+  providers: [ApiService],
 })
 export class AppModule {}
