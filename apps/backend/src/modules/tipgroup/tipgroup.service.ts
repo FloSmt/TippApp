@@ -15,14 +15,17 @@ import {TipgroupResponseDto} from "./dto/tipgroup-response.dto";
 export class TipgroupService {
 
   constructor(
-    @InjectRepository(Tipgroup) private tipgroupRepository: Repository<Tipgroup>,
+    @InjectRepository(Tipgroup)
+    private tipgroupRepository: Repository<Tipgroup>,
+    @InjectRepository(TipgroupUser)
+    private readonly tipgroupUserRepository: Repository<TipgroupUser>,
     private TipSeasonService: TipSeasonService,
     private apiService: ApiService,
     private userService: UserService
     ) {
   }
 
-  async create(createTipgroupDto: CreateTipgroupDto, userId: number): Promise<TipgroupResponseDto> {
+  async create(createTipgroupDto: CreateTipgroupDto, userId: number): Promise<Tipgroup> {
     const user = await this.userService.findById(userId);
 
     if (!user) {
@@ -69,14 +72,18 @@ export class TipgroupService {
       const savedTipSeason = await this.TipSeasonService.saveTipSeason(newTipSeason);
       newTipgroup.seasons.push(savedTipSeason);
 
-      const savedTipgroup = await this.tipgroupRepository.save(newTipgroup);
-
-      return {
-        id: savedTipgroup.id,
-        name: savedTipgroup.name,
-      }
+      return this.tipgroupRepository.save(newTipgroup);
     }
 
     throw new InternalServerErrorException();
+  }
+
+  async getByUserId(userId: number): Promise<Tipgroup[]> {
+    const tipgroupUserEntries = await this.tipgroupUserRepository.find({
+      where: { userId: userId },
+      relations: ['tipgroup'],
+    });
+
+    return tipgroupUserEntries.map(entry => entry.tipgroup);
   }
 }

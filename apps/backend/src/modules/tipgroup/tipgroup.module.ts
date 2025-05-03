@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { TipgroupService } from './tipgroup.service';
 import { TipgroupController } from './tipgroup.controller';
 import {TypeOrmModule} from "@nestjs/typeorm";
@@ -6,9 +6,10 @@ import {Tipgroup} from "../../database/entities/tipgroup.entity";
 import {TipSeasonModule} from "../tip-season/tip-season.module";
 import {ApiModule} from "../../api/api.module";
 import {UserModule} from "../user/user.module";
+import {TipgroupUser} from "../../database/entities/tipgroupUser.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tipgroup]), TipSeasonModule, ApiModule, UserModule],
+  imports: [TypeOrmModule.forFeature([Tipgroup, TipgroupUser]), TipSeasonModule, ApiModule, forwardRef(() => UserModule)],
   controllers: [TipgroupController],
   exports: [TipgroupService],
   providers: [TipgroupService],

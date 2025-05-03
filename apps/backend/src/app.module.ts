@@ -30,11 +30,11 @@ import { ApiModule } from './api/api.module';
       useFactory:
         process.env.NODE_ENV === 'production' ? dbConfigProduction : dbConfig,
     }),
-    UserModule,
     AuthModule,
     HttpModule,
     TipSeasonModule,
     TipgroupModule,
+    UserModule,
     MatchdayModule,
     MatchModule,
     ApiModule,

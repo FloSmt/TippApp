@@ -11,9 +11,15 @@ export class TipgroupUser {
   @JoinColumn({name: 'userId'})
   user: User;
 
+  @Column()
+  userId: number;
+
   @ManyToOne(() => Tipgroup, (tipgroup) => tipgroup.users, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'tipgroupId'})
   tipgroup: Tipgroup;
+
+  @Column()
+  tipgroupId: number;
 
   @Column( {default: false})
   isAdmin: boolean;
