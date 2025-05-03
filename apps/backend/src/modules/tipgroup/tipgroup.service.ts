@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import { CreateTipgroupDto } from './dto/create-tipgroup.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
@@ -9,6 +9,7 @@ import {GroupResponse} from "../../api/responses/group.response";
 import {MatchResponse} from "../../api/responses/match.response";
 import {UserService} from "../user/user.service";
 import {TipgroupUser} from "../../database/entities/tipgroupUser.entity";
+import {TipgroupResponseDto} from "./dto/tipgroup-response.dto";
 
 @Injectable()
 export class TipgroupService {
@@ -21,7 +22,7 @@ export class TipgroupService {
     ) {
   }
 
-  async create(createTipgroupDto: CreateTipgroupDto, userId: number): Promise<Tipgroup> {
+  async create(createTipgroupDto: CreateTipgroupDto, userId: number): Promise<TipgroupResponseDto> {
     const user = await this.userService.findById(userId);
 
     if (!user) {
@@ -68,9 +69,14 @@ export class TipgroupService {
       const savedTipSeason = await this.TipSeasonService.saveTipSeason(newTipSeason);
       newTipgroup.seasons.push(savedTipSeason);
 
-      return this.tipgroupRepository.save(newTipgroup);
+      const savedTipgroup = await this.tipgroupRepository.save(newTipgroup);
+
+      return {
+        id: savedTipgroup.id,
+        name: savedTipgroup.name,
+      }
     }
 
-    return null;
+    throw new InternalServerErrorException();
   }
 }
