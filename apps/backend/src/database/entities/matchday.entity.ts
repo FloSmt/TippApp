@@ -10,16 +10,21 @@ export class Matchday {
   @Column()
   name: string;
 
-  @Column()
+  @Column({default: 0})
   orderId: number;
 
   @Column()
-  api_groupId: number;
+  api_groupId: string;
 
   @ManyToOne(() => TipSeason, (tipSeason) => tipSeason.matchdays, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'seasonId'})
   season: TipSeason;
 
-  @OneToMany(() => Match, (match) => match.matchday)
+  @Column({nullable: true})
+  seasonId: number;
+
+  @OneToMany(() => Match, (match) => match.matchday, {
+    cascade: true
+  })
   matches: Match[];
 }

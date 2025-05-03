@@ -14,7 +14,12 @@ export class TipSeason {
   @JoinColumn( {name: 'tipgroupId'})
   tipgroup: Tipgroup;
 
-  @OneToMany(() => Matchday, (matchday) => matchday.season)
+  @Column({nullable: true})
+  tipgroupId: number;
+
+  @OneToMany(() => Matchday, (matchday) => matchday.season, {
+    cascade: true
+  })
   matchdays: Matchday[];
 
 }

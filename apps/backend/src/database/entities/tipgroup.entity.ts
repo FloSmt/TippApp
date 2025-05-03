@@ -16,7 +16,9 @@ export class Tipgroup {
   @Column()
   passwordHash: string;
 
-  @OneToMany(() => TipgroupUser, (tipgroupUser) => tipgroupUser.tipgroup)
+  @OneToMany(() => TipgroupUser, (tipgroupUser) => tipgroupUser.tipgroup, {
+    cascade: true
+  })
   users: TipgroupUser[];
 
   @OneToMany(() => TipSeason, (tipSeason) => tipSeason.tipgroup)

@@ -14,7 +14,13 @@ export class ApiService {
 
   async getMatchDay(leagueShortcut: string, season: number, groupId?: number): Promise<MatchResponse[]> {
     try {
-      const url = `${this.apiUrl}/getmatchdata/${leagueShortcut}/${season}/${groupId}`;
+      let url = "";
+      if (groupId) {
+        url = `${this.apiUrl}/getmatchdata/${leagueShortcut}/${season}/${groupId}`;
+      }else {
+        url = `${this.apiUrl}/getmatchdata/${leagueShortcut}/${season}`;
+      }
+
       const response = await firstValueFrom(this.httpService.get(url));
 
       return response.data.map((match: any) => new MatchResponse(match));
@@ -25,7 +31,7 @@ export class ApiService {
     }
   }
 
-  async getAvailableLeagues(season: number): Promise<LeagueResponse[]> {
+  async getAvailableLeagues(): Promise<LeagueResponse[]> {
     try {
       const url = `${this.apiUrl}/getavailableleagues/`;
       const response = await firstValueFrom(this.httpService.get(url));
@@ -42,17 +48,15 @@ export class ApiService {
     }
   }
 
-  async getAvailableGroups(season: number, leagueShortcut: string): Promise<GroupResponse[]> {
+  async getAvailableGroups(leagueShortcut: string, season: number): Promise<GroupResponse[]> {
     try {
       const url = `${this.apiUrl}/getavailablegroups/${leagueShortcut}/${season}`;
       const response = await firstValueFrom(this.httpService.get(url));
 
-
-      // Filters only Men/Women football with the targeted Season
       return response.data.map((group: any) => new GroupResponse(group));
 
     }catch (error) {
-      throw new HttpException('Error on calling external API',
+      throw new HttpException('Error on calling external API (' + error + ')',
         HttpStatus.BAD_REQUEST);
     }
   }

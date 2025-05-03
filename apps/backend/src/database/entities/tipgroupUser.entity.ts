@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {User} from "./user.entity";
 import {Tipgroup} from "./tipgroup.entity";
 
@@ -18,6 +18,6 @@ export class TipgroupUser {
   @Column( {default: false})
   isAdmin: boolean;
 
-  @Column()
+  @CreateDateColumn()
   joinDate: Date;
 }
