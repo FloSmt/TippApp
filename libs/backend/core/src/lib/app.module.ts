@@ -1,13 +1,13 @@
 import {Module} from '@nestjs/common';
 import {UserModule} from "@tippapp/backend/user";
 import {AuthModule} from "@tippapp/backend/auth";
-import {ConfigModule} from "@nestjs/config";
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import * as process from "node:process";
 import * as path from "node:path";
-import {HttpModule} from "@nestjs/axios";
 import {ApiModule} from "@tippapp/backend/api";
 import {dbConfig, dbConfigProduction} from "@tippapp/backend/database";
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -21,6 +21,7 @@ import {dbConfig, dbConfigProduction} from "@tippapp/backend/database";
       load: [dbConfig, dbConfigProduction]
     }),
     TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
       useFactory: process.env.NODE_ENV.trim() === "production" ? dbConfigProduction : dbConfig,
     }),
     UserModule,
