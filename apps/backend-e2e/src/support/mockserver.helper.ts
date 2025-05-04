@@ -1,4 +1,4 @@
-import { mockServerClient } from 'mockserver-client';
+import {mockServerClient} from 'mockserver-client';
 
 export const setupMockApi = async () => {
   const client = mockServerClient('localhost', 1080);
@@ -6,7 +6,7 @@ export const setupMockApi = async () => {
   await client.mockAnyResponse({
     httpRequest: {
       method: 'GET',
-      path: '/getmatchdata/',
+      path: '/getmatchdata',
     },
     httpResponse: {
       statusCode: 200,

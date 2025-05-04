@@ -15,13 +15,13 @@ import {dbConfig, dbConfigProduction} from "@tippapp/backend/database";
       envFilePath: path.resolve(
         process.cwd(),
         'environments',
-        `.env.${process.env.NODE_ENV || 'development'}`
+        `.env.${process.env.NODE_ENV.trim() || 'development'}`
       ),
       isGlobal: true,
       load: [dbConfig, dbConfigProduction]
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: process.env.NODE_ENV === "production"? dbConfigProduction : dbConfig,
+      useFactory: process.env.NODE_ENV.trim() === "production" ? dbConfigProduction : dbConfig,
     }),
     UserModule,
     AuthModule,
@@ -31,4 +31,8 @@ import {dbConfig, dbConfigProduction} from "@tippapp/backend/database";
   controllers: [],
   providers: [],
 })
+
 export class AppModule {}
+
+console.log(process.env.NODE_ENV);
+console.log('process', process.env.DB_HOST);

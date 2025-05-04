@@ -1,8 +1,8 @@
-import * as request from 'supertest';
 import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
 import {setupMockApi} from "../support/mockserver.helper";
 import {AppModule} from "@tippapp/backend/core";
+import request from 'supertest';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -19,7 +19,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/my-api (GET) sollte Mock-Daten liefern', async () => {
-    const res = await request(app.getHttpServer()).get('/my-api');
+    const res = await request(app.getHttpServer()).post('/api/auth/login');
     expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({name: 'Mocked Name'}));
   });
