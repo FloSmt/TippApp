@@ -4,13 +4,15 @@ import {firstValueFrom} from "rxjs";
 import {MatchResponse} from "./responses/match.response";
 import {LeagueResponse} from "./responses/league.response";
 import {GroupResponse} from "./responses/group.response";
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class ApiService {
 
-  private readonly apiUrl = 'https://api.openligadb.de';
+  constructor(private readonly httpService: HttpService,
+              private readonly config: ConfigService) {}
 
-  constructor(private readonly httpService: HttpService) {}
+  private readonly apiUrl = this.config.get<string>('EXTERNAL_API_BASE_URL');
 
   async getMatchDay(leagueShortcut: string, season: number, groupId?: number): Promise<MatchResponse[]> {
     try {

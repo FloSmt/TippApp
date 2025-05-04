@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:Database": "docker compose up"
+    "start:Database": "docker compose up",
+    "test:Database": "docker-compose -f docker-compose.test.yaml up -d"
   },
   "private": true,
   "dependencies": {
@@ -77,6 +78,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jest-preset-angular": "~14.4.0",
+    "mockserver-client": "^5.15.0",
     "nx": "20.6.2",
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",
