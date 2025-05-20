@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:Database": "docker compose up",
-    "test:Database": "docker-compose -f docker-compose.test.yaml up -d",
+    "start:database": "docker compose up",
+    "start:test-database": "docker-compose -f docker-compose.test.yaml up -d",
+    "start:backend": "nx run backend:serve",
     "test:backend:e2e": "set NODE_ENV=test && nx run backend-e2e:e2e",
     "test:backend:unit": "nx run-many --target=test --projects=libs/backend/* --code-coverage"
   },

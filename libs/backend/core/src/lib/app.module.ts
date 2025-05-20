@@ -34,6 +34,3 @@ import { HttpModule } from '@nestjs/axios';
 })
 
 export class AppModule {}
-
-console.log(process.env.NODE_ENV);
-console.log('process', process.env.DB_HOST);

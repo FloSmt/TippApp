@@ -12,7 +12,7 @@ import {TipSeason} from "../entities/tipSeason.entity";
 
 export default registerAs("dbconfig.dev", ():MysqlConnectionOptions =>  ({
   type: "mysql",
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST ?? 'localhost',
   port: +process.env.DB_PORT,
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
