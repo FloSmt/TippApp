@@ -23,7 +23,6 @@ describe('AuthController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/auth/register')
       .send({username: 'test', password: 'test', email: 'test'});
-    console.log(res);
     //expect(res.status).toBe(200);
     expect(res.body).toEqual(expect.objectContaining({name: 'Mocked Name'}));
   });
