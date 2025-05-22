@@ -132,7 +132,7 @@ describe('AuthService', () => {
   describe('refreshTokens', () => {
     it('should throw a NotFoundException if the User was not found', async () => {
       userService.findById.mockResolvedValueOnce(null);
-      await expect(service.refreshTokens(1, 'token')).rejects.toThrow(new NotFoundException('UserId not found'));
+      await expect(service.refreshTokens(1, 'token')).rejects.toThrow(new UnauthorizedException('User not found'));
       expect(userService.findById).toHaveBeenCalledWith(1);
     });
 
