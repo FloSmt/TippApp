@@ -4,9 +4,9 @@
  */
 
 import {Logger, ValidationPipe} from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import {NestFactory} from '@nestjs/core';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import {AppModule} from "@tippapp/backend/core";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
