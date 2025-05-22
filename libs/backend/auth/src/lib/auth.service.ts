@@ -59,7 +59,7 @@ export class AuthService {
     const user = await this.userService.findById(userId);
 
     if (!user) {
-      throw new NotFoundException('UserId not found');
+      throw new UnauthorizedException('User not found');
     }
 
     if (user.refreshToken !== refreshToken) {

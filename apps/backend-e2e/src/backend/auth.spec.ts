@@ -19,6 +19,12 @@ describe('AuthController (e2e)', () => {
       return [{
         email: 'test@email.de',
         password: '1234'
+      },{
+        email: 'wrongEmail@email.de',
+        password: '1234'
+      },{
+        email: 'test@email.de',
+        password: 'wrongPassword'
       }]
     },
 
@@ -93,25 +99,96 @@ describe('AuthController (e2e)', () => {
       const loginDto = mocks.loginData[0];
 
       // Register new User
-      let response = await request(app.getHttpServer()).post('/auth/register').send(registerDto);
-      // let foundUser = await userRepository.findOne({ where: { id: response.body.userId } });
-      // const oldRefreshToken = foundUser.refreshToken;
+      const response1 = await request(app.getHttpServer()).post('/auth/register').send(registerDto);
+      const userOnRegistration = await userRepository.findOne({ where: { id: response1.body.userId } });
+      const oldRefreshToken = userOnRegistration.refreshToken;
+
+      // Delay between registration and login to get different tokens
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Login with same credentials
-      response = await request(app.getHttpServer()).post('/auth/login').send(loginDto);
-      expect(response.status).toBe(200);
-      expectAuthResponse(response);
+      const response2 = await request(app.getHttpServer()).post('/auth/login').send(loginDto);
+      expect(response2.status).toBe(200);
+      expectAuthResponse(response2);
 
-      /*TODO: check if new refreshToken is set*/
+      const userOnLogin = await userRepository.findOne({ where: { id: response2.body.userId } });
+      const newRefreshToken = userOnLogin.refreshToken;
 
-      // foundUser = await userRepository.findOne({ where: { id: response.body.userId } });
-      // const newRefreshToken = foundUser.refreshToken;
-
-      // console.log(newRefreshToken);
-      // console.log(oldRefreshToken);
-      // expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
+      expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
     });
-  })
+
+    it('should throw Error 401 if user was not found or password is wrong', async () => {
+      const registerDto = mocks.registerData[0];
+      let loginDto = mocks.loginData[1];
+
+      // Register new User
+      await request(app.getHttpServer()).post('/auth/register').send(registerDto);
+
+      // Login with wrong email
+      let response = await request(app.getHttpServer()).post('/auth/login').send(loginDto);
+      expect(response.status).toBe(401);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('User not found');
+
+      // Login with wrong password
+      loginDto = mocks.loginData[2];
+      response = await request(app.getHttpServer()).post('/auth/login').send(loginDto);
+      expect(response.status).toBe(401);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Invalid credentials');
+    });
+  });
+
+  describe('/refresh (POST)', () => {
+    it('should response AuthResponse and generates new refreshToken', async () => {
+      const registerDto = mocks.registerData[0];
+
+      // Register new User
+      const response1 = await request(app.getHttpServer()).post('/auth/register').send(registerDto);
+      const userOnRegistration = await userRepository.findOne({ where: { id: response1.body.userId } });
+      const oldRefreshToken = userOnRegistration.refreshToken;
+      const userId = userOnRegistration.id;
+
+      // Delay between registration and login to get different tokens
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // Login with same credentials
+      const response2 = await request(app.getHttpServer()).post('/auth/refresh').send({userId: userId, refreshToken: oldRefreshToken});
+      expect(response2.status).toBe(200);
+      expectAuthResponse(response2);
+
+      const userOnLogin = await userRepository.findOne({ where: { id: response2.body.userId } });
+      const newRefreshToken = userOnLogin.refreshToken;
+
+      expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
+    });
+
+    it('should throw Error 401 if user was not found or invalid refreshToken was send', async () => {
+      const registerDto = mocks.registerData[0];
+
+      // Register new User
+      const response1 = await request(app.getHttpServer()).post('/auth/register').send(registerDto);
+      const userOnRegistration = await userRepository.findOne({ where: { id: response1.body.userId } });
+      const oldRefreshToken = userOnRegistration.refreshToken;
+      const userId = userOnRegistration.id;
+
+      // Refresh with wrong UserId
+      let response = await request(app.getHttpServer())
+        .post('/auth/refresh')
+        .send({ userId: (userId + 1), refreshToken: oldRefreshToken });
+      expect(response.status).toBe(401);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('User not found');
+
+      // Refresh with wrong refreshToken
+      response = await request(app.getHttpServer())
+        .post('/auth/refresh')
+        .send({ userId: userId, refreshToken: 'wrongToken' });
+      expect(response.status).toBe(401);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Invalid refreshToken');
+    });
+  });
 
   afterAll(async () => {
     await app.close();
