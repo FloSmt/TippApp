@@ -1,9 +1,9 @@
 import {ConflictException, Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {UserService} from "@tippapp/backend/user";
-import {RegisterDto} from "./dto/register.dto";
-import {LoginDto} from "./dto/login.dto";
-import {AuthResponseDto} from "./dto/auth-response.dto";
+import {RegisterDto} from '@tippapp/shared/data-access';
+import {LoginDto} from '@tippapp/shared/data-access';
+import {AuthResponseDto} from '@tippapp/shared/data-access';
 import {ConfigService} from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 

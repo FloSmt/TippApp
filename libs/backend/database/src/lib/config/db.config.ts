@@ -26,5 +26,6 @@ export default registerAs("dbconfig.dev", ():MysqlConnectionOptions =>  ({
     TipSeason,
     Tip,
   ],
-  synchronize: true
+  synchronize: true,
+  dropSchema: process.env.NODE_ENV === 'test'
 }));

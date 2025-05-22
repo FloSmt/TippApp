@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {Repository} from "typeorm";
 import {User} from "@tippapp/backend/database";
 import {InjectRepository} from "@nestjs/typeorm";
-import {RegisterDto} from "../../../auth/src/lib/dto/register.dto";
+import {RegisterDto} from '@tippapp/shared/data-access';
 
 @Injectable()
 export class UserService {

@@ -1,7 +1,7 @@
 import {Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
 import {AuthService} from './auth.service';
-import {LoginDto} from "./dto/login.dto";
-import {RegisterDto} from "./dto/register.dto";
+import {LoginDto} from "../../../../shared/data-access/src/lib/dtos/auth/login.dto";
+import {RegisterDto} from "../../../../shared/data-access/src/lib/dtos/auth/register.dto";
 import {Public} from "./guards/jwt-auth.guard";
 import {ApiOperation, ApiParam, ApiResponse} from "@nestjs/swagger";
 
@@ -19,7 +19,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({summary: 'creates a User if email not exists'})
   async register(@Body() registerDto: RegisterDto) {
     return await this.authService.register(registerDto);

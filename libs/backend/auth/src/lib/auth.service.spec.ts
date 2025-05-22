@@ -4,9 +4,9 @@ import {JwtService} from "@nestjs/jwt";
 import {createMock, DeepMocked} from "@golevelup/ts-jest";
 import {ConfigService} from "@nestjs/config";
 import {ConflictException, NotFoundException, UnauthorizedException} from '@nestjs/common';
-import {LoginDto} from "./dto/login.dto";
+import {LoginDto} from "../../../../shared/data-access/src/lib/dtos/auth/login.dto";
 import {User} from '@tippapp/backend/database';
-import {RegisterDto} from './dto/register.dto';
+import {RegisterDto} from '../../../../shared/data-access/src/lib/dtos/auth/register.dto';
 import {UserService} from "@tippapp/backend/user";
 
 describe('AuthService', () => {
