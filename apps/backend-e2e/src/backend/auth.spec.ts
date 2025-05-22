@@ -104,7 +104,7 @@ describe('AuthController (e2e)', () => {
       const oldRefreshToken = userOnRegistration.refreshToken;
 
       // Delay between registration and login to get different tokens
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Login with same credentials
       const response2 = await request(app.getHttpServer()).post('/auth/login').send(loginDto);
@@ -150,7 +150,7 @@ describe('AuthController (e2e)', () => {
       const userId = userOnRegistration.id;
 
       // Delay between registration and login to get different tokens
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Login with same credentials
       const response2 = await request(app.getHttpServer()).post('/auth/refresh').send({userId: userId, refreshToken: oldRefreshToken});
