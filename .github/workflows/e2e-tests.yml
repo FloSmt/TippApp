@@ -1,0 +1,55 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:latest
+        ports: [3307:3306]
+        env:
+          MYSQL_ROOT_PASSWORD: root_test
+          MYSQL_DATABASE: test_db
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      mockserver:
+        image: mockserver/mockserver
+        ports: [1080:1080]
+
+    env:
+      NODE_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3307
+      DB_USER: root
+      DB_PASS: root_test
+      DB_NAME: test_db
+      EXTERNAL_API_BASE_URL: http://localhost:1080
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build NX workspace
+        run: npx nx run backend:build
+
+      - name: Run E2E tests
+        run: npx nx run backend-e2e:e2e

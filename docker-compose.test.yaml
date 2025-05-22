@@ -1,0 +1,31 @@
+services:
+  mysql_test:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_test
+      MYSQL_DATABASE: test_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - test_db_data:/var/lib/mysql
+
+  phpmyadmin_test:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: mysql_test
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root_test
+    ports:
+      - 8081:80
+    depends_on:
+      - mysql_test
+
+  mockserver:
+    image: mockserver/mockserver:latest
+    ports:
+      - "1080:1080"
+    environment:
+      MOCKSERVER_SERVER_PORT: 1080
+
+volumes:
+  test_db_data:
