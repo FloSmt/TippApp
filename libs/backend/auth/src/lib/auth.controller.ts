@@ -1,7 +1,7 @@
 import {Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
 import {AuthService} from './auth.service';
-import {LoginDto} from "../../../../shared/data-access/src/lib/dtos/auth/login.dto";
-import {RegisterDto} from "../../../../shared/data-access/src/lib/dtos/auth/register.dto";
+import {LoginDto} from '@tippapp/shared/data-access';
+import {RegisterDto} from '@tippapp/shared/data-access';
 import {Public} from "./guards/jwt-auth.guard";
 import {ApiOperation, ApiParam, ApiResponse} from "@nestjs/swagger";
 

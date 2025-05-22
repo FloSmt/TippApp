@@ -1,6 +1,5 @@
 import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions";
 import {User} from "../entities/user.entity";
-
 import {Tip} from "../entities/tip.entity";
 import {registerAs} from "@nestjs/config";
 import * as process from "node:process";

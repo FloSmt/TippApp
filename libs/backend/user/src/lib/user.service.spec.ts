@@ -3,7 +3,7 @@ import {UserService} from './user.service';
 import {Repository} from 'typeorm';
 import {getRepositoryToken} from '@nestjs/typeorm';
 import {User} from '@tippapp/backend/database';
-import {RegisterDto} from '../../../../shared/data-access/src/lib/dtos/auth/register.dto';
+import {RegisterDto} from '@tippapp/shared/data-access';
 
 describe('UserService', () => {
   let userService: UserService;
