@@ -5,9 +5,9 @@ import {JwtService} from '@nestjs/jwt';
 import {ConfigService} from '@nestjs/config';
 import {Test, TestingModule} from '@nestjs/testing';
 import {UserService} from '@tippapp/backend/user';
-import {AuthResponseDto} from '../../../../shared/data-access/src/lib/dtos/auth/auth-response.dto';
-import {LoginDto} from '../../../../shared/data-access/src/lib/dtos/auth/login.dto';
-import {RegisterDto} from '../../../../shared/data-access/src/lib/dtos/auth/register.dto';
+import {AuthResponseDto} from '@tippapp/shared/data-access';
+import {LoginDto} from '@tippapp/shared/data-access';
+import {RegisterDto} from '@tippapp/shared/data-access';
 
 describe('AuthController', () => {
   let authController: AuthController;
