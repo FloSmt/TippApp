@@ -1,3 +1,3 @@
-export * from './lib/auth.module';
-export * from './lib/auth.controller';
-export * from './lib/auth.service';
+export * from './auth.module';
+export * from './auth.controller';
+export * from './auth.service';
