@@ -1,7 +1,7 @@
 {
-  "name": "api",
+  "name": "match",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/backend/api/src",
+  "sourceRoot": "libs/backend/match/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -11,11 +11,11 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/backend/api",
-        "main": "libs/backend/api/src/index.ts",
-        "tsConfig": "libs/backend/api/tsconfig.lib.json",
+        "outputPath": "dist/libs/backend/match",
+        "main": "libs/backend/match/src/index.ts",
+        "tsConfig": "libs/backend/match/tsconfig.lib.json",
         "assets": [
-          "libs/backend/api/*.md"
+          "libs/backend/match/*.md"
         ],
         "format": [
           "cjs"
@@ -29,7 +29,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "libs/backend/api/jest.config.ts"
+        "jestConfig": "libs/backend/match/jest.config.ts"
       }
     }
   }

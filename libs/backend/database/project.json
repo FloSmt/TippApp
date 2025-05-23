@@ -5,6 +5,24 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/libs/backend/database",
+        "main": "libs/backend/database/src/index.ts",
+        "tsConfig": "libs/backend/database/tsconfig.lib.json",
+        "assets": [
+          "libs/backend/database/*.md"
+        ],
+        "format": [
+          "cjs"
+        ],
+        "generatePackageJson": true
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": [

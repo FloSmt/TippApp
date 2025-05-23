@@ -1,7 +1,7 @@
 {
-  "name": "api",
+  "name": "matchday",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/backend/api/src",
+  "sourceRoot": "libs/backend/matchday/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -11,11 +11,11 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/backend/api",
-        "main": "libs/backend/api/src/index.ts",
-        "tsConfig": "libs/backend/api/tsconfig.lib.json",
+        "outputPath": "dist/libs/backend/matchday",
+        "main": "libs/backend/matchday/src/index.ts",
+        "tsConfig": "libs/backend/matchday/tsconfig.lib.json",
         "assets": [
-          "libs/backend/api/*.md"
+          "libs/backend/matchday/*.md"
         ],
         "format": [
           "cjs"
@@ -29,7 +29,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "libs/backend/api/jest.config.ts"
+        "jestConfig": "libs/backend/matchday/jest.config.ts"
       }
     }
   }
