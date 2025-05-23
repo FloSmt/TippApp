@@ -1,11 +1,13 @@
 import nx from '@nx/eslint-plugin';
+import ts from '@typescript-eslint/eslint-plugin';
+import importPlugin from 'eslint-plugin-import';
 
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist'],
+    ignores: ['**/dist', '**/node_modules'],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -36,7 +38,18 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    // Override or add rules here
-    rules: {},
+    plugins: {
+      'import': importPlugin,
+    },
+    rules: {
+      ...ts.configs.recommended.rules,
+      '@typescript-eslint/no-require-imports': "off",
+      '@typescript-eslint/no-explicit-any': "warn",
+      '@typescript-eslint/no-unused-vars': "warn",
+      '@typescript-eslint/no-non-null-assertion': "warn",
+      'import/no-cycle': "error",
+      'import/no-useless-path-segments': "warn",
+      'import/newline-after-import': "warn",
+    },
   },
 ];
