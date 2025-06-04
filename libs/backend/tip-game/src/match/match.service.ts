@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMatchDto } from '../../../../shared/data-access/src/dtos/match/create-match.dto';
-import { Match } from '../../database/entities/match.entity';
+import { CreateMatchDto } from '@tippapp/shared/data-access';
+import { Match } from '@tippapp/backend/database';
 
 @Injectable()
 export class MatchService {

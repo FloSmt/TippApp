@@ -1,4 +1,4 @@
-import { MatchResponse } from '../../../../shared/data-access/src/apiResponses/match.response';
+import { MatchResponse } from '@tippapp/shared/data-access';
 import { groupResponseMock } from './group-response.mock';
 import { teamResponseMock } from './team-response.mock';
 

@@ -11,7 +11,7 @@ export class UserController {
   @Get('tipgroups')
   @ApiBearerAuth()
   async getTipgroups(@Request() req: any): Promise<TipgroupResponseDto[]> {
-    const userId = req.user.sub;
+    const userId = req.user.id;
 
     const tipgroups: Tipgroup[] = await this.userService.getTipGroupsByUserId(
       userId

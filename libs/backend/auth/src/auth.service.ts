@@ -64,7 +64,7 @@ export class AuthService {
     return {
       userId: user.id,
       accessToken: newTokens.accessToken,
-      refreshToken: newTokens.refreshToke,
+      refreshToken: newTokens.refreshToken,
     };
   }
 
@@ -84,14 +84,14 @@ export class AuthService {
 
     const newTokens = this.generateTokens({
       username: user.username,
-      sub: user.id,
+      id: user.i,
     });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
       userId: user.id,
       accessToken: newTokens.accessToken,
-      refreshToken: newTokens.refreshToke,
+      refreshToken: newTokens.refreshToken,
     };
   }
 
@@ -105,7 +105,7 @@ export class AuthService {
 
     return {
       accessToken: newAccessToken,
-      refreshToken: newRefreshTokn,
+      refreshToken: newRefreshToke,
     };
   }
 

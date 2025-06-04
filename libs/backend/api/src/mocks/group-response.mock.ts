@@ -1,4 +1,4 @@
-import { GroupResponse } from '../../../../shared/data-access/src/apiResponses/group.response';
+import { GroupResponse } from '@tippapp/shared/data-access';
 
 export const groupResponseMock = [
   {
@@ -9,6 +9,6 @@ export const groupResponseMock = [
   {
     groupId: '2',
     groupOrderId: '2',
-    groupName: '2,
+    groupName: '2',
   },
 ] as GroupResponse[];

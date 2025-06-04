@@ -1,4 +1,4 @@
-import { TeamResponse } from '../../../../shared/data-access/src/apiResponses/team.response';
+import { TeamResponse } from '@tippapp/shared/data-access';
 
 export const teamResponseMock = [
   {
@@ -9,6 +9,6 @@ export const teamResponseMock = [
   {
     teamId: 2,
     teamName: '2',
-    teamIconUrl: '2,
+    teamIconUrl: '2',
   },
 ] as TeamResponse[];

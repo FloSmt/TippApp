@@ -1,8 +1,10 @@
 import { Body, Controller, Post, Request } from '@nestjs/common';
 import { TipgroupService } from './tipgroup.service';
-import { CreateTipgroupDto } from '../../../../shared/data-access/src/dtos/tipgroup/create-tipgroup.dto';
+import {
+  CreateTipgroupDto,
+  TipgroupResponseDto,
+} from '@tippapp/shared/data-access';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { TipgroupResponseDto } from '../../../../shared/data-access/src/dtos/tipgroup/tipgroup-response.dto';
 
 @Controller('tipgroup')
 export class TipgroupController {
@@ -15,13 +17,13 @@ export class TipgroupController {
   })
   @ApiOperation({
     summary:
-      'creates a new Tipgroup and generates a new TipSeason with all given Matchdays and Matches,
+      'creates a new Tipgroup and generates a new TipSeason with all given Matchdays and Matches',
   })
   async create(
     @Body() createTipgroupDto: CreateTipgroupDto,
     @Request() req: any
   ): Promise<TipgroupResponseDto> {
-    const userId = req.user.sub;
+    const userId = req.user.id;
     const tipgroup = await this.tipgroupService.create(
       createTipgroupDto,
       userId

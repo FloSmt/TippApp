@@ -48,7 +48,8 @@ export class ApiService {
 
       // Filters only Men/Women football with the targeted Season
       const filteredMatches = response.data.filter(
-        (league) => league.sport.sportId === 1 || league.sport.sportId === 79
+        (league: any) =>
+          league.sport.sportId === 1 || league.sport.sportId === 79
       );
       return filteredMatches.map((league: any) => new LeagueResponse(league));
     } catch (error) {
