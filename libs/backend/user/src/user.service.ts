@@ -1,17 +1,22 @@
-import {Injectable} from '@nestjs/common';
-import {Repository} from "typeorm";
-import {User} from "@tippapp/backend/database";
-import {InjectRepository} from "@nestjs/typeorm";
-import {RegisterDto} from '@tippapp/shared/data-access';
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Tipgroup, TipgroupUser, User } from '@tippapp/backend/database';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RegisterDto } from '@tippapp/shared/data-access';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(TipgroupUser)
+    private readonly tipgroupUserRepository: Repository<TipgroupUser>
   ) {}
 
-  async updateRefreshToken(userId: number, refreshToken: string): Promise<void> {
+  async updateRefreshToken(
+    userId: number,
+    refreshToken: string
+  ): Promise<void> {
     await this.userRepository.update(userId, { refreshToken });
   }
 
@@ -26,5 +31,14 @@ export class UserService {
   async create(registerDto: RegisterDto): Promise<User> {
     const user = this.userRepository.create(registerDto);
     return this.userRepository.save(user);
+  }
+
+  async getTipGroupsByUserId(userId: number): Promise<Tipgroup[]> {
+    const tipGroupUserEntries = await this.tipgroupUserRepository.find({
+      where: { userId: userId },
+      relations: ['tipgroup'],
+    });
+
+    return tipGroupUserEntries.map((entry) => entry.tipgroup);
   }
 }

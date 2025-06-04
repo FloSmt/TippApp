@@ -1,7 +1,7 @@
 {
-  "name": "user",
+  "name": "tip-game",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/backend/user/src",
+  "sourceRoot": "libs/backend/tip-game/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -11,11 +11,11 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/backend/user",
-        "main": "libs/backend/user/src/index.ts",
-        "tsConfig": "libs/backend/user/tsconfig.lib.json",
+        "outputPath": "dist/libs/backend/tip-game",
+        "main": "libs/backend/tip-game/src/index.ts",
+        "tsConfig": "libs/backend/tip-game/tsconfig.lib.json",
         "assets": [
-          "libs/backend/user/*.md"
+          "libs/backend/tip-game/*.md"
         ],
         "format": [
           "cjs"
@@ -28,7 +28,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "libs/backend/user/jest.config.ts"
+        "jestConfig": "libs/backend/tip-game/jest.config.ts"
       }
     }
   }

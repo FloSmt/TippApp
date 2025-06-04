@@ -1,13 +1,14 @@
-import {GroupResponse} from "../responses/group.response";
+import { GroupResponse } from '../../../../shared/data-access/src/apiResponses/group.response';
 
-export const groupResponseMock =  [
+export const groupResponseMock = [
   {
     groupId: '1',
     groupOrderId: '1',
-    groupName: '1'
-  }, {
+    groupName: '1',
+  },
+  {
     groupId: '2',
     groupOrderId: '2',
-    groupName: '2'
-  }
+    groupName: '2,
+  },
 ] as GroupResponse[];
