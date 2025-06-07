@@ -1,17 +1,8 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import {
-  AuthResponseDto,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
-import { Public } from './guards/jwt-auth.guard';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-} from '@nestjs/swagger';
+import {Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
+import {AuthService} from './auth.service';
+import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {Public} from './guards/jwt-auth.guard';
+import {ApiOkResponse, ApiOperation, ApiParam, ApiResponse,} from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -19,9 +10,10 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthResponseDto })
   @ApiOperation({
-    summary: 'returns accessToken, refreshToken and userId for User logi',
+    summary: 'returns accessToken, refreshToken and userId for User login',
   })
   @ApiResponse({ status: 200, type: AuthResponseDto })
   async login(@Body() loginDto: LoginDto) {

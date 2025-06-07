@@ -30,7 +30,7 @@ describe('MatchdayService', () => {
 
   it('should return a Matchday Entity with 2 Matches', () => {
     const createMatchdayDtoMock = {
-      api_groupId: "1",
+      api_groupId: 1,
       name: "Matchday",
       matches: [{
         api_matchId: 1,

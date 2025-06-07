@@ -1,6 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MatchdayController } from './matchday.controller';
-import { MatchdayService } from './matchday.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {MatchdayController} from './matchday.controller';
 
 describe('MatchdayController', () => {
   let controller: MatchdayController;
@@ -8,7 +7,7 @@ describe('MatchdayController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MatchdayController],
-      providers: [MatchdayService],
+      providers: [],
     }).compile();
 
     controller = module.get<MatchdayController>(MatchdayController);

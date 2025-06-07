@@ -1,7 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { MatchdayService } from './matchday.service';
+import {Controller} from '@nestjs/common';
 
 @Controller('matchday')
 export class MatchdayController {
-  constructor(private readonly matchdayService: MatchdayService) {}
 }

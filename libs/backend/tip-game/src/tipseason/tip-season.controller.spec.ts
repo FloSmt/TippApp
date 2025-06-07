@@ -1,6 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TipSeasonController } from './tip-season.controller';
-import { TipSeasonService } from './tip-season.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {TipSeasonController} from './tip-season.controller';
 
 describe('TipSeasonController', () => {
   let controller: TipSeasonController;
@@ -8,7 +7,7 @@ describe('TipSeasonController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TipSeasonController],
-      providers: [TipSeasonService],
+      providers: [],
     }).compile();
 
     controller = module.get<TipSeasonController>(TipSeasonController);

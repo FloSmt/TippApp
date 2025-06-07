@@ -1,7 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { TipSeasonService } from './tip-season.service';
+import {Controller} from '@nestjs/common';
 
 @Controller('tip-season')
 export class TipSeasonController {
-  constructor(private readonly tipSeasonService: TipSeasonService) {}
 }
