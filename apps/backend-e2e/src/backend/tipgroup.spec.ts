@@ -7,7 +7,7 @@ import {setupE2ETestEnvironment} from "./helper/setup-tests";
 import {AVAILABLE_GROUPS_MOCK} from "./api-mocks/getAvailableGroups.mock";
 import {MATCHDATA_MOCK} from "./api-mocks/getMatchData.mock";
 
-fdescribe('TipgroupController (e2e)', () => {
+describe('TipgroupController (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
 

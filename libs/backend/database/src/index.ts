@@ -8,4 +8,4 @@ export * from './entities/match.entity';
 
 export {default as dbConfig} from './config/db.config';
 export {default as dbConfigProduction} from './config/db.config.production';
-export {default as dbConfigTest} from './config/db.config.test';
+export {default as dbConfigTest} from './config/db.config.test-env';

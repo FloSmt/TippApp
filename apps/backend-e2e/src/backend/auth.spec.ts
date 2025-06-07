@@ -101,6 +101,8 @@ describe('AuthController (e2e)', () => {
       expect(response2.status).toBe(200);
       expectAuthResponse(response2);
 
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       const userOnLogin = await userRepository.findOne({ where: { id: response2.body.userId } });
       const newRefreshToken = userOnLogin.refreshToken;
 
