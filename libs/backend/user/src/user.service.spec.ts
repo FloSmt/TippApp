@@ -2,12 +2,14 @@ import {Test, TestingModule} from '@nestjs/testing';
 import {UserService} from './user.service';
 import {Repository} from 'typeorm';
 import {getRepositoryToken} from '@nestjs/typeorm';
-import {User} from '@tippapp/backend/database';
+import {TipgroupUser, User} from '@tippapp/backend/database';
 import {RegisterDto} from '@tippapp/shared/data-access';
+import {createMock, DeepMocked} from "@golevelup/ts-jest";
 
 describe('UserService', () => {
   let userService: UserService;
   let userRepository: Repository<User>;
+  let tipgroupUserRepository: DeepMocked<Repository<TipgroupUser>>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,11 +24,16 @@ describe('UserService', () => {
             save: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(TipgroupUser),
+          useValue: createMock<Repository<TipgroupUser>>()
+        }
       ],
     }).compile();
 
     userService = module.get<UserService>(UserService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    tipgroupUserRepository = module.get(getRepositoryToken(TipgroupUser));
   });
 
   it('should be defined', () => {

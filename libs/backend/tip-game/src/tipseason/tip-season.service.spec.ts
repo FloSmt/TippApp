@@ -16,7 +16,7 @@ describe('TipSeasonService', () => {
     api_LeagueSeason: 2020,
     isClosed: false,
     matchdays: [{
-      api_groupId: "1",
+      api_groupId: 1,
       name: "Matchday",
       matches: []
     }]

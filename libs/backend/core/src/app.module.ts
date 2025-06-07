@@ -1,14 +1,14 @@
-import { Module } from '@nestjs/common';
-import { UserModule } from '@tippapp/backend/user';
-import { AuthModule } from '@tippapp/backend/auth';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import {Module} from '@nestjs/common';
+import {UserModule} from '@tippapp/backend/user';
+import {AuthModule} from '@tippapp/backend/auth';
+import {ConfigModule, ConfigService} from '@nestjs/config';
+import {TypeOrmModule} from '@nestjs/typeorm';
 import * as process from 'node:process';
 import * as path from 'node:path';
-import { ApiModule } from '@tippapp/backend/api';
-import { dbConfig, dbConfigProduction } from '@tippapp/backend/database';
-import { HttpModule } from '@nestjs/axios';
-import { TipgroupModule } from '@tippapp/backend/tip-game';
+import {ApiModule} from '@tippapp/backend/api';
+import {dbConfig, dbConfigProduction} from '@tippapp/backend/database';
+import {HttpModule} from '@nestjs/axios';
+import {TipgroupModule} from '@tippapp/backend/tip-game';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { TipgroupModule } from '@tippapp/backend/tip-game';
       useFactory:
         process.env.NODE_ENV.trim() === 'production'
           ? dbConfigProduction
-          : dbConfi,
+          : dbConfig,
     }),
     UserModule,
     AuthModule,
