@@ -14,8 +14,9 @@ export class TipSeasonService {
   ) {}
   createNewTipSeason(createTipSeasonDto: CreateTipSeasonDto): TipSeason {
     const newTipSeason = new TipSeason();
-    newTipSeason.isClosed = false;
+    newTipSeason.isClosed = createTipSeasonDto.isClosed;
     newTipSeason.matchdays = [];
+    newTipSeason.api_LeagueSeason = createTipSeasonDto.api_LeagueSeason;
 
     createTipSeasonDto.matchdays.forEach((matchday) => {
       const newMatchday = this.MatchdayService.createMatchday(matchday);

@@ -6,7 +6,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import * as process from 'node:process';
 import * as path from 'node:path';
 import {ApiModule} from '@tippapp/backend/api';
-import {dbConfig, dbConfigProduction} from '@tippapp/backend/database';
+import {dbConfig, dbConfigProduction, dbConfigTest} from '@tippapp/backend/database';
 import {HttpModule} from '@nestjs/axios';
 import {TipgroupModule} from '@tippapp/backend/tip-game';
 
@@ -19,14 +19,14 @@ import {TipgroupModule} from '@tippapp/backend/tip-game';
         `.env.${process.env.NODE_ENV.trim() || 'development'}`
       ),
       isGlobal: true,
-      load: [dbConfig, dbConfigProduction],
+      load: [dbConfig, dbConfigTest, dbConfigProduction],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory:
         process.env.NODE_ENV.trim() === 'production'
           ? dbConfigProduction
-          : dbConfig,
+          : (process.env.NODE_ENV.trim() === 'test' ? dbConfigTest : dbConfig),
     }),
     UserModule,
     AuthModule,

@@ -1,12 +1,10 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import {AppModule} from "@tippapp/backend/core";
+import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
 import * as bcrypt from "bcrypt";
-import { DataSource, Repository } from 'typeorm';
-import { User } from '@tippapp/backend/database';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { LoginDto, RegisterDto } from '@tippapp/shared/data-access';
+import {DataSource, Repository} from 'typeorm';
+import {User} from '@tippapp/backend/database';
+import {LoginDto, RegisterDto} from '@tippapp/shared/data-access';
+import {setupE2ETestEnvironment} from "./helper/setup-tests";
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -38,18 +36,10 @@ describe('AuthController (e2e)', () => {
   }
 
   beforeAll(async () => {
-    // await setupMockApi();
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-
-    dataSource = app.get(DataSource);
-    userRepository = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
+    const setup = await setupE2ETestEnvironment();
+    app = setup.app;
+    dataSource = setup.dataSource;
+    userRepository = setup.userRepository;
   });
 
   describe('/register (POST)', () => {
