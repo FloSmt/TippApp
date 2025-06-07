@@ -10,6 +10,9 @@ export class TipSeason {
   @Column( {default: false})
   isClosed: boolean;
 
+  @Column()
+  api_LeagueSeason: number;
+
   @ManyToOne(() => Tipgroup, (tipgroup) => tipgroup.seasons, {onDelete: 'CASCADE'})
   @JoinColumn( {name: 'tipgroupId'})
   tipgroup: Tipgroup;

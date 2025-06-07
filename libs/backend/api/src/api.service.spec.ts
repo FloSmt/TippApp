@@ -1,14 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ApiService } from './api.service';
-import { HttpService } from '@nestjs/axios';
-import { of, throwError } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { MatchResponse } from '../../../shared/data-access/src/apiResponses/match.response';
-import { LeagueResponse } from '../../../shared/data-access/src/apiResponses/league.response';
-import { GroupResponse } from '../../../shared/data-access/src/apiResponses/group.response';
-import { HttpException } from '@nestjs/common';
-import { matchResponseMock } from './mocks/match-response.mock';
-import { ConfigService } from '@nestjs/config';
+import {Test, TestingModule} from '@nestjs/testing';
+import {ApiService} from './api.service';
+import {HttpService} from '@nestjs/axios';
+import {of, throwError} from 'rxjs';
+import {AxiosResponse} from 'axios';
+import {GroupResponse, LeagueResponse, MatchResponse} from '@tippapp/shared/data-access';
+import {HttpException} from '@nestjs/common';
+import {matchResponseMock} from './mocks/match-response.mock';
+import {ConfigService} from '@nestjs/config';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -22,7 +20,7 @@ describe('ApiService', () => {
       providers: [
         ApiService,
         ConfigService,
-        { provide: HttpService, useValue: mockHttpService ,
+        {provide: HttpService, useValue: mockHttpService}
       ],
     }).compile();
 
@@ -44,7 +42,7 @@ describe('ApiService', () => {
       };
       mockHttpService.get.mockReturnValue(of(response));
 
-      const result = await service.getMatchDay('bl1', 2024, 1);
+      const result = await service.getMatchData('bl1', 2024, 1);
       expect(result).toHaveLength(2);
       expect(result[0]).toBeInstanceOf(MatchResponse);
     });
@@ -54,7 +52,7 @@ describe('ApiService', () => {
         throwError(() => new Error('Network error'))
       );
 
-      await expect(service.getMatchDay('bl1', 2024, 1)).rejects.toThrow(
+      await expect(service.getMatchData('bl1', 2024, 1)).rejects.toThrow(
         HttpException
       );
     });
@@ -78,7 +76,7 @@ describe('ApiService', () => {
       };
       mockHttpService.get.mockReturnValue(of(response));
 
-      const result = await service.getAvailableLeagues(2024);
+      const result = await service.getAvailableLeagues();
       expect(result).toHaveLength(2);
       expect(result[0]).toBeInstanceOf(LeagueResponse);
     });
@@ -88,7 +86,7 @@ describe('ApiService', () => {
         throwError(() => new Error('API Error'))
       );
 
-      await expect(service.getAvailableLeagues(2024)).rejects.toThrow(
+      await expect(service.getAvailableLeagues()).rejects.toThrow(
         HttpException
       );
     });
@@ -108,7 +106,7 @@ describe('ApiService', () => {
       };
       mockHttpService.get.mockReturnValue(of(response));
 
-      const result = await service.getAvailableGroups(2024, 'bl1');
+      const result = await service.getAvailableGroups('bl1', 2024);
       expect(result).toHaveLength(2);
       expect(result[0]).toBeInstanceOf(GroupResponse);
     });
@@ -118,7 +116,7 @@ describe('ApiService', () => {
         throwError(() => new Error('API Error'))
       );
 
-      await expect(service.getAvailableGroups(2024, 'bl1')).rejects.toThrow(
+      await expect(service.getAvailableGroups('bl1', 2024)).rejects.toThrow(
         HttpException
       );
     });

@@ -1,12 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import {
-  GroupResponse,
-  LeagueResponse,
-  MatchResponse,
-} from '@tippapp/shared/data-access';
-import { ConfigService } from '@nestjs/config';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpService} from '@nestjs/axios';
+import {firstValueFrom} from 'rxjs';
+import {GroupResponse, LeagueResponse, MatchResponse,} from '@tippapp/shared/data-access';
+import {ConfigService} from '@nestjs/config';
 
 @Injectable()
 export class ApiService {
@@ -17,13 +13,13 @@ export class ApiService {
 
   private readonly apiUrl = this.config.get<string>('EXTERNAL_API_BASE_URL');
 
-  async getMatchDay(
+  async getMatchData(
     leagueShortcut: string,
     season: number,
     groupId?: number
   ): Promise<MatchResponse[]> {
     try {
-      let url = '';
+      let url: string;
       if (groupId) {
         url = `${this.apiUrl}/getmatchdata/${leagueShortcut}/${season}/${groupId}`;
       } else {

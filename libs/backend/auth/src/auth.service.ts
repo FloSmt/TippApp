@@ -1,16 +1,8 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '@tippapp/backend/user';
-import {
-  AuthResponseDto,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
-import { ConfigService } from '@nestjs/config';
+import {ConflictException, Injectable, UnauthorizedException,} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
+import {UserService} from '@tippapp/backend/user';
+import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {ConfigService} from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -84,7 +76,7 @@ export class AuthService {
 
     const newTokens = this.generateTokens({
       username: user.username,
-      id: user.i,
+      id: user.id,
     });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
@@ -105,7 +97,7 @@ export class AuthService {
 
     return {
       accessToken: newAccessToken,
-      refreshToken: newRefreshToke,
+      refreshToken: newRefreshToken,
     };
   }
 

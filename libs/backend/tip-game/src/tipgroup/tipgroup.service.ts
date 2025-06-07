@@ -1,19 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import {
-  CreateTipgroupDto,
-  GroupResponse,
-  MatchResponse,
-} from '@tippapp/shared/data-access';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Tipgroup, TipgroupUser } from '@tippapp/backend/database';
-import { ApiService } from '@tippapp/backend/api';
-import { TipSeasonService } from '../tipseason';
-import { UserService } from '@tippapp/backend/user';
+import {Injectable, InternalServerErrorException, NotFoundException,} from '@nestjs/common';
+import {CreateTipgroupDto, GroupResponse, MatchResponse,} from '@tippapp/shared/data-access';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {Tipgroup, TipgroupUser} from '@tippapp/backend/database';
+import {ApiService} from '@tippapp/backend/api';
+import {TipSeasonService} from '../tipseason';
+import {UserService} from '@tippapp/backend/user';
 
 @Injectable()
 export class TipgroupService {
@@ -25,7 +17,7 @@ export class TipgroupService {
     private userService: UserService
   ) {}
 
-  async create(
+  async createTipgroup(
     createTipgroupDto: CreateTipgroupDto,
     userId: number
   ): Promise<Tipgroup> {
@@ -43,7 +35,7 @@ export class TipgroupService {
       );
 
     // Get all Matches from API for given League and Season
-    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchDay(
+    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchData(
       createTipgroupDto.leagueShortcut,
       createTipgroupDto.currentSeason
     );
@@ -85,7 +77,6 @@ export class TipgroupService {
         newTipSeason
       );
       newTipgroup.seasons.push(savedTipSeason);
-
       return this.tipgroupRepository.save(newTipgroup);
     }
 

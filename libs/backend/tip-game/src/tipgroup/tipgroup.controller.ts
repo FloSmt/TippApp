@@ -1,10 +1,7 @@
-import { Body, Controller, Post, Request } from '@nestjs/common';
-import { TipgroupService } from './tipgroup.service';
-import {
-  CreateTipgroupDto,
-  TipgroupResponseDto,
-} from '@tippapp/shared/data-access';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {Body, Controller, Post, Request} from '@nestjs/common';
+import {TipgroupService} from './tipgroup.service';
+import {CreateTipgroupDto, TipgroupResponseDto,} from '@tippapp/shared/data-access';
+import {ApiBearerAuth, ApiOkResponse, ApiOperation} from '@nestjs/swagger';
 
 @Controller('tipgroup')
 export class TipgroupController {
@@ -24,7 +21,7 @@ export class TipgroupController {
     @Request() req: any
   ): Promise<TipgroupResponseDto> {
     const userId = req.user.id;
-    const tipgroup = await this.tipgroupService.create(
+    const tipgroup = await this.tipgroupService.createTipgroup(
       createTipgroupDto,
       userId
     );

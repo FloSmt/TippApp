@@ -14,7 +14,7 @@ export class Matchday {
   orderId: number;
 
   @Column()
-  api_groupId: string;
+  api_groupId: number;
 
   @ManyToOne(() => TipSeason, (tipSeason) => tipSeason.matchdays, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'seasonId'})
