@@ -28,7 +28,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const newTokens = this.generateTokens({ sub: user.id, email: user.email });
+    const newTokens = this.generateTokens({id: user.id, email: user.email});
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
@@ -50,7 +50,7 @@ export class AuthService {
       ...registerDto,
       password: passwordHash,
     });
-    const newTokens = this.generateTokens({ sub: user.id, email: user.email });
+    const newTokens = this.generateTokens({id: user.id, email: user.email});
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {

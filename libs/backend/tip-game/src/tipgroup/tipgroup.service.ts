@@ -27,6 +27,8 @@ export class TipgroupService {
       throw new NotFoundException('User was not found');
     }
 
+    //TODO: check if leagueShortcut exists
+
     // Get all Groups from API for given League and Season
     const matchDaysFromApi: GroupResponse[] =
       await this.apiService.getAvailableGroups(

@@ -7,32 +7,19 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {AppModule} from "@tippapp/backend/core";
 import {getRepositoryToken} from "@nestjs/typeorm";
 import {AuthService} from "@tippapp/backend/auth";
-import request from 'supertest';
-import {setupMockApi} from "./mockserver.helper";
+import {TestApi} from "./test-utils";
 
 interface TestSetupResult {
   app: INestApplication;
   dataSource: DataSource;
-  authToken: string;
+  testApi: TestApi;
   userRepository: Repository<User>;
-  testUser: User;
+  authService: AuthService;
 }
 
-interface TestSetupOptions {
-  login?: boolean;
-  mockApi?: boolean;
-  registerUserDto?: RegisterDto;
-}
-
-export async function setupE2ETestEnvironment(options: TestSetupOptions = {}): Promise<TestSetupResult> {
-  if (options.mockApi ?? false) {
-    await setupMockApi();
-  }
-
+export async function setupE2ETestEnvironment(): Promise<TestSetupResult> {
   let userRepository: Repository<User>;
-  let authService: AuthService = undefined;
-  let authToken: any = undefined;
-  let testUser: User = undefined;
+  let authService: AuthService;
 
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
@@ -44,34 +31,25 @@ export async function setupE2ETestEnvironment(options: TestSetupOptions = {}): P
 
   let dataSource = app.get(DataSource);
   userRepository = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
-  if (options.login ?? false) {
-    authService = moduleFixture.get<AuthService>(AuthService);
+  authService = moduleFixture.get<AuthService>(AuthService);
 
-    let registerDto: RegisterDto = {
-      username: 'testuser',
-      email: 'testuser@test.com',
-      password: 'password123', ...options.registerUserDto
-    }
+  let testApi = new TestApi(app);
 
-    testUser = userRepository.create({
+  return {app: app, dataSource: dataSource, testApi, authService, userRepository}
+}
+
+export async function registerMultipleUsers(registerDtos: RegisterDto[], userRepository: Repository<User>, authService: AuthService): Promise<User[]> {
+  let testUsers: User[] = [];
+  for (const registerDto of registerDtos) {
+    const testUser = userRepository.create({
       username: registerDto.username,
       email: registerDto.email,
       password: await authService.hashPassword(registerDto.password),
     });
 
     await userRepository.save(testUser);
-
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({email: registerDto.email, password: registerDto.password});
-
-    authToken = loginResponse.body.accessToken;
-
-    if (!authToken) {
-      console.error('Failed to get auth token in test setup:', loginResponse.body);
-      throw new Error('Authentication failed during E2E test environment setup.');
-    }
+    testUsers.push(testUser);
   }
 
-  return {app: app, userRepository: userRepository, authToken: authToken, dataSource: dataSource, testUser}
+  return testUsers;
 }

@@ -2,13 +2,13 @@ import {Test, TestingModule} from '@nestjs/testing';
 import {UserService} from './user.service';
 import {Repository} from 'typeorm';
 import {getRepositoryToken} from '@nestjs/typeorm';
-import {TipgroupUser, User} from '@tippapp/backend/database';
+import {Tipgroup, TipgroupUser, User} from '@tippapp/backend/database';
 import {RegisterDto} from '@tippapp/shared/data-access';
 import {createMock, DeepMocked} from "@golevelup/ts-jest";
 
 describe('UserService', () => {
-  let userService: UserService;
-  let userRepository: Repository<User>;
+  let service: UserService;
+  let userRepository: DeepMocked<Repository<User>>;
   let tipgroupUserRepository: DeepMocked<Repository<TipgroupUser>>;
 
   beforeEach(async () => {
@@ -17,12 +17,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useValue: {
-            update: jest.fn(),
-            findOneBy: jest.fn(),
-            create: jest.fn(),
-            save: jest.fn(),
-          },
+          useValue: createMock<Repository<User>>()
         },
         {
           provide: getRepositoryToken(TipgroupUser),
@@ -31,29 +26,29 @@ describe('UserService', () => {
       ],
     }).compile();
 
-    userService = module.get<UserService>(UserService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    service = module.get<UserService>(UserService);
+    userRepository = module.get(getRepositoryToken(User));
     tipgroupUserRepository = module.get(getRepositoryToken(TipgroupUser));
   });
 
   it('should be defined', () => {
-    expect(userService).toBeDefined();
+    expect(service).toBeDefined();
   });
 
   it('should update the refresh token of a user', async () => {
     const userId = 1;
     const refreshToken = 'newRefreshToken';
 
-    await userService.updateRefreshToken(userId, refreshToken);
+    await service.updateRefreshToken(userId, refreshToken);
 
     expect(userRepository.update).toHaveBeenCalledWith(userId, { refreshToken });
   });
 
   it('should return a user by id', async () => {
     const user = { id: 1, email: 'test@example.com' } as User;
-    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
+    userRepository.findOneBy.mockResolvedValue(user);
 
-    const result = await userService.findById(1);
+    const result = await service.findById(1);
 
     expect(userRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
     expect(result).toEqual(user);
@@ -61,9 +56,9 @@ describe('UserService', () => {
 
   it('should return a user by email', async () => {
     const user = { id: 1, email: 'test@example.com' } as User;
-    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
+    userRepository.findOneBy.mockResolvedValue(user);
 
-    const result = await userService.findByEmail('test@example.com');
+    const result = await service.findByEmail('test@example.com');
 
     expect(userRepository.findOneBy).toHaveBeenCalledWith({ email: 'test@example.com' });
     expect(result).toEqual(user);
@@ -73,13 +68,43 @@ describe('UserService', () => {
     const registerDto: RegisterDto = { email: 'test@example.com', password: 'hashedPassword', username: 'username'};
     const user = { id: 1, ...registerDto } as User;
 
-    jest.spyOn(userRepository, 'create').mockReturnValue(user);
-    jest.spyOn(userRepository, 'save').mockResolvedValue(user);
+    userRepository.create.mockReturnValue(user);
+    userRepository.save.mockResolvedValue(user);
 
-    const result = await userService.create(registerDto);
+    const result = await service.create(registerDto);
 
     expect(userRepository.create).toHaveBeenCalledWith(registerDto);
     expect(userRepository.save).toHaveBeenCalledWith(user);
     expect(result).toEqual(user);
+  });
+
+  it('should return an array of tip groups for a given user ID', async () => {
+    const userId = 1;
+
+    const tipgroup1 = new Tipgroup();
+    tipgroup1.id = 101;
+    tipgroup1.name = 'Group1';
+
+    const tipgroup2 = new Tipgroup();
+    tipgroup2.id = 102;
+    tipgroup2.name = 'Group2';
+
+    const tipgroupUserEntry1 = new TipgroupUser();
+    tipgroupUserEntry1.userId = userId;
+    tipgroupUserEntry1.tipgroup = tipgroup1;
+
+    const tipgroupUserEntry2 = new TipgroupUser();
+    tipgroupUserEntry2.userId = userId;
+    tipgroupUserEntry2.tipgroup = tipgroup2;
+
+    tipgroupUserRepository.find.mockResolvedValue([tipgroupUserEntry1, tipgroupUserEntry2]);
+
+    const result = await service.getTipGroupsByUserId(userId);
+
+    expect(result).toEqual([tipgroup1, tipgroup2]);
+    expect(tipgroupUserRepository.find).toHaveBeenCalledWith({
+      where: {userId: userId},
+      relations: ['tipgroup'],
+    });
   });
 });

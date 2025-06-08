@@ -1,15 +1,17 @@
 import {INestApplication} from '@nestjs/common';
-import request from 'supertest';
 import {DataSource, Repository} from 'typeorm';
 import {Match, Matchday, Tipgroup, TipgroupUser, TipSeason, User} from '@tippapp/backend/database';
 import {CreateTipgroupDto, RegisterDto} from '@tippapp/shared/data-access';
-import {setupE2ETestEnvironment} from "./helper/setup-tests";
+import {registerMultipleUsers, setupE2ETestEnvironment} from "./helper/setup-tests";
 import {AVAILABLE_GROUPS_MOCK} from "./api-mocks/getAvailableGroups.mock";
 import {MATCHDATA_MOCK} from "./api-mocks/getMatchData.mock";
+import {setupMockApi} from "./helper/mockserver.helper";
+import {TestApi} from "./helper/test-utils";
 
 describe('TipgroupController (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
+  let testApi: TestApi;
 
   let tipgroupRepository: Repository<Tipgroup>;
   let tipseasonRepository: Repository<TipSeason>;
@@ -18,7 +20,7 @@ describe('TipgroupController (e2e)', () => {
   let tipgroupUserRepository: Repository<TipgroupUser>;
 
   let authToken: string;
-  let testUser: User;
+  let testUser: User[];
 
   const mocks = {
     get createTipgroupData(): CreateTipgroupDto[] {
@@ -40,32 +42,31 @@ describe('TipgroupController (e2e)', () => {
   }
 
   beforeAll(async () => {
-    const setup = await setupE2ETestEnvironment({login: true, mockApi: true});
+    await setupMockApi();
+    const setup = await setupE2ETestEnvironment();
     app = setup.app;
     dataSource = setup.dataSource;
-    authToken = setup.authToken;
-    testUser = setup.testUser;
+    testApi = setup.testApi;
 
     tipgroupRepository = dataSource.getRepository(Tipgroup);
     tipseasonRepository = dataSource.getRepository(TipSeason);
     matchdayRepository = dataSource.getRepository(Matchday);
     matchRepository = dataSource.getRepository(Match);
     tipgroupUserRepository = dataSource.getRepository(TipgroupUser);
+
+    testUser = await registerMultipleUsers(mocks.registerData, setup.userRepository, setup.authService);
+    authToken = await testApi.loginAndGetToken(mocks.registerData[0].email, mocks.registerData[0].password);
   });
 
   describe('/create (POST)', () => {
     it('should create tipgroup, tipseason, matchdays and matches', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/tipgroup/create')
-        .set('Authorization', `Bearer ${authToken}`)
-        .send(mocks.createTipgroupData[0]);
-
+      const response = await testApi.createTipgroup(mocks.createTipgroupData[0], authToken);
       expect(response.status).toBe(201);
 
       // Check if user is set
       const tipgroupUser: TipgroupUser[] = await tipgroupUserRepository.find();
       expect(tipgroupUser.length).toBe(1);
-      expect(tipgroupUser[0].userId).toEqual(testUser.id);
+      expect(tipgroupUser[0].userId).toEqual(testUser[0].id);
       expect(tipgroupUser[0].isAdmin).toBeTruthy();
       expect(tipgroupUser[0].tipgroupId).toEqual(response.body.id);
 
@@ -93,9 +94,7 @@ describe('TipgroupController (e2e)', () => {
     });
 
     it('should throw Error 401 if user is not authorized', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/tipgroup/create')
-        .send(mocks.createTipgroupData[0]);
+      const response = await testApi.createTipgroup(mocks.createTipgroupData[0], 'wrongToken');
 
       expect(response.status).toBe(401);
     });
