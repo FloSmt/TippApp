@@ -3,14 +3,12 @@ import {TipgroupService} from './tipgroup.service';
 import {createMock, DeepMocked} from "@golevelup/ts-jest";
 import {Repository} from "typeorm";
 import {Match, Matchday, Tipgroup, TipSeason, User} from "@tippapp/backend/database";
-import {TipSeasonService} from "@tippapp/backend/tip-game";
-import {ApiService} from "@tippapp/backend/api";
+import {ApiService, GroupResponseMock, LeaguesResponseMock, MatchResponseMock} from "@tippapp/backend/api";
 import {UserService} from "@tippapp/backend/user";
 import {getRepositoryToken} from "@nestjs/typeorm";
 import {CreateTipgroupDto} from "@tippapp/shared/data-access";
 import {NotFoundException} from "@nestjs/common";
-import {groupResponseMock} from "../../../api/src/mocks/group-response.mock";
-import {matchResponseMock} from "../../../api/src/mocks/match-response.mock";
+import {TipSeasonService} from "../tipseason";
 
 describe('TipgroupService', () => {
   let service: TipgroupService;
@@ -19,26 +17,41 @@ describe('TipgroupService', () => {
   let apiService: DeepMocked<ApiService>;
   let userService: DeepMocked<UserService>;
 
-  const createTipgroupDtoMock = {
-    name: 'Tipgroup1',
-    leagueShortcut: 'bl1',
-    currentSeason: 2022,
-    passwordHash: '212'
-  } as CreateTipgroupDto
+  const mocks = {
+    get createTipgroupDtoMocks() {
+      return [
+        {
+          name: 'Tipgroup1',
+          leagueShortcut: 'l1',
+          currentSeason: 2022,
+          passwordHash: '212'
+        },
+        {
+          name: 'Tipgroup1',
+          leagueShortcut: 'leagueNotExists',
+          currentSeason: 2022,
+          passwordHash: '212'
+        }] as CreateTipgroupDto[]
+    },
 
-  const userMock = {
-    id: 1,
-    username: 'user',
-    email: 'test@test.de',
-    password: 'password',
-  } as User
+    get userMock() {
+      return {
+        id: 1,
+        username: 'user',
+        email: 'test@test.de',
+        password: 'password',
+      } as User
+    },
 
-  const tipSeasonMock: TipSeason = {
-    id: 1,
-    api_LeagueSeason: 2022,
-    isClosed: false,
-    matchdays: [],
-  } as any as TipSeason;
+    get tipSeasonMock() {
+      return {
+        id: 1,
+        api_LeagueSeason: 2022,
+        isClosed: false,
+        matchdays: [],
+      } as any as TipSeason;
+    }
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -78,18 +91,26 @@ describe('TipgroupService', () => {
     it('should throw an error if user not found', async () => {
       userService.findById.mockResolvedValueOnce(null);
 
-      await expect(service.createTipgroup(createTipgroupDtoMock, 1)).rejects.toThrow(new NotFoundException('User was not found'));
-    })
+      await expect(service.createTipgroup(mocks.createTipgroupDtoMocks[0], 1)).rejects.toThrow(new NotFoundException('User was not found'));
+    });
+
+    it('should throw an error if leagueShortcut not found', async () => {
+      userService.findById.mockResolvedValue(mocks.userMock);
+      apiService.getAvailableLeagues.mockResolvedValue(LeaguesResponseMock);
+
+      await expect(service.createTipgroup(mocks.createTipgroupDtoMocks[1], 1)).rejects.toThrow(new NotFoundException('LeagueShortcut was not found'));
+    });
 
     it('should create a tipgroup successfully with correct data', async () => {
-      userService.findById.mockResolvedValue(userMock);
-      apiService.getAvailableGroups.mockResolvedValue(groupResponseMock);
-      apiService.getMatchData.mockResolvedValue(matchResponseMock);
+      userService.findById.mockResolvedValue(mocks.userMock);
+      apiService.getAvailableGroups.mockResolvedValue(GroupResponseMock);
+      apiService.getAvailableLeagues.mockResolvedValue(LeaguesResponseMock);
+      apiService.getMatchData.mockResolvedValue(MatchResponseMock);
 
       // Mock the repository methods
       const mockTipgroupInstance = new Tipgroup();
-      mockTipgroupInstance.name = createTipgroupDtoMock.name;
-      mockTipgroupInstance.passwordHash = createTipgroupDtoMock.passwordHash;
+      mockTipgroupInstance.name = mocks.createTipgroupDtoMocks[0].name;
+      mockTipgroupInstance.passwordHash = mocks.createTipgroupDtoMocks[0].passwordHash;
       mockTipgroupInstance.users = [];
       mockTipgroupInstance.seasons = [];
 
@@ -97,10 +118,10 @@ describe('TipgroupService', () => {
       tipgroupRepository.save.mockResolvedValue(mockTipgroupInstance);
 
       // Mock TipSeasonService
-      const expectedMatchdaysForTipSeason: Matchday[] = groupResponseMock.map(group => ({
+      const expectedMatchdaysForTipSeason: Matchday[] = GroupResponseMock.map(group => ({
         name: group.groupName,
         api_groupId: group.groupId,
-        matches: matchResponseMock
+        matches: MatchResponseMock
           .filter(match => match.group.groupId === group.groupId)
           .map(match => ({api_matchId: match.matchId} as Match)),
         id: expect.any(Number),
@@ -110,7 +131,7 @@ describe('TipgroupService', () => {
       }));
 
       const createdTipSeasonMock: TipSeason = {
-        ...tipSeasonMock,
+        ...mocks.tipSeasonMock,
         matchdays: expectedMatchdaysForTipSeason,
       };
 
@@ -118,49 +139,51 @@ describe('TipgroupService', () => {
       tipSeasonService.saveTipSeason.mockResolvedValue(createdTipSeasonMock);
 
 
-      const result = await service.createTipgroup(createTipgroupDtoMock, 1);
+      const result = await service.createTipgroup(mocks.createTipgroupDtoMocks[0], 1);
 
       expect(userService.findById).toHaveBeenCalledWith(1);
       expect(apiService.getAvailableGroups).toHaveBeenCalledWith(
-        createTipgroupDtoMock.leagueShortcut,
-        createTipgroupDtoMock.currentSeason
+        mocks.createTipgroupDtoMocks[0].leagueShortcut,
+        mocks.createTipgroupDtoMocks[0].currentSeason
       );
       expect(apiService.getMatchData).toHaveBeenCalledWith(
-        createTipgroupDtoMock.leagueShortcut,
-        createTipgroupDtoMock.currentSeason
+        mocks.createTipgroupDtoMocks[0].leagueShortcut,
+        mocks.createTipgroupDtoMocks[0].currentSeason
       );
 
+      expect(apiService.getAvailableLeagues).toHaveBeenCalledTimes(1);
+
       expect(tipgroupRepository.create).toHaveBeenCalledWith({
-        name: createTipgroupDtoMock.name,
-        passwordHash: createTipgroupDtoMock.passwordHash,
+        name: mocks.createTipgroupDtoMocks[0].name,
+        passwordHash: mocks.createTipgroupDtoMocks[0].passwordHash,
       });
 
       expect(tipgroupRepository.save).toHaveBeenCalledTimes(1);
       expect(result).toEqual(expect.objectContaining({
-        name: createTipgroupDtoMock.name,
-        passwordHash: createTipgroupDtoMock.passwordHash,
+        name: mocks.createTipgroupDtoMocks[0].name,
+        passwordHash: mocks.createTipgroupDtoMocks[0].passwordHash,
         users: expect.arrayContaining([
           expect.objectContaining({
             isAdmin: true,
-            user: userMock,
+            user: mocks.userMock,
           }),
         ]),
         seasons: expect.arrayContaining([
           expect.objectContaining({
-            api_LeagueSeason: createTipgroupDtoMock.currentSeason,
+            api_LeagueSeason: mocks.createTipgroupDtoMocks[0].currentSeason,
             isClosed: false,
             matchdays: expect.arrayContaining([
               expect.objectContaining({
-                name: groupResponseMock[0].groupName,
-                api_groupId: groupResponseMock[0].groupId,
+                name: GroupResponseMock[0].groupName,
+                api_groupId: GroupResponseMock[0].groupId,
                 matches: expect.arrayContaining([
-                  expect.objectContaining({api_matchId: matchResponseMock[0].matchId}),
-                  expect.objectContaining({api_matchId: matchResponseMock[1].matchId}),
+                  expect.objectContaining({api_matchId: MatchResponseMock[0].matchId}),
+                  expect.objectContaining({api_matchId: MatchResponseMock[1].matchId}),
                 ]),
               }),
               expect.objectContaining({
-                name: groupResponseMock[1].groupName,
-                api_groupId: groupResponseMock[1].groupId,
+                name: GroupResponseMock[1].groupName,
+                api_groupId: GroupResponseMock[1].groupId,
                 matches: []
               }),
             ]),
@@ -170,15 +193,15 @@ describe('TipgroupService', () => {
 
       // Verify TipSeasonService calls
       expect(tipSeasonService.createNewTipSeason).toHaveBeenCalledWith(expect.objectContaining({
-        api_LeagueSeason: createTipgroupDtoMock.currentSeason,
+        api_LeagueSeason: mocks.createTipgroupDtoMocks[0].currentSeason,
         isClosed: false,
         matchdays: expect.arrayContaining([
           expect.objectContaining({
-            name: groupResponseMock[0].groupName,
-            api_groupId: groupResponseMock[0].groupId,
+            name: GroupResponseMock[0].groupName,
+            api_groupId: GroupResponseMock[0].groupId,
             matches: expect.arrayContaining([
-              expect.objectContaining({api_matchId: matchResponseMock[0].matchId}),
-              expect.objectContaining({api_matchId: matchResponseMock[1].matchId}),
+              expect.objectContaining({api_matchId: MatchResponseMock[0].matchId}),
+              expect.objectContaining({api_matchId: MatchResponseMock[1].matchId}),
             ]),
           }),
         ]),

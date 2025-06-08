@@ -1,6 +1,6 @@
-import { TeamResponse } from '@tippapp/shared/data-access';
+import {TeamResponse} from '@tippapp/shared/data-access';
 
-export const teamResponseMock = [
+export const TeamResponseMock = [
   {
     teamId: 1,
     teamName: '1',

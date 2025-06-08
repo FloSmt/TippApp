@@ -1,8 +1,8 @@
-import { MatchResponse } from '@tippapp/shared/data-access';
-import { groupResponseMock } from './group-response.mock';
-import { teamResponseMock } from './team-response.mock';
+import {MatchResponse} from '@tippapp/shared/data-access';
+import {GroupResponseMock} from './group-response.mock';
+import {TeamResponseMock} from './team-response.mock';
 
-export const matchResponseMock = [
+export const MatchResponseMock = [
   {
     matchId: 1,
     matchDateTime: new Date(),
@@ -12,9 +12,9 @@ export const matchResponseMock = [
     leagueSeason: 2024,
     leagueShortcut: 'test',
     matchDateTimeUTC: '1',
-    group: groupResponseMock[0],
-    team1: teamResponseMock[0],
-    team2: teamResponseMock[1],
+    group: GroupResponseMock[0],
+    team1: TeamResponseMock[0],
+    team2: TeamResponseMock[1],
     matchIsFinished: false,
     matchResults: [],
   },
@@ -27,9 +27,9 @@ export const matchResponseMock = [
     leagueSeason: 2024,
     leagueShortcut: 'test',
     matchDateTimeUTC: '2',
-    group: groupResponseMock[0],
-    team1: teamResponseMock[1],
-    team2: teamResponseMock[0],
+    group: GroupResponseMock[0],
+    team1: TeamResponseMock[1],
+    team2: TeamResponseMock[0],
     matchIsFinished: false,
     matchResults: [],
   },

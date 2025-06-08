@@ -2,7 +2,7 @@ import {Injectable, InternalServerErrorException, NotFoundException,} from '@nes
 import {CreateTipgroupDto, GroupResponse, MatchResponse,} from '@tippapp/shared/data-access';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {Tipgroup, TipgroupUser} from '@tippapp/backend/database';
+import {Tipgroup, TipgroupUser, User} from '@tippapp/backend/database';
 import {ApiService} from '@tippapp/backend/api';
 import {TipSeasonService} from '../tipseason';
 import {UserService} from '@tippapp/backend/user';
@@ -22,46 +22,33 @@ export class TipgroupService {
     userId: number
   ): Promise<Tipgroup> {
     const user = await this.userService.findById(userId);
-
     if (!user) {
       throw new NotFoundException('User was not found');
     }
 
-    //TODO: check if leagueShortcut exists
+    await this.validateAndGetAvailableLeagues(createTipgroupDto.leagueShortcut);
 
-    // Get all Groups from API for given League and Season
-    const matchDaysFromApi: GroupResponse[] =
-      await this.apiService.getAvailableGroups(
-        createTipgroupDto.leagueShortcut,
-        createTipgroupDto.currentSeason
-      );
-
-    // Get all Matches from API for given League and Season
-    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchData(
+    const {matchDays, matches} = await this.getApiMatchData(
       createTipgroupDto.leagueShortcut,
       createTipgroupDto.currentSeason
     );
 
-    if (matchDaysFromApi && matchesFromApi) {
-      const newTipgroup = this.tipgroupRepository.create({
-        name: createTipgroupDto.name,
-        passwordHash: createTipgroupDto.passwordHash,
-      });
-      newTipgroup.users = [];
+    if (matchDays && matches) {
+      const newTipgroup = this.createNewTipgroupEntity(
+        createTipgroupDto.name,
+        createTipgroupDto.passwordHash
+      );
 
       // Add User as Admin to Tipgroup
-      const newTipgroupUser = new TipgroupUser();
-      newTipgroupUser.isAdmin = true;
-      newTipgroupUser.user = user;
+      const newTipgroupUser = this.createNewTipgroupUserAsAdmin(user);
       newTipgroup.users.push(newTipgroupUser);
 
       // Add first Season to Tipgroup
-      newTipgroup.seasons = [];
       const newTipSeason = this.TipSeasonService.createNewTipSeason({
         api_LeagueSeason: createTipgroupDto.currentSeason,
         isClosed: false,
-        matchdays: matchDaysFromApi.map((group) => {
-          const matchesForGroup = matchesFromApi.filter(
+        matchdays: matchDays.map((group) => {
+          const matchesForGroup = matches.filter(
             (match) => match.group.groupId === group.groupId
           );
           return {
@@ -75,13 +62,46 @@ export class TipgroupService {
       });
 
       // Save new TipSeason
-      const savedTipSeason = await this.TipSeasonService.saveTipSeason(
-        newTipSeason
-      );
+      const savedTipSeason = await this.TipSeasonService.saveTipSeason(newTipSeason);
       newTipgroup.seasons.push(savedTipSeason);
+
       return this.tipgroupRepository.save(newTipgroup);
     }
 
     throw new InternalServerErrorException();
+  }
+
+  private async validateAndGetAvailableLeagues(leagueShortcut: string): Promise<void> {
+    const availableLeagues = (await this.apiService.getAvailableLeagues()).map(league => league.leagueShortcut);
+    if (!availableLeagues.includes(leagueShortcut)) {
+      throw new NotFoundException('LeagueShortcut was not found');
+    }
+  }
+
+  private async getApiMatchData(
+    leagueShortcut: string,
+    currentSeason: number
+  ): Promise<{ matchDays: GroupResponse[], matches: MatchResponse[] }> {
+    const matchDaysFromApi: GroupResponse[] = await this.apiService.getAvailableGroups(leagueShortcut, currentSeason);
+    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchData(leagueShortcut, currentSeason);
+
+    if (!matchDaysFromApi || !matchesFromApi) {
+      throw new InternalServerErrorException('Failed to retrieve match data from external API.');
+    }
+    return {matchDays: matchDaysFromApi, matches: matchesFromApi};
+  }
+
+  private createNewTipgroupEntity(name: string, passwordHash?: string): Tipgroup {
+    const newTipgroup = this.tipgroupRepository.create({name, passwordHash});
+    newTipgroup.users = [];
+    newTipgroup.seasons = [];
+    return newTipgroup;
+  }
+
+  private createNewTipgroupUserAsAdmin(user: User): TipgroupUser {
+    const newTipgroupUser = new TipgroupUser();
+    newTipgroupUser.isAdmin = true;
+    newTipgroupUser.user = user;
+    return newTipgroupUser;
   }
 }

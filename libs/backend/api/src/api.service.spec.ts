@@ -5,7 +5,7 @@ import {of, throwError} from 'rxjs';
 import {AxiosResponse} from 'axios';
 import {GroupResponse, LeagueResponse, MatchResponse} from '@tippapp/shared/data-access';
 import {HttpException} from '@nestjs/common';
-import {matchResponseMock} from './mocks/match-response.mock';
+import {MatchResponseMock} from './mocks/match-response.mock';
 import {ConfigService} from '@nestjs/config';
 
 describe('ApiService', () => {
@@ -35,7 +35,7 @@ describe('ApiService', () => {
     it('should return mapped MatchResponse[]', async () => {
       const response: AxiosResponse = {
         config: undefined,
-        data: matchResponseMock,
+        data: MatchResponseMock,
         status: 200,
         statusText: 'OK',
         headers: {}

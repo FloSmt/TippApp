@@ -1,6 +1,6 @@
 import {GroupResponse} from '@tippapp/shared/data-access';
 
-export const groupResponseMock = [
+export const GroupResponseMock = [
   {
     groupId: 1,
     groupOrderId: 1,
