@@ -1,9 +1,8 @@
 import {Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
 import {AuthService} from './auth.service';
-import { AuthResponseDto, LoginDto } from '@tippapp/shared/data-access';
-import {RegisterDto} from '@tippapp/shared/data-access';
-import {Public} from "./guards/jwt-auth.guard";
-import {ApiOperation, ApiParam, ApiResponse} from "@nestjs/swagger";
+import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {Public} from './guards/jwt-auth.guard';
+import {ApiOkResponse, ApiOperation, ApiParam, ApiResponse,} from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -12,8 +11,11 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({summary: 'returns accessToken, refreshToken and userId for User login'})
-  @ApiResponse({status: 200, type: AuthResponseDto})
+  @ApiOkResponse({ type: AuthResponseDto })
+  @ApiOperation({
+    summary: 'returns accessToken, refreshToken and userId for User login',
+  })
+  @ApiResponse({ status: 200, type: AuthResponseDto })
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
@@ -21,8 +23,8 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({summary: 'creates a User if email not exists'})
-  @ApiResponse({status: 201, type: AuthResponseDto})
+  @ApiOperation({ summary: 'creates a User if email not exists' })
+  @ApiResponse({ status: 201, type: AuthResponseDto })
   async register(@Body() registerDto: RegisterDto) {
     return await this.authService.register(registerDto);
   }
@@ -30,11 +32,13 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'generates a new accessToken with existing refreshToken'})
-  @ApiParam({name: 'userId', type: 'number'})
-  @ApiParam({name: 'refreshToken', type: 'string'})
-  @ApiResponse({status: 200, type: AuthResponseDto})
-  async refresh(@Body() body: {userId: number; refreshToken: string}) {
+  @ApiOperation({
+    summary: 'generates a new accessToken with existing refreshToken',
+  })
+  @ApiParam({ name: 'userId', type: 'number' })
+  @ApiParam({ name: 'refreshToken', type: 'string' })
+  @ApiResponse({ status: 200, type: AuthResponseDto })
+  async refresh(@Body() body: { userId: number; refreshToken: string }) {
     return this.authService.refreshTokens(body.userId, body.refreshToken);
   }
 }

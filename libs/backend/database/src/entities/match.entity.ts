@@ -14,6 +14,9 @@ export class Match {
   @JoinColumn( {name: 'matchdayId'})
   matchday: Matchday;
 
+  @Column({nullable: true})
+  matchdayId: number;
+
   @OneToMany(() => Tip, (tip) => tip.match)
   tips: Tip[];
 }

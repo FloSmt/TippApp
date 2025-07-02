@@ -1,18 +1,16 @@
-import {ConflictException, Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
+import {ConflictException, Injectable, UnauthorizedException,} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
-import {UserService} from "@tippapp/backend/user";
-import {RegisterDto} from '@tippapp/shared/data-access';
-import {LoginDto} from '@tippapp/shared/data-access';
-import {AuthResponseDto} from '@tippapp/shared/data-access';
-import {ConfigService} from "@nestjs/config";
-import * as bcrypt from "bcrypt";
+import {UserService} from '@tippapp/backend/user';
+import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {ConfigService} from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
@@ -22,40 +20,50 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const isPasswordMatch = await this.comparePasswords(loginDto.password, user.password!);
+    const isPasswordMatch = await this.comparePasswords(
+      loginDto.password,
+      user.password!
+    );
     if (!isPasswordMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const newTokens = this.generateTokens({ sub: user.id, email: user.email });
-    await this.userService.updateRefreshToken(user.id, newTokens.refreshToken)
-
-    return {
-      userId: user.id,
-      accessToken: newTokens.accessToken,
-      refreshToken: newTokens.refreshToken
-    };
-  }
-
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const userAlreadyExists = await this.userService.findByEmail(registerDto.email) != null;
-
-    if (userAlreadyExists) {
-      throw new ConflictException('Email already exists');
-    }
-    const passwordHash = await this.hashPassword(registerDto.password);
-    const user = await this.userService.create({ ...registerDto, password: passwordHash });
-    const newTokens = this.generateTokens({ sub: user.id, email: user.email });
+    const newTokens = this.generateTokens({id: user.id, email: user.email});
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
       userId: user.id,
       accessToken: newTokens.accessToken,
-      refreshToken: newTokens.refreshToken
+      refreshToken: newTokens.refreshToken,
     };
   }
 
-  async refreshTokens(userId: number, refreshToken: string): Promise<AuthResponseDto> {
+  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
+    const userAlreadyExists =
+      (await this.userService.findByEmail(registerDto.email)) != null;
+
+    if (userAlreadyExists) {
+      throw new ConflictException('Email already exists');
+    }
+    const passwordHash = await this.hashPassword(registerDto.password);
+    const user = await this.userService.create({
+      ...registerDto,
+      password: passwordHash,
+    });
+    const newTokens = this.generateTokens({id: user.id, email: user.email});
+    await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
+
+    return {
+      userId: user.id,
+      accessToken: newTokens.accessToken,
+      refreshToken: newTokens.refreshToken,
+    };
+  }
+
+  async refreshTokens(
+    userId: number,
+    refreshToken: string
+  ): Promise<AuthResponseDto> {
     const user = await this.userService.findById(userId);
 
     if (!user) {
@@ -63,30 +71,40 @@ export class AuthService {
     }
 
     if (user.refreshToken !== refreshToken) {
-      throw new UnauthorizedException('Invalid refreshToken')
+      throw new UnauthorizedException('Invalid refreshToken');
     }
 
-    const newTokens = this.generateTokens({ username: user.username, sub: user.id });
+    const newTokens = this.generateTokens({
+      username: user.username,
+      id: user.id,
+    });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
       userId: user.id,
       accessToken: newTokens.accessToken,
-      refreshToken: newTokens.refreshToken
+      refreshToken: newTokens.refreshToken,
     };
   }
 
-  generateTokens(payload: any): {accessToken: string, refreshToken: string} {
-    const newAccessToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') });
-    const newRefreshToken = this.jwtService.sign(payload, { expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') });
+  generateTokens(payload: any): { accessToken: string; refreshToken: string } {
+    const newAccessToken = this.jwtService.sign(payload, {
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+    });
+    const newRefreshToken = this.jwtService.sign(payload, {
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+    });
 
     return {
       accessToken: newAccessToken,
-      refreshToken: newRefreshToken
-    }
+      refreshToken: newRefreshToken,
+    };
   }
 
-  async comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
+  async comparePasswords(
+    password: string,
+    hashedPassword: string
+  ): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
   }
 

@@ -1,6 +1,6 @@
-import {TeamResponse} from "./team.response";
-import {GroupResponse} from "./group.response";
-import {MatchResultResponse} from "./matchResult.response";
+import {TeamResponse} from './team.response';
+import {GroupResponse} from './group.response';
+import {MatchResultResponse} from './matchResult.response';
 
 export class MatchResponse {
   matchId: number;
@@ -30,7 +30,8 @@ export class MatchResponse {
     this.team1 = new TeamResponse(data.team1);
     this.team2 = new TeamResponse(data.team2);
     this.matchIsFinished = data.matchIsFinished;
-    this.matchResults = data.matchResults.map((matchResult: any) => new MatchResultResponse(matchResult));
-
+    this.matchResults = data.matchResults.map(
+      (matchResult: any) => new MatchResultResponse(matchResult)
+    );
   }
 }

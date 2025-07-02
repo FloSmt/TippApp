@@ -1,7 +1,7 @@
 export class GroupResponse {
   groupName: string;
-  groupOrderId: string;
-  groupId: string;
+  groupOrderId: number;
+  groupId: number;
 
   constructor(data: any) {
     this.groupId = data.groupID;

@@ -5,6 +5,23 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/libs/backend/api",
+        "main": "libs/backend/api/src/index.ts",
+        "tsConfig": "libs/backend/api/tsconfig.lib.json",
+        "assets": [
+          "libs/backend/api/*.md"
+        ],
+        "format": [
+          "cjs"
+        ]
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": [

@@ -10,11 +10,19 @@ export class TipSeason {
   @Column( {default: false})
   isClosed: boolean;
 
+  @Column()
+  api_LeagueSeason: number;
+
   @ManyToOne(() => Tipgroup, (tipgroup) => tipgroup.seasons, {onDelete: 'CASCADE'})
   @JoinColumn( {name: 'tipgroupId'})
   tipgroup: Tipgroup;
 
-  @OneToMany(() => Matchday, (matchday) => matchday.season)
+  @Column({nullable: true})
+  tipgroupId: number;
+
+  @OneToMany(() => Matchday, (matchday) => matchday.season, {
+    cascade: true
+  })
   matchdays: Matchday[];
 
 }
