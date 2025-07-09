@@ -74,7 +74,8 @@
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
       }
-    }
+    },
+    "@nxext/capacitor/plugin"
   ],
   "generators": {
     "@nx/angular:application": {
