@@ -17,12 +17,16 @@
     "noPropertyAccessFromIndexSignature": false,
     "baseUrl": ".",
     "paths": {
+      "@tippapp/auth": ["libs/frontend/features/auth/src/index.ts"],
       "@tippapp/backend/api": ["libs/backend/api/src/index.ts"],
       "@tippapp/backend/auth": ["libs/backend/auth/src/index.ts"],
       "@tippapp/backend/core": ["libs/backend/core/src/index.ts"],
       "@tippapp/backend/database": ["libs/backend/database/src/index.ts"],
       "@tippapp/backend/tip-game": ["libs/backend/tip-game/src/index.ts"],
       "@tippapp/backend/user": ["libs/backend/user/src/index.ts"],
+      "@tippapp/frontent/shared-components": [
+        "libs/frontend/frontend/ui/shared-components/src/index.ts"
+      ],
       "@tippapp/shared/data-access": ["libs/shared/data-access/src/index.ts"]
     }
   },
