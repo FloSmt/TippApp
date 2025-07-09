@@ -10,7 +10,8 @@
     "test:backend:unit": "nx run-many --target=test --projects=libs/backend/* --code-coverage",
     "build:mobile-app": "nx run mobile-app:build",
     "sync:mobile-app": "nx run mobile-app:sync:android",
-    "serve:mobile-app": "nx run mobile-app:serve"
+    "start:mobile-app": "nx run mobile-app:serve",
+    "test:mobile-app:e2e": "set NODE_ENV=test && nx run mobile-app-e2e:e2e"
   },
   "private": true,
   "dependencies": {
