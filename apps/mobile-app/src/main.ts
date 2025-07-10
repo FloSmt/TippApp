@@ -9,9 +9,7 @@ import {
   IonicRouteStrategy,
   provideIonicAngular,
 } from '@ionic/angular/standalone';
-
-import { routes } from './app/app.routes';
-import { AppComponent } from './app/app.component';
+import { AppComponent, routes } from '@tippapp/frontend/core';
 
 bootstrapApplication(AppComponent, {
   providers: [
