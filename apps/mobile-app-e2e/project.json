@@ -5,5 +5,18 @@
   "sourceRoot": "apps/mobile-app-e2e/src",
   "implicitDependencies": ["mobile-app"],
   "// targets": "to see all targets run: nx show project mobile-app-e2e --web",
-  "targets": {}
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": [
+        "{workspaceRoot}/dist/.playwright/apps/mobile-app-e2e"
+      ],
+      "options": {
+        "config": "apps/mobile-app-e2e/playwright.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
 }
