@@ -1,6 +1,7 @@
 // libs/frontend/frontend/ui/shared-components/playwright.config.ts
 import {defineConfig, devices} from '@playwright/test';
 import {nxE2EPreset} from '@nx/playwright/preset';
+import {workspaceRoot} from "nx/src/utils/workspace-root";
 
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
@@ -10,17 +11,6 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
  * https://github.com/motdotla/dotenv
  */
 // require('dotenv').config();
-
-// Calculate the relative path to the workspace root from this config file's location.
-// This config file is at: libs/frontend/frontend/ui/shared-components/playwright.config.ts
-// The workspace root is at: <repo_root>/
-// So, we need to go up 5 directories to reach the workspace root:
-// 1. shared-components -> ui (../)
-// 2. ui -> frontend (inner) (../)
-// 3. frontend (inner) -> frontend (outer) (../)
-// 4. frontend (outer) -> libs (../)
-// 5. libs -> workspace root (../)
-const relativeWorkspaceRoot = '../../../../../';
 
 
 /**
@@ -36,15 +26,12 @@ export default defineConfig({
   },
   /* Run your local dev server before starting the tests */
   // Temporarily commenting out webServer to diagnose "invalid type: unit value" error
-  // webServer: {
-  //   command: 'npx nx run mobile-app:serve',
-  //   url: 'http://localhost:4200',
-  //   reuseExistingServer: !process.env['CI'],
-  //   // Using a relative path for cwd, as `workspaceRoot` might sometimes lead to issues
-  //   // with how SWC or Playwright resolves paths in certain environments (e.g., CI).
-  //   // This makes the path explicit relative to the playwright.config.ts file.
-  //   cwd: relativeWorkspaceRoot,
-  // },
+  webServer: {
+    command: 'npx nx run mobile-app:serve',
+    url: 'http://localhost:4200',
+    reuseExistingServer: !process.env['CI'],
+    cwd: workspaceRoot,
+  },
   projects: [
     {
       name: 'chromium',
