@@ -27,19 +27,6 @@ jobs:
       - name: Restore Playwright Browsers
         run: npx playwright install --with-deps
 
-      # --- DEBUGGING-SCHRITTE (Entfernen, wenn Problem gelöst) ---
-      - name: Debug - Verify Node Modules Path
-        run: |
-          echo "Listing contents of node_modules:"
-          ls -la node_modules || echo "node_modules directory not found or empty."
-          echo "Path to node_modules: $(pwd)/node_modules"
-
-      - name: Debug - Verify Playwright Cache Path
-        run: |
-          echo "Listing contents of Playwright cache:"
-          ls -la ~/.cache/ms-playwright || echo "Playwright cache directory not found or empty."
-          echo "Path to Playwright cache: ~/.cache/ms-playwright"
-
       # --- Cache Node Modules and Playwright Browsers for other jobs ---
       - name: Cache Node Modules
         id: cache-node-modules
@@ -60,118 +47,118 @@ jobs:
             ${{ runner.os }}-playwright-
 
 
-#  # Job 2: Run Unit Tests (Depends on Prepare)
-#  run-unit-tests:
-#    runs-on: ubuntu-latest
-#    needs: prepare # Dieser Job wird erst ausgeführt, wenn 'prepare' erfolgreich war
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v4
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: '20'
-#
-#      - name: Restore Node Modules Cache
-#        uses: actions/cache/restore@v4 # 'restore' statt 'save' um den Cache zu laden
-#        with:
-#          path: node_modules
-#          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-#
-#      - name: Run All Unit Tests
-#        run: npx nx run-many --target=test --all --parallel --configuration=ci
-#
-#  # Job 3: Run Backend E2E Tests (Depends on Prepare)
-#  run-backend-e2e:
-#    runs-on: ubuntu-latest
-#    needs: prepare
-#    services:
-#      mysql:
-#        image: mysql:latest
-#        ports: [ 3307:3306 ]
-#        env:
-#          MYSQL_ROOT_PASSWORD: root_test
-#          MYSQL_DATABASE: test_db
-#        options: >-
-#          --health-cmd="mysqladmin ping"
-#          --health-interval=10s
-#          --health-timeout=5s
-#          --health-retries=3
-#      mockserver:
-#        image: mockserver/mockserver
-#        ports: [ 1080:1080 ]
-#
-#    env:
-#      NODE_ENV: test
-#      CI: true
-#      DB_HOST: 127.0.0.1
-#      DB_PORT: 3307
-#      DB_USER: root
-#      DB_PASS: root_test
-#      DB_NAME: test_db
-#      EXTERNAL_API_BASE_URL: http://localhost:1080
-#
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v4
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: '20'
-#
-#      - name: Restore Node Modules Cache
-#        uses: actions/cache/restore@v4
-#        with:
-#          path: node_modules
-#          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-#
-#      - name: Build Backend for E2E
-#        run: npx nx build backend --configuration=production
-#
-#      - name: Run Backend E2E Tests
-#        run: npx nx e2e backend-e2e
-#
-#  # Job 4: Run Frontend (Playwright) E2E Tests (Depends on Prepare)
-#  run-frontend-e2e:
-#    runs-on: ubuntu-latest
-#    needs: prepare
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v4
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: '20'
-#
-#      - name: Restore Node Modules Cache
-#        uses: actions/cache/restore@v4
-#        with:
-#          path: node_modules
-#          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-#
-#      - name: Restore Playwright Browsers Cache
-#        uses: actions/cache/restore@v4
-#        with:
-#          path: ~/.cache/ms-playwright
-#          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
-#
-#
-#      - name: Start Frontend for Playwright UI Tests
-#        run: |
-#          npx nx serve mobile-app --port=4200 &
-#          sleep 15
-#        env:
-#          NODE_ENV: test
-#
-#      - name: Run Playwright UI Tests
-#        run: npx playwright test
-#
-#      - name: Upload Playwright Test Results
-#        uses: actions/upload-artifact@v4
-#        if: always()
-#        with:
-#          name: playwright-report
-#          path: playwright-report/
+  # Job 2: Run Unit Tests (Depends on Prepare)
+  run-unit-tests:
+    runs-on: ubuntu-latest
+    needs: prepare # Dieser Job wird erst ausgeführt, wenn 'prepare' erfolgreich war
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore Node Modules Cache
+        uses: actions/cache/restore@v4 # 'restore' statt 'save' um den Cache zu laden
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Run All Unit Tests
+        run: npx nx run-many --target=test --all --parallel --configuration=ci
+
+  # Job 3: Run Backend E2E Tests (Depends on Prepare)
+  run-backend-e2e:
+    runs-on: ubuntu-latest
+    needs: prepare
+    services:
+      mysql:
+        image: mysql:latest
+        ports: [ 3307:3306 ]
+        env:
+          MYSQL_ROOT_PASSWORD: root_test
+          MYSQL_DATABASE: test_db
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+      mockserver:
+        image: mockserver/mockserver
+        ports: [ 1080:1080 ]
+
+    env:
+      NODE_ENV: test
+      CI: true
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3307
+      DB_USER: root
+      DB_PASS: root_test
+      DB_NAME: test_db
+      EXTERNAL_API_BASE_URL: http://localhost:1080
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore Node Modules Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build Backend for E2E
+        run: npx nx build backend --configuration=production
+
+      - name: Run Backend E2E Tests
+        run: npx nx e2e backend-e2e
+
+  # Job 4: Run Frontend (Playwright) E2E Tests (Depends on Prepare)
+  run-frontend-e2e:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore Node Modules Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Restore Playwright Browsers Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
+
+      - name: Start Frontend for Playwright UI Tests
+        run: |
+          npx nx serve mobile-app --port=4200 &
+          sleep 15
+        env:
+          NODE_ENV: test
+
+      - name: Run Playwright UI Tests
+        run: npx playwright test
+
+      - name: Upload Playwright Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
