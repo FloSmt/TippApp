@@ -51,6 +51,10 @@ jobs:
       - name: Install NX CLI
         run: npm ci
 
+      - name: Check SWC version in CI
+        run: |
+          npm list @swc/core
+
       - name: Build NX workspace
         run: npx nx run backend:build --verbose
 
