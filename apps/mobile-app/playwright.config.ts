@@ -2,6 +2,7 @@ import {defineConfig, devices} from '@playwright/test';
 import {nxE2EPreset} from '@nx/playwright/preset';
 import {workspaceRoot} from '@nx/devkit';
 
+require('dotenv').config();
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = 'http://localhost:4200';
 
@@ -9,7 +10,6 @@ const baseURL = 'http://localhost:4200';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
