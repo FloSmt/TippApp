@@ -69,7 +69,13 @@
         "watchDepsTargetName": "watch-deps"
       }
     },
-    "@nxext/capacitor/plugin"
+    "@nxext/capacitor/plugin",
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    }
   ],
   "generators": {
     "@nx/angular:application": {
