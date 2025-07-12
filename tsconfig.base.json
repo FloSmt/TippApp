@@ -25,8 +25,8 @@
       "@tippapp/backend/user": ["libs/backend/user/src/index.ts"],
       "@tippapp/frontend/auth": ["libs/frontend/auth/src/index.ts"],
       "@tippapp/frontend/core": ["libs/frontend/core/src/index.ts"],
-      "@tippapp/frontent/shared-components": [
-        "libs/frontend/frontend/ui/shared-components/src/index.ts"
+      "@tippapp/frontend/shared-components": [
+        "libs/frontend/ui/shared-components/src/index.ts"
       ],
       "@tippapp/shared/data-access": ["libs/shared/data-access/src/index.ts"]
     }

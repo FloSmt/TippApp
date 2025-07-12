@@ -1,1 +1,1 @@
-export * from './lib/shared-components/shared-components.component';
+export * from './theme-test-page/theme-test-page.component';
