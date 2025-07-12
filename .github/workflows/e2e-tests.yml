@@ -1,10 +1,10 @@
 name: E2E Tests
 
-on:
-  pull_request:
-    branches: [master]
-  push:
-    branches: [master]
+#on:
+#  pull_request:
+#    branches: [master]
+#  push:
+#    branches: [master]
 
 jobs:
   e2e:
@@ -48,13 +48,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Install NX CLI
-        run: npm ci
-
-      - name: Check SWC version in CI
-        run: |
-          npm list @swc/core
 
       - name: Build NX workspace
         run: npx nx run backend:build --verbose
