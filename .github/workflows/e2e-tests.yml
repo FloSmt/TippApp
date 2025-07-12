@@ -48,8 +48,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install NX CLI
+        run: npm ci
+
       - name: Build NX workspace
-        run: npx nx run backend:build
+        run: npx nx run backend:build --verbose
 
       - name: Run E2E tests
-        run: npx nx run backend-e2e:e2e
+        run: npx nx run backend-e2e:e2e --verbose
