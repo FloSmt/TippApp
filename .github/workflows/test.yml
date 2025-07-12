@@ -12,6 +12,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      NODE_ENV: test
+      CI: true
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
