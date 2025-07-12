@@ -29,6 +29,9 @@ export default defineConfig({
     reuseExistingServer: true,
     cwd: workspaceRoot,
   },
+  workers: 1,
+
+
   projects: [
     {
       name: 'chromium',
