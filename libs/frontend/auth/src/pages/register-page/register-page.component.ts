@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {IonicModule} from '@ionic/angular';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'lib-register-page',
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
 })
