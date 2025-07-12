@@ -35,15 +35,16 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npx nx run mobile-app:serve',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env['CI'],
-    // Using a relative path for cwd, as `workspaceRoot` might sometimes lead to issues
-    // with how SWC or Playwright resolves paths in certain environments (e.g., CI).
-    // This makes the path explicit relative to the playwright.config.ts file.
-    cwd: relativeWorkspaceRoot,
-  },
+  // Temporarily commenting out webServer to diagnose "invalid type: unit value" error
+  // webServer: {
+  //   command: 'npx nx run mobile-app:serve',
+  //   url: 'http://localhost:4200',
+  //   reuseExistingServer: !process.env['CI'],
+  //   // Using a relative path for cwd, as `workspaceRoot` might sometimes lead to issues
+  //   // with how SWC or Playwright resolves paths in certain environments (e.g., CI).
+  //   // This makes the path explicit relative to the playwright.config.ts file.
+  //   cwd: relativeWorkspaceRoot,
+  // },
   projects: [
     {
       name: 'chromium',
