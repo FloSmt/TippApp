@@ -116,9 +116,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Build Backend for E2E
-        run: npx nx build backend --configuration=production --verbose
-
       - name: Run Backend E2E Tests
         run: npx nx e2e backend-e2e
 
