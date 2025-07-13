@@ -51,7 +51,7 @@ jobs:
   # Job 2: Run Unit Tests (Depends on Prepare)
   run-unit-tests:
     runs-on: ubuntu-latest
-    needs: prepare # Dieser Job wird erst ausgeführt, wenn 'prepare' erfolgreich war
+    needs: prepare
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
           node-version: '20'
 
       - name: Restore Node Modules Cache
-        uses: actions/cache/restore@v4 # 'restore' statt 'save' um den Cache zu laden
+        uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
@@ -153,6 +153,7 @@ jobs:
           sleep 15
         env:
           NODE_ENV: test
+          CI: true
 
       - name: Run Playwright UI Tests
         run: npx nx run mobile-app:e2e

@@ -11,7 +11,7 @@
     "build:mobile-app": "nx run mobile-app:build",
     "sync:mobile-app": "nx run mobile-app:sync:android",
     "start:mobile-app": "nx run mobile-app:serve",
-    "test:mobile-app:e2e": "set NODE_ENV=test && nx run mobile-app:e2e"
+    "test:mobile-app:e2e": "set NODE_ENV=test && nx run mobile-app-e2e:e2e"
   },
   "private": true,
   "dependencies": {
