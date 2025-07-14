@@ -1,7 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateTipgroupDto, RegisterDto } from '@tippapp/shared/data-access';
-import { User } from '@tippapp/backend/database';
+import {
+  Match,
+  Matchday,
+  Tipgroup,
+  TipgroupUser,
+  TipSeason,
+  User,
+} from '@tippapp/backend/database';
 import {
   registerMultipleUsers,
   setupE2ETestEnvironment,
@@ -110,5 +117,14 @@ describe('UserController (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  afterEach(async () => {
+    // Clear Database Table after Test
+    await dataSource.createQueryBuilder().delete().from(TipgroupUser).execute();
+    await dataSource.createQueryBuilder().delete().from(Tipgroup).execute();
+    await dataSource.createQueryBuilder().delete().from(TipSeason).execute();
+    await dataSource.createQueryBuilder().delete().from(Matchday).execute();
+    await dataSource.createQueryBuilder().delete().from(Match).execute();
   });
 });
