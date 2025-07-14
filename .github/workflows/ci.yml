@@ -147,7 +147,7 @@ jobs:
 
       - name: Start Frontend for Playwright UI Tests
         run: |
-          npx nx serve mobile-app --port=4200 &
+          npx nx serve mobile-app:production --port=4200
           sleep 15
         env:
           NODE_ENV: test
