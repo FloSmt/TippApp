@@ -1,14 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { CreateTipgroupDto, RegisterDto } from '@tippapp/shared/data-access';
 import {
+  CreateTipgroupDto,
   Match,
   Matchday,
+  RegisterDto,
   Tipgroup,
   TipgroupUser,
   TipSeason,
   User,
-} from '@tippapp/backend/database';
+} from '@tippapp/shared/data-access';
 import {
   registerMultipleUsers,
   setupE2ETestEnvironment,

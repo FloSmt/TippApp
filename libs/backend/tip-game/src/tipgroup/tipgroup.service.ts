@@ -7,10 +7,12 @@ import {
   CreateTipgroupDto,
   GroupResponse,
   MatchResponse,
+  Tipgroup,
+  TipgroupUser,
+  User,
 } from '@tippapp/shared/data-access';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Tipgroup, TipgroupUser, User } from '@tippapp/backend/database';
 import { ApiService } from '@tippapp/backend/api';
 import { UserService } from '@tippapp/backend/user';
 import { TipSeasonService } from '../tipseason';

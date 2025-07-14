@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TipSeason } from '@tippapp/backend/database';
+import { TipSeason } from '@tippapp/shared/data-access';
 import { TipSeasonService } from './tip-season.service';
 import { TipSeasonController } from './tip-season.controller';
 import { MatchdayModule } from '../matchday';

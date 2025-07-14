@@ -1,7 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { TipgroupResponseDto } from '@tippapp/shared/data-access';
-import { Tipgroup } from '@tippapp/backend/database';
+import { Tipgroup, TipgroupResponseDto } from '@tippapp/shared/data-access';
 import { UserService } from './user.service';
 
 @Controller('user')

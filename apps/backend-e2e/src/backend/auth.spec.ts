@@ -1,11 +1,10 @@
-import {INestApplication} from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import * as bcrypt from "bcrypt";
-import {DataSource, Repository} from 'typeorm';
-import {User} from '@tippapp/backend/database';
-import {LoginDto, RegisterDto} from '@tippapp/shared/data-access';
-import {setupE2ETestEnvironment} from "./helper/setup-tests";
-import {API_ROUTES} from "./helper/routes";
+import * as bcrypt from 'bcrypt';
+import { DataSource, Repository } from 'typeorm';
+import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
+import { setupE2ETestEnvironment } from './helper/setup-tests';
+import { API_ROUTES } from './helper/routes';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -15,26 +14,32 @@ describe('AuthController (e2e)', () => {
 
   const mocks = {
     get loginData(): LoginDto[] {
-      return [{
-        email: 'test@email.de',
-        password: '1234'
-      },{
-        email: 'wrongEmail@email.de',
-        password: '1234'
-      },{
-        email: 'test@email.de',
-        password: 'wrongPassword'
-      }]
+      return [
+        {
+          email: 'test@email.de',
+          password: '1234',
+        },
+        {
+          email: 'wrongEmail@email.de',
+          password: '1234',
+        },
+        {
+          email: 'test@email.de',
+          password: 'wrongPassword',
+        },
+      ];
     },
 
     get registerData(): RegisterDto[] {
-      return [{
-        username: 'test',
-        email: 'test@email.de',
-        password: '1234'
-      }]
-    }
-  }
+      return [
+        {
+          username: 'test',
+          email: 'test@email.de',
+          password: '1234',
+        },
+      ];
+    },
+  };
 
   beforeAll(async () => {
     const setup = await setupE2ETestEnvironment();
@@ -65,7 +70,10 @@ describe('AuthController (e2e)', () => {
       expect(foundUser.email).toBe(registerDto.email);
       expect(foundUser.refreshToken).toBe(refreshToken);
 
-      const correctPassword = await bcrypt.compare(registerDto.password, foundUser.password);
+      const correctPassword = await bcrypt.compare(
+        registerDto.password,
+        foundUser.password
+      );
       expect(correctPassword).toBeTruthy();
     });
 
@@ -73,16 +81,20 @@ describe('AuthController (e2e)', () => {
       const registerDto = mocks.registerData[0];
 
       // first Register of User
-      let response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
+      let response = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REGISTER)
+        .send(registerDto);
       expect(response.status).toBe(201);
 
       // second registration with same User content
-      response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
+      response = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REGISTER)
+        .send(registerDto);
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty('message');
       expect(response.body.message).toBe('Email already exists');
     });
-  })
+  });
 
   describe('/login (POST)', () => {
     it('should response AuthResponse and generates new refreshToken', async () => {
@@ -90,21 +102,29 @@ describe('AuthController (e2e)', () => {
       const loginDto = mocks.loginData[0];
 
       // Register new User
-      const response1 = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
-      const userOnRegistration = await userRepository.findOne({ where: { id: response1.body.userId } });
+      const response1 = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REGISTER)
+        .send(registerDto);
+      const userOnRegistration = await userRepository.findOne({
+        where: { id: response1.body.userId },
+      });
       const oldRefreshToken = userOnRegistration.refreshToken;
 
       // Delay between registration and login to get different tokens
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Login with same credentials
-      const response2 = await request(app.getHttpServer()).post(API_ROUTES.AUTH.LOGIN).send(loginDto);
+      const response2 = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.LOGIN)
+        .send(loginDto);
       expect(response2.status).toBe(200);
       expectAuthResponse(response2);
 
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      const userOnLogin = await userRepository.findOne({ where: { id: response2.body.userId } });
+      const userOnLogin = await userRepository.findOne({
+        where: { id: response2.body.userId },
+      });
       const newRefreshToken = userOnLogin.refreshToken;
 
       expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
@@ -115,17 +135,23 @@ describe('AuthController (e2e)', () => {
       let loginDto = mocks.loginData[1];
 
       // Register new User
-      await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
+      await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REGISTER)
+        .send(registerDto);
 
       // Login with wrong email
-      let response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.LOGIN).send(loginDto);
+      let response = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.LOGIN)
+        .send(loginDto);
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
       expect(response.body.message).toBe('User not found');
 
       // Login with wrong password
       loginDto = mocks.loginData[2];
-      response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.LOGIN).send(loginDto);
+      response = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.LOGIN)
+        .send(loginDto);
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
       expect(response.body.message).toBe('Invalid credentials');
@@ -137,8 +163,12 @@ describe('AuthController (e2e)', () => {
       const registerDto = mocks.registerData[0];
 
       // Register new User
-      const response1 = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
-      const userOnRegistration = await userRepository.findOne({ where: { id: response1.body.userId } });
+      const response1 = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REGISTER)
+        .send(registerDto);
+      const userOnRegistration = await userRepository.findOne({
+        where: { id: response1.body.userId },
+      });
       const oldRefreshToken = userOnRegistration.refreshToken;
       const userId = userOnRegistration.id;
 
@@ -146,14 +176,18 @@ describe('AuthController (e2e)', () => {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Login with same credentials
-      const response2 = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REFRESH).send({
-        userId: userId,
-        refreshToken: oldRefreshToken
-      });
+      const response2 = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REFRESH)
+        .send({
+          userId: userId,
+          refreshToken: oldRefreshToken,
+        });
       expect(response2.status).toBe(200);
       expectAuthResponse(response2);
 
-      const userOnLogin = await userRepository.findOne({ where: { id: response2.body.userId } });
+      const userOnLogin = await userRepository.findOne({
+        where: { id: response2.body.userId },
+      });
       const newRefreshToken = userOnLogin.refreshToken;
 
       expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
@@ -163,15 +197,19 @@ describe('AuthController (e2e)', () => {
       const registerDto = mocks.registerData[0];
 
       // Register new User
-      const response1 = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
-      const userOnRegistration = await userRepository.findOne({ where: { id: response1.body.userId } });
+      const response1 = await request(app.getHttpServer())
+        .post(API_ROUTES.AUTH.REGISTER)
+        .send(registerDto);
+      const userOnRegistration = await userRepository.findOne({
+        where: { id: response1.body.userId },
+      });
       const oldRefreshToken = userOnRegistration.refreshToken;
       const userId = userOnRegistration.id;
 
       // Refresh with wrong UserId
       let response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.REFRESH)
-        .send({ userId: (userId + 1), refreshToken: oldRefreshToken });
+        .send({ userId: userId + 1, refreshToken: oldRefreshToken });
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
       expect(response.body.message).toBe('User not found');
@@ -193,7 +231,7 @@ describe('AuthController (e2e)', () => {
   afterEach(async () => {
     // Clear Database Table after Test
     await dataSource.createQueryBuilder().delete().from(User).execute();
-  })
+  });
 
   function verifyToken(token: string) {
     expect(typeof token).toBe('string');
