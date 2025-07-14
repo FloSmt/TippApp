@@ -1,13 +1,15 @@
 import * as process from 'node:process';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import { registerAs } from '@nestjs/config';
-import { User } from '../entities/user.entity';
-import { Tipgroup } from '../entities/tipgroup.entity';
-import { TipgroupUser } from '../entities/tipgroupUser.entity';
-import { Match } from '../entities/match.entity';
-import { Matchday } from '../entities/matchday.entity';
-import { TipSeason } from '../entities/tipSeason.entity';
-import { Tip } from '../entities/tip.entity';
+import {
+  Match,
+  Matchday,
+  Tip,
+  Tipgroup,
+  TipgroupUser,
+  TipSeason,
+  User,
+} from '@tippapp/shared/data-access';
 
 export default registerAs(
   'dbconfig.prod',

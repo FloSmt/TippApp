@@ -1,6 +1,12 @@
-import {Column, Entity, JoinTable, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {User} from "./user.entity";
-import {Match} from "./match.entity";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
+import { Match } from './match.entity';
 
 @Entity('tips')
 export class Tip {

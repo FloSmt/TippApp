@@ -1,6 +1,13 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Matchday} from "./matchday.entity";
-import {Tip} from "./tip.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Matchday } from './matchday.entity';
+import { Tip } from './tip.entity';
 
 @Entity('matches')
 export class Match {
