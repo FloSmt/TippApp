@@ -45,7 +45,7 @@ jobs:
 
       - name: Restore Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install-deps
+        run: npx playwright install
 
 
   # Job 2: Run Unit Tests (Depends on Prepare)
