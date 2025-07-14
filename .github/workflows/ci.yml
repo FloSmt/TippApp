@@ -88,7 +88,7 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run All Unit Tests
-        run: npx nx run-many --target=test --all --parallel --configuration=ci
+        run: npx nx run-many --target=test --parallel --configuration=ci
 
   # Job 3: Run Backend E2E Tests (Depends on Prepare)
   run-backend-e2e:
