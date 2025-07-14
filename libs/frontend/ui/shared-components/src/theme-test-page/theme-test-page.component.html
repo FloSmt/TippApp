@@ -1,0 +1,171 @@
+<ion-tabs>
+  <ion-tab tab="home">
+    <ion-header [translucent]="false" mode="ios">
+      <ion-toolbar mode="md">
+        <ion-title>Title</ion-title>
+        <ion-buttons slot="end">
+          <ion-button>Button</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content [fullscreen]="true" class="ion-padding">
+      <h1 data-testid="test-header">Welcome</h1>
+      <h2>Small</h2>
+      <ion-button fill="clear" size="small">Clear</ion-button>
+      <ion-button fill="outline" size="small">Outline</ion-button>
+      <ion-button fill="solid" size="small">Solid</ion-button>
+      <ion-button disabled fill="solid" size="small">Disabled</ion-button>
+
+      <h2>Default</h2>
+      <ion-button fill="clear" size="default">Clear</ion-button>
+      <ion-button fill="outline" size="default">Outline</ion-button>
+      <ion-button fill="solid" size="default">Solid</ion-button>
+      <ion-button disabled fill="outline" size="default">Disabled</ion-button>
+
+      <h2>Large</h2>
+      <ion-button fill="clear" size="large">Clear</ion-button>
+      <ion-button fill="outline" size="large">Outline</ion-button>
+      <ion-button fill="solid" size="large">Solid</ion-button>
+      <ion-button disabled fill="clear" size="large">Disabled</ion-button>
+
+      <h2>Segment</h2>
+      <ion-segment value="default">
+        <ion-segment-button value="default">
+          <ion-label>Default</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="segment">
+          <ion-label>Segment</ion-label>
+        </ion-segment-button>
+        <ion-segment-button disabled value="weiteres">
+          <ion-label>Weiteres</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <h2>Chips</h2>
+      <ion-chip>Default</ion-chip>
+      <ion-chip [disabled]="true">Disabled</ion-chip>
+      <ion-chip [outline]="true">Outline</ion-chip>
+      <ion-chip>
+        <ion-icon name="play-circle"></ion-icon>
+        <ion-label>Icon Chip</ion-label>
+        <ion-icon name="close"></ion-icon>
+      </ion-chip>
+
+      <h2>FAB</h2>
+      <ion-fab>
+        <ion-fab-button>
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+
+    </ion-content>
+  </ion-tab>
+  <ion-tab tab="radio">
+    <ion-content [fullscreen]="true" class="ion-padding">
+      <ion-input fill="outline" label="Outline input" label-placement="floating" placeholder="Enter text"
+                 type="email"></ion-input>
+      <br>
+      <ion-input fill="solid" label="Outline input" label-placement="floating" placeholder="Enter text"></ion-input>
+      <br>
+      <ion-input label="Outline input" label-placement="floating" placeholder="Enter text"></ion-input>
+
+      <h2>Checkbox</h2>
+      <ion-checkbox labelPlacement="end">checkbox</ion-checkbox>
+      <br>
+      <ion-checkbox checked labelPlacement="end">checked</ion-checkbox>
+      <br>
+      <ion-checkbox checked disabled labelPlacement="end">disabled</ion-checkbox>
+      <br>
+      <ion-checkbox [indeterminate]="true" labelPlacement="end">Indeterminate</ion-checkbox>
+
+
+      <h2>Selections</h2>
+      <ion-list>
+        <ion-item>
+          <ion-select aria-label="Fruit" interface="action-sheet" placeholder="action-sheet">
+            <ion-select-option value="apples">Apples</ion-select-option>
+            <ion-select-option value="oranges">Oranges</ion-select-option>
+            <ion-select-option value="bananas">Bananas</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-select aria-label="Fruit" placeholder="Select fruit">
+            <ion-select-option value="apples">Apples</ion-select-option>
+            <ion-select-option value="oranges">Oranges</ion-select-option>
+            <ion-select-option value="bananas">Bananas</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <ion-select fill="solid" label="Solid select" label-placement="floating">
+        <ion-select-option value="apple">Apple</ion-select-option>
+        <ion-select-option value="banana">Banana</ion-select-option>
+        <ion-select-option value="orange">Orange</ion-select-option>
+      </ion-select>
+
+      <br/>
+
+      <ion-select fill="outline" label="Outline select" label-placement="floating">
+        <ion-select-option value="apple">Apple</ion-select-option>
+        <ion-select-option value="banana">Banana</ion-select-option>
+        <ion-select-option value="orange">Orange</ion-select-option>
+      </ion-select>
+
+      <h2>Toggle</h2>
+      <ion-toggle>Default Toggle</ion-toggle>
+      <br/><br/>
+      <ion-toggle [checked]="true">Checked Toggle</ion-toggle>
+      <br/><br/>
+      <ion-toggle [enableOnOffLabels]="true">On/Off Label Toggle</ion-toggle>
+      <br/><br/>
+      <ion-toggle [checked]="true" [disabled]="true">Disabled Checked Toggle</ion-toggle>
+    </ion-content>
+  </ion-tab>
+  <ion-tab tab="library">
+    <!-- https://github.com/ionic-team/ionic-framework/issues/25157 -->
+    <ion-header [translucent]="false" mode="ios">
+      <ion-toolbar mode="md">
+        <ion-title>
+          <h1 class="title">Title</h1>
+          <p class="subtitle">Subtitle</p>
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button>Button</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content [fullscreen]="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar mode="md">
+          <ion-title size="large">
+            <h1 class="title">Title</h1>
+            <p class="subtitle">Subtitle</p>
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <div style="height: 110vh"></div>
+    </ion-content>
+  </ion-tab>
+  <ion-tab tab="search">
+    <div id="search-page">
+    </div>
+  </ion-tab>
+
+
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home">
+      <ion-icon name="search"></ion-icon>
+      Buttons
+    </ion-tab-button>
+    <ion-tab-button tab="radio">
+      <ion-icon name="radio"></ion-icon>
+      Input
+    </ion-tab-button>
+    <ion-tab-button tab="library">
+      <ion-icon name="library"></ion-icon>
+      Library
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

@@ -18,11 +18,26 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           {
-            "glob": "**/*",
-            "input": "apps/mobile-app/public"
+            "glob": "**/*.svg",
+            "input": "node_modules/ionicons/dist/ionicons/svg",
+            "output": "./svg"
           }
         ],
-        "styles": ["apps/mobile-app/src/styles.scss"],
+        "styles": [
+          "apps/mobile-app/src/styles.scss",
+          "node_modules/@ionic/angular/css/core.css",
+          "node_modules/@ionic/angular/css/normalize.css",
+          "node_modules/@ionic/angular/css/structure.css",
+          "node_modules/@ionic/angular/css/typography.css",
+          "node_modules/@ionic/angular/css/display.css",
+          "node_modules/@ionic/angular/css/padding.css",
+          "node_modules/@ionic/angular/css/float-elements.css",
+          "node_modules/@ionic/angular/css/text-alignment.css",
+          "node_modules/@ionic/angular/css/text-transformation.css",
+          "node_modules/@ionic/angular/css/flex-utils.css",
+          "node_modules/@ionic/angular/css/palettes/dark.system.css",
+          "apps/mobile-app/src/theme/variables.scss"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -30,8 +45,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "8mb",
+              "maximumError": "15mb"
             },
             {
               "type": "anyComponentStyle",
