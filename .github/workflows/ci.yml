@@ -27,7 +27,7 @@ jobs:
       - name: Start Nx Cloud CI Run
         if: github.event_name == 'pull_request'
         id: start-nx-cloud-run
-        run: npx nx-cloud start-ci-run --stop-agents-after-completion --agent-count 1
+        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
       - name: Cache Node Modules
         id: cache-node-modules
