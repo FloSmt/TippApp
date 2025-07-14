@@ -1,10 +1,13 @@
-import {INestApplication} from '@nestjs/common';
-import {DataSource} from 'typeorm';
-import {registerMultipleUsers, setupE2ETestEnvironment} from "./helper/setup-tests";
-import {CreateTipgroupDto, RegisterDto} from "@tippapp/shared/data-access";
-import {setupMockApi} from "./helper/mockserver.helper";
-import {TestApi} from "./helper/test-utils";
-import {User} from "@tippapp/backend/database";
+import { INestApplication } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { CreateTipgroupDto, RegisterDto } from '@tippapp/shared/data-access';
+import { User } from '@tippapp/backend/database';
+import {
+  registerMultipleUsers,
+  setupE2ETestEnvironment,
+} from './helper/setup-tests';
+import { setupMockApi } from './helper/mockserver.helper';
+import { TestApi } from './helper/test-utils';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -16,31 +19,36 @@ describe('UserController (e2e)', () => {
 
   const mocks = {
     get createTipgroupData(): CreateTipgroupDto[] {
-      return [{
-        name: 'Tipgroup1',
-        passwordHash: 'password',
-        leagueShortcut: 'bl1',
-        currentSeason: 2024
-      }, {
-        name: 'Tipgroup2',
-        passwordHash: 'password',
-        leagueShortcut: 'bl1',
-        currentSeason: 2024
-      },]
+      return [
+        {
+          name: 'Tipgroup1',
+          passwordHash: 'password',
+          leagueShortcut: 'bl1',
+          currentSeason: 2024,
+        },
+        {
+          name: 'Tipgroup2',
+          passwordHash: 'password',
+          leagueShortcut: 'bl1',
+          currentSeason: 2024,
+        },
+      ];
     },
     get registerData(): RegisterDto[] {
-      return [{
-        username: 'test',
-        email: 'test@email.de',
-        password: '1234'
-      },
+      return [
+        {
+          username: 'test',
+          email: 'test@email.de',
+          password: '1234',
+        },
         {
           username: 'test2',
           email: 'test2@email.de',
-          password: '1234'
-        }]
-    }
-  }
+          password: '1234',
+        },
+      ];
+    },
+  };
 
   beforeAll(async () => {
     const setup = await setupE2ETestEnvironment();
@@ -48,13 +56,23 @@ describe('UserController (e2e)', () => {
     dataSource = setup.dataSource;
     testApi = setup.testApi;
 
-    testUser = await registerMultipleUsers(mocks.registerData, setup.userRepository, setup.authService);
-    authToken = await testApi.loginAndGetToken(mocks.registerData[0].email, mocks.registerData[0].password);
+    testUser = await registerMultipleUsers(
+      mocks.registerData,
+      setup.userRepository,
+      setup.authService
+    );
+    authToken = await testApi.loginAndGetToken(
+      mocks.registerData[0].email,
+      mocks.registerData[0].password
+    );
   });
 
   describe('/tipgroups (GET)', () => {
     beforeEach(async () => {
-      await setupMockApi({matchDataResponse: [], availableGroupsResponse: []});
+      await setupMockApi({
+        matchDataResponse: [],
+        availableGroupsResponse: [],
+      });
     });
 
     it('should return an empty list of tipgroups for a new user', async () => {
@@ -73,16 +91,22 @@ describe('UserController (e2e)', () => {
       let response = await testApi.getTipgroups(authToken);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual([{"id": 1, "name": "Tipgroup1"}, {"id": 2, "name": "Tipgroup2"}]);
+      expect(response.body).toEqual([
+        { id: 1, name: 'Tipgroup1' },
+        { id: 2, name: 'Tipgroup2' },
+      ]);
 
       //Login to other User
-      const authTokenForSecondUser = await testApi.loginAndGetToken(mocks.registerData[1].email, mocks.registerData[1].password);
+      const authTokenForSecondUser = await testApi.loginAndGetToken(
+        mocks.registerData[1].email,
+        mocks.registerData[1].password
+      );
 
       response = await testApi.getTipgroups(authTokenForSecondUser);
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
     });
-  })
+  });
 
   afterAll(async () => {
     await app.close();

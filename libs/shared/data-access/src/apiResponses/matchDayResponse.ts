@@ -1,6 +1,6 @@
-import {TeamResponse} from './team.response';
-import {GroupResponse} from './group.response';
-import {MatchResultResponse} from './matchResult.response';
+import { GroupResponse } from './group.response';
+import { MatchResultResponse } from './matchResult.response';
+import { TeamResponse } from './team.response';
 
 export class MatchResponse {
   matchId: number;

@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "lint": "nx run-many --target=lint",
     "start:database": "docker compose up",
     "start:mockserver": "docker-compose -f docker-compose.test.yaml up -d",
     "start:backend": "nx run backend:serve",

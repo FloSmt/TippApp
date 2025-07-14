@@ -7,7 +7,13 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/node_modules'],
+    ignores: [
+      '**/dist',
+      '**/node_modules',
+      '**/coverage',
+      '**/build',
+      '**/android',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -39,17 +45,29 @@ export default [
       '**/*.mjs',
     ],
     plugins: {
-      'import': importPlugin,
+      import: importPlugin,
     },
     rules: {
       ...ts.configs.recommended.rules,
-      '@typescript-eslint/no-require-imports': "off",
-      '@typescript-eslint/no-explicit-any': "warn",
-      '@typescript-eslint/no-unused-vars': "warn",
-      '@typescript-eslint/no-non-null-assertion': "warn",
-      'import/no-cycle': "error",
-      'import/no-useless-path-segments': "warn",
-      'import/newline-after-import': "warn",
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      'import/no-cycle': 'error',
+      'import/no-useless-path-segments': 'warn',
+      'import/newline-after-import': 'warn',
+      '@angular-eslint/component-selector': 'warn',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+        },
+      ],
     },
   },
 ];
