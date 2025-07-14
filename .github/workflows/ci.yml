@@ -29,23 +29,23 @@ jobs:
         id: start-nx-cloud-run
         run: npx nx-cloud start-ci-run --stop-agents-after-completion --agent-count 1
 
-#      - name: Cache Node Modules
-#        id: cache-node-modules
-#        uses: actions/cache@v4
-#        with:
-#          path: node_modules
-#          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-#          restore-keys: |
-#            ${{ runner.os }}-npm-
-#
-#      - name: Cache Playwright Browsers
-#        id: cache-playwright-browsers
-#        uses: actions/cache@v4
-#        with:
-#          path: ~/.cache/ms-playwright
-#          key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.ts') }}
-#          restore-keys: |
-#            ${{ runner.os }}-playwright-
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Cache Playwright Browsers
+        id: cache-playwright-browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -64,7 +64,7 @@ jobs:
         run: npx playwright install
 
       - name: "Run Linting"
-        run: npx nx affected -t lint --all --parallel --configuration=ci
+        run: npx nx affected -t lint --parallel --configuration=ci
 
   # Job 2: Run Unit Tests (Depends on Prepare)
   run-unit-tests:
@@ -88,7 +88,7 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run All Unit Tests
-        run: npx nx run-many --target=test --parallel --configuration=ci
+        run: npx nx run-many --target=test --all --parallel --configuration=ci
 
   # Job 3: Run Backend E2E Tests (Depends on Prepare)
   run-backend-e2e:
