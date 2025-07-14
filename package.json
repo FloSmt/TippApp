@@ -109,6 +109,7 @@
     "jsonc-eslint-parser": "^2.1.0",
     "mockserver-client": "^5.15.0",
     "nx": "20.6.2",
+    "nx-cloud": "^19.1.0",
     "prettier": "^2.6.2",
     "supertest": "^7.1.0",
     "ts-jest": "^29.1.0",
