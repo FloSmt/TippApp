@@ -5,7 +5,6 @@ import { TipSeason } from '@tippapp/backend/database';
 import { CreateTipSeasonDto } from '@tippapp/shared/data-access';
 import { Repository } from 'typeorm';
 import { TipSeasonService } from './tip-season.service';
-
 import { MatchdayService } from '../matchday';
 
 describe('TipSeasonService', () => {

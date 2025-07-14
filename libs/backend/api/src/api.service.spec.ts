@@ -1,12 +1,16 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {ApiService} from './api.service';
-import {HttpService} from '@nestjs/axios';
-import {of, throwError} from 'rxjs';
-import {AxiosResponse} from 'axios';
-import {GroupResponse, LeagueResponse, MatchResponse} from '@tippapp/shared/data-access';
-import {HttpException} from '@nestjs/common';
-import {MatchResponseMock} from './mocks/match-response.mock';
-import {ConfigService} from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { HttpService } from '@nestjs/axios';
+import { of, throwError } from 'rxjs';
+import { AxiosResponse } from 'axios';
+import {
+  GroupResponse,
+  LeagueResponse,
+  MatchResponse,
+} from '@tippapp/shared/data-access';
+import { HttpException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { MatchResponseMock } from './mocks';
+import { ApiService } from './api.service';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -20,12 +24,12 @@ describe('ApiService', () => {
       providers: [
         ApiService,
         ConfigService,
-        {provide: HttpService, useValue: mockHttpService}
+        { provide: HttpService, useValue: mockHttpService },
       ],
     }).compile();
 
     service = module.get<ApiService>(ApiService);
-  })
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -38,7 +42,7 @@ describe('ApiService', () => {
         data: MatchResponseMock,
         status: 200,
         statusText: 'OK',
-        headers: {}
+        headers: {},
       };
       mockHttpService.get.mockReturnValue(of(response));
 
@@ -63,7 +67,7 @@ describe('ApiService', () => {
       const mockData = [
         { sport: { sportId: 1 }, name: 'League 1' },
         { sport: { sportId: 79 }, name: 'League 2' },
-        { sport: { sportId: 5 }, name: 'Other' }
+        { sport: { sportId: 5 }, name: 'Other' },
       ];
       const response: AxiosResponse = {
         data: mockData,
@@ -71,8 +75,8 @@ describe('ApiService', () => {
         statusText: 'OK',
         headers: {},
         config: {
-          headers: undefined
-        }
+          headers: undefined,
+        },
       };
       mockHttpService.get.mockReturnValue(of(response));
 
@@ -101,8 +105,8 @@ describe('ApiService', () => {
         statusText: 'OK',
         headers: {},
         config: {
-          headers: undefined
-        }
+          headers: undefined,
+        },
       };
       mockHttpService.get.mockReturnValue(of(response));
 

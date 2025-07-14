@@ -1,9 +1,12 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {TipgroupController} from './tipgroup.controller';
-import {TipgroupService} from './tipgroup.service';
-import {createMock, DeepMocked} from "@golevelup/ts-jest";
-import {CreateTipgroupDto, TipgroupResponseDto} from "@tippapp/shared/data-access";
-import {Tipgroup} from "@tippapp/backend/database";
+import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+  CreateTipgroupDto,
+  TipgroupResponseDto,
+} from '@tippapp/shared/data-access';
+import { Tipgroup } from '@tippapp/backend/database';
+import { TipgroupService } from './tipgroup.service';
+import { TipgroupController } from './tipgroup.controller';
 
 describe('TipgroupController', () => {
   let controller: TipgroupController;
@@ -13,19 +16,19 @@ describe('TipgroupController', () => {
     get tipgroupMock(): Tipgroup {
       return {
         createDate: new Date('1.1.1970'),
-        passwordHash: "",
+        passwordHash: '',
         seasons: [],
         users: [],
         name: 'Tipgroup1',
-        id: 1
+        id: 1,
       };
     },
 
     get tipgroupResponse(): TipgroupResponseDto {
       return {
         name: 'Tipgroup1',
-        id: 1
-      }
+        id: 1,
+      };
     },
 
     get createTipgroupDtoMock(): CreateTipgroupDto {
@@ -34,7 +37,7 @@ describe('TipgroupController', () => {
         passwordHash: '123',
         leagueShortcut: 'bl1',
         currentSeason: 2024,
-      }
+      };
     },
   };
 
@@ -45,8 +48,8 @@ describe('TipgroupController', () => {
         TipgroupService,
         {
           provide: TipgroupService,
-          useValue: createMock<TipgroupService>()
-        }
+          useValue: createMock<TipgroupService>(),
+        },
       ],
     }).compile();
 
@@ -60,11 +63,14 @@ describe('TipgroupController', () => {
 
   it('should return tipgroup-response', async () => {
     tipgroupService.createTipgroup.mockResolvedValueOnce(mocks.tipgroupMock);
-    const req = {user: {id: 1}};
+    const req = { user: { id: 1 } };
 
     const result = await controller.create(mocks.createTipgroupDtoMock, req);
 
-    expect(tipgroupService.createTipgroup).toHaveBeenCalledWith(mocks.createTipgroupDtoMock, req.user.id);
+    expect(tipgroupService.createTipgroup).toHaveBeenCalledWith(
+      mocks.createTipgroupDtoMock,
+      req.user.id
+    );
     expect(result).toEqual(mocks.tipgroupResponse);
   });
 });

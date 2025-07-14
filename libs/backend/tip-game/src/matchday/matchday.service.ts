@@ -1,13 +1,11 @@
-import {Injectable} from '@nestjs/common';
-import {CreateMatchdayDto} from '@tippapp/shared/data-access';
-import {MatchService} from '../match';
-import {Matchday} from '@tippapp/backend/database';
+import { Injectable } from '@nestjs/common';
+import { CreateMatchdayDto } from '@tippapp/shared/data-access';
+import { Matchday } from '@tippapp/backend/database';
+import { MatchService } from '../match';
 
 @Injectable()
 export class MatchdayService {
-  constructor(
-    private matchService: MatchService
-  ) {}
+  constructor(private matchService: MatchService) {}
 
   createMatchday(createMatchdayDto: CreateMatchdayDto): Matchday {
     const newMatchday = new Matchday();

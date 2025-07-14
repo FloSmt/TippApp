@@ -1,8 +1,8 @@
+import * as process from 'node:process';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
+import { registerAs } from '@nestjs/config';
 import { User } from '../entities/user.entity';
 import { Tip } from '../entities/tip.entity';
-import { registerAs } from '@nestjs/config';
-import * as process from 'node:process';
 import { Tipgroup } from '../entities/tipgroup.entity';
 import { TipgroupUser } from '../entities/tipgroupUser.entity';
 import { Match } from '../entities/match.entity';

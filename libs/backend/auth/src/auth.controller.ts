@@ -1,8 +1,17 @@
-import {Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
-import {AuthService} from './auth.service';
-import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
-import {Public} from './guards/jwt-auth.guard';
-import {ApiOkResponse, ApiOperation, ApiParam, ApiResponse,} from '@nestjs/swagger';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  AuthResponseDto,
+  LoginDto,
+  RegisterDto,
+} from '@tippapp/shared/data-access';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { AuthService } from './auth.service';
+import { Public } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {

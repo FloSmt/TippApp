@@ -1,8 +1,8 @@
-import {JwtAuthGuard} from './jwt-auth.guard';
-import {JwtService} from '@nestjs/jwt';
-import {Reflector} from '@nestjs/core';
-import {ConfigService} from '@nestjs/config';
-import {ExecutionContext, UnauthorizedException} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 describe('JwtAuthGuard', () => {
   let jwtAuthGuard: JwtAuthGuard;
@@ -42,12 +42,16 @@ describe('JwtAuthGuard', () => {
       getClass: jest.fn(),
     } as unknown as ExecutionContext;
 
-    await expect(jwtAuthGuard.canActivate(context)).rejects.toThrow(UnauthorizedException);
+    await expect(jwtAuthGuard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException
+    );
   });
 
   it('should throw UnauthorizedException if token is invalid', async () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(false);
-    jest.spyOn(jwtService, 'verifyAsync').mockRejectedValue(new Error('Invalid token'));
+    jest
+      .spyOn(jwtService, 'verifyAsync')
+      .mockRejectedValue(new Error('Invalid token'));
 
     const mockRequest = { headers: { authorization: 'Bearer invalid-token' } };
     const context = {
@@ -58,15 +62,21 @@ describe('JwtAuthGuard', () => {
       getClass: jest.fn(),
     } as unknown as ExecutionContext;
 
-    await expect(jwtAuthGuard.canActivate(context)).rejects.toThrow(UnauthorizedException);
+    await expect(jwtAuthGuard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException
+    );
   });
 
   it('should allow access if token is valid', async () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(false);
     jest.spyOn(configService, 'get').mockReturnValue('mock-secret');
-    jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue({ id: 1, email: 'test@example.com' });
+    jest
+      .spyOn(jwtService, 'verifyAsync')
+      .mockResolvedValue({ id: 1, email: 'test@example.com' });
 
-    const mockRequest: any = {headers: {authorization: 'Bearer valid-token'}};
+    const mockRequest: any = {
+      headers: { authorization: 'Bearer valid-token' },
+    };
     const context = {
       switchToHttp: () => ({
         getRequest: () => mockRequest,

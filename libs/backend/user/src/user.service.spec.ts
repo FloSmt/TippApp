@@ -1,10 +1,10 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {UserService} from './user.service';
-import {Repository} from 'typeorm';
-import {getRepositoryToken} from '@nestjs/typeorm';
-import {Tipgroup, TipgroupUser, User} from '@tippapp/backend/database';
-import {RegisterDto} from '@tippapp/shared/data-access';
-import {createMock, DeepMocked} from "@golevelup/ts-jest";
+import { Test, TestingModule } from '@nestjs/testing';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Tipgroup, TipgroupUser, User } from '@tippapp/backend/database';
+import { RegisterDto } from '@tippapp/shared/data-access';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserService } from './user.service';
 
 describe('UserService', () => {
   let service: UserService;
@@ -17,12 +17,12 @@ describe('UserService', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useValue: createMock<Repository<User>>()
+          useValue: createMock<Repository<User>>(),
         },
         {
           provide: getRepositoryToken(TipgroupUser),
-          useValue: createMock<Repository<TipgroupUser>>()
-        }
+          useValue: createMock<Repository<TipgroupUser>>(),
+        },
       ],
     }).compile();
 
@@ -41,7 +41,9 @@ describe('UserService', () => {
 
     await service.updateRefreshToken(userId, refreshToken);
 
-    expect(userRepository.update).toHaveBeenCalledWith(userId, { refreshToken });
+    expect(userRepository.update).toHaveBeenCalledWith(userId, {
+      refreshToken,
+    });
   });
 
   it('should return a user by id', async () => {
@@ -60,12 +62,18 @@ describe('UserService', () => {
 
     const result = await service.findByEmail('test@example.com');
 
-    expect(userRepository.findOneBy).toHaveBeenCalledWith({ email: 'test@example.com' });
+    expect(userRepository.findOneBy).toHaveBeenCalledWith({
+      email: 'test@example.com',
+    });
     expect(result).toEqual(user);
   });
 
   it('should create and save a new user', async () => {
-    const registerDto: RegisterDto = { email: 'test@example.com', password: 'hashedPassword', username: 'username'};
+    const registerDto: RegisterDto = {
+      email: 'test@example.com',
+      password: 'hashedPassword',
+      username: 'username',
+    };
     const user = { id: 1, ...registerDto } as User;
 
     userRepository.create.mockReturnValue(user);
@@ -97,13 +105,16 @@ describe('UserService', () => {
     tipgroupUserEntry2.userId = userId;
     tipgroupUserEntry2.tipgroup = tipgroup2;
 
-    tipgroupUserRepository.find.mockResolvedValue([tipgroupUserEntry1, tipgroupUserEntry2]);
+    tipgroupUserRepository.find.mockResolvedValue([
+      tipgroupUserEntry1,
+      tipgroupUserEntry2,
+    ]);
 
     const result = await service.getTipGroupsByUserId(userId);
 
     expect(result).toEqual([tipgroup1, tipgroup2]);
     expect(tipgroupUserRepository.find).toHaveBeenCalledWith({
-      where: {userId: userId},
+      where: { userId: userId },
       relations: ['tipgroup'],
     });
   });

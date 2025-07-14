@@ -1,11 +1,11 @@
-import {Module} from '@nestjs/common';
-import {AuthService} from './auth.service';
-import {UserModule} from "@tippapp/backend/user";
-import {AuthController} from "./auth.controller";
-import {JwtModule} from "@nestjs/jwt";
-import {APP_GUARD} from "@nestjs/core";
-import {JwtAuthGuard} from "./guards/jwt-auth.guard";
-import {ConfigModule, ConfigService} from "@nestjs/config";
+import { Module } from '@nestjs/common';
+import { UserModule } from '@tippapp/backend/user';
+import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 
 @Module({
   imports: [
@@ -15,19 +15,18 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET')
-      })
-    })
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+    }),
   ],
   providers: [
     AuthService,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard
-    }
+      useClass: JwtAuthGuard,
+    },
   ],
   controllers: [AuthController],
-  exports: [AuthService]
+  exports: [AuthService],
 })
-
 export class AuthModule {}

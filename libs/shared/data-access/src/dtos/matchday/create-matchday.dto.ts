@@ -1,5 +1,5 @@
-import {CreateMatchDto} from '../match/create-match.dto';
-import {ApiProperty} from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { CreateMatchDto } from '../match/create-match.dto';
 
 export class CreateMatchdayDto {
   @ApiProperty()

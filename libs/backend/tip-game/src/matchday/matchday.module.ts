@@ -1,9 +1,9 @@
-import {Module} from '@nestjs/common';
-import {MatchdayService} from './matchday.service';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {MatchModule} from '../match';
-import {Matchday} from '@tippapp/backend/database';
-import {MatchdayController} from "./matchday.controller";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Matchday } from '@tippapp/backend/database';
+import { MatchdayService } from './matchday.service';
+import { MatchModule } from '../match';
+import { MatchdayController } from './matchday.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Matchday]), MatchModule],

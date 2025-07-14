@@ -1,7 +1,13 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {TipgroupUser} from "./tipgroupUser.entity";
-import {Tip} from "./tip.entity";
-import {ApiProperty} from "@nestjs/swagger";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { TipgroupUser } from './tipgroupUser.entity';
+import { Tip } from './tip.entity';
 
 @Entity('users')
 export class User {
@@ -21,7 +27,7 @@ export class User {
   @ApiProperty()
   password?: string;
 
-  @Column( {nullable: true})
+  @Column({ nullable: true })
   refreshToken?: string;
 
   @CreateDateColumn()

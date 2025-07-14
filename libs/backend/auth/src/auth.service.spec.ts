@@ -1,13 +1,12 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {AuthService} from "./auth.service";
-import {JwtService} from "@nestjs/jwt";
-import {createMock, DeepMocked} from "@golevelup/ts-jest";
-import {ConfigService} from "@nestjs/config";
-import {ConflictException, NotFoundException, UnauthorizedException} from '@nestjs/common';
-import {LoginDto} from '@tippapp/shared/data-access';
-import {User} from '@tippapp/backend/database';
-import {RegisterDto} from '@tippapp/shared/data-access';
-import {UserService} from "@tippapp/backend/user";
+import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { LoginDto, RegisterDto } from '@tippapp/shared/data-access';
+import { User } from '@tippapp/backend/database';
+import { UserService } from '@tippapp/backend/user';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -15,22 +14,26 @@ describe('AuthService', () => {
 
   const mocks = {
     get loginData(): LoginDto[] {
-      return [{
-        email: 'test@gmail.com',
-        password: '1234'
-      },
+      return [
+        {
+          email: 'test@gmail.com',
+          password: '1234',
+        },
         {
           email: 'test2@gmail.com',
-          password: 'password'
-        }]
+          password: 'password',
+        },
+      ];
     },
 
     get registerData(): RegisterDto[] {
-      return [{
-        username: 'test',
-        email: 'test@email.de',
-        password: '1234'
-      }]
+      return [
+        {
+          username: 'test',
+          email: 'test@email.de',
+          password: '1234',
+        },
+      ];
     },
 
     get userData(): User {
@@ -39,10 +42,10 @@ describe('AuthService', () => {
         username: 'testUser',
         password: 'password',
         email: 'test2@gmail.com',
-        refreshToken: 'tokenFromDB'
-      }
-    }
-  }
+        refreshToken: 'tokenFromDB',
+      };
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,12 +57,12 @@ describe('AuthService', () => {
         },
         {
           provide: ConfigService,
-          useValue: createMock<ConfigService>()
+          useValue: createMock<ConfigService>(),
         },
         {
           provide: UserService,
-          useValue: createMock<UserService>()
-        }
+          useValue: createMock<UserService>(),
+        },
       ],
     }).compile();
 
@@ -70,18 +73,25 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should throw an UnauthorizedException if the User was not found', async () => {
       userService.findByEmail.mockResolvedValueOnce(null);
-      await expect(service.login(mocks.loginData[0])).rejects.toThrow(new UnauthorizedException('User not found'));
+      await expect(service.login(mocks.loginData[0])).rejects.toThrow(
+        new UnauthorizedException('User not found')
+      );
 
-      expect(userService.findByEmail).toHaveBeenCalledWith(mocks.loginData[0].email);
+      expect(userService.findByEmail).toHaveBeenCalledWith(
+        mocks.loginData[0].email
+      );
     });
 
     it('should throw an UnauthorizedException if the passwords dont match', async () => {
       jest.spyOn(service, 'comparePasswords').mockResolvedValueOnce(false);
 
-      await expect(service.login(mocks.loginData[0]))
-        .rejects.toThrow(new UnauthorizedException('Invalid credentials'));
+      await expect(service.login(mocks.loginData[0])).rejects.toThrow(
+        new UnauthorizedException('Invalid credentials')
+      );
 
-      expect(userService.findByEmail).toHaveBeenCalledWith(mocks.loginData[0].email);
+      expect(userService.findByEmail).toHaveBeenCalledWith(
+        mocks.loginData[0].email
+      );
     });
 
     it('should return id, refreshToken and accessToken', async () => {
@@ -98,19 +108,26 @@ describe('AuthService', () => {
         refreshToken: 'refreshToken',
       });
       expect(service.generateTokens).toHaveBeenCalled();
-      expect(userService.updateRefreshToken).toHaveBeenCalledWith(mocks.userData.id, 'refreshToken');
+      expect(userService.updateRefreshToken).toHaveBeenCalledWith(
+        mocks.userData.id,
+        'refreshToken'
+      );
     });
-  })
+  });
 
   describe('register', () => {
     it('should throw an ConflictException if User already exists', async () => {
       userService.findByEmail.mockResolvedValueOnce(mocks.userData);
 
-      await expect(service.register(mocks.registerData[0])).rejects.toThrow(new ConflictException('Email already exists'))
+      await expect(service.register(mocks.registerData[0])).rejects.toThrow(
+        new ConflictException('Email already exists')
+      );
     });
 
     it('should create a new User with hashed Password', async () => {
-      jest.spyOn(service, 'hashPassword').mockResolvedValueOnce('hashedPassword');
+      jest
+        .spyOn(service, 'hashPassword')
+        .mockResolvedValueOnce('hashedPassword');
       userService.findByEmail.mockResolvedValueOnce(null);
       userService.create.mockResolvedValueOnce(mocks.userData);
       jest.spyOn(service, 'generateTokens').mockReturnValue({
@@ -122,23 +139,33 @@ describe('AuthService', () => {
         userId: mocks.userData.id,
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
-      })
-      expect(userService.create).toHaveBeenCalledWith({...mocks.registerData[0], password: 'hashedPassword'});
+      });
+      expect(userService.create).toHaveBeenCalledWith({
+        ...mocks.registerData[0],
+        password: 'hashedPassword',
+      });
       expect(service.generateTokens).toHaveBeenCalled();
-      expect(userService.updateRefreshToken).toHaveBeenCalledWith(mocks.userData.id, 'refreshToken');
+      expect(userService.updateRefreshToken).toHaveBeenCalledWith(
+        mocks.userData.id,
+        'refreshToken'
+      );
     });
-  })
+  });
 
   describe('refreshTokens', () => {
     it('should throw a NotFoundException if the User was not found', async () => {
       userService.findById.mockResolvedValueOnce(null);
-      await expect(service.refreshTokens(1, 'token')).rejects.toThrow(new UnauthorizedException('User not found'));
+      await expect(service.refreshTokens(1, 'token')).rejects.toThrow(
+        new UnauthorizedException('User not found')
+      );
       expect(userService.findById).toHaveBeenCalledWith(1);
     });
 
     it('should throw an UnauthorizedException if refreshToken is not equal', async () => {
       userService.findById.mockResolvedValueOnce(mocks.userData);
-      await expect(service.refreshTokens(1, 'invalidToken')).rejects.toThrow(new UnauthorizedException('Invalid refreshToken'));
+      await expect(service.refreshTokens(1, 'invalidToken')).rejects.toThrow(
+        new UnauthorizedException('Invalid refreshToken')
+      );
       expect(userService.findById).toHaveBeenCalledWith(1);
     });
 
@@ -149,14 +176,19 @@ describe('AuthService', () => {
         refreshToken: 'refreshToken',
       });
 
-      await expect(service.refreshTokens(1, mocks.userData.refreshToken!)).resolves.toEqual({
+      await expect(
+        service.refreshTokens(1, mocks.userData.refreshToken!)
+      ).resolves.toEqual({
         userId: mocks.userData.id,
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       });
 
       expect(service.generateTokens).toHaveBeenCalled();
-      expect(userService.updateRefreshToken).toHaveBeenCalledWith(mocks.userData.id, 'refreshToken');
+      expect(userService.updateRefreshToken).toHaveBeenCalledWith(
+        mocks.userData.id,
+        'refreshToken'
+      );
     });
-  })
+  });
 });

@@ -1,5 +1,5 @@
-import { CreateMatchdayDto } from '../matchday/create-matchday.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateMatchdayDto } from '../matchday/create-matchday.dto';
 
 export class CreateTipSeasonDto {
   @ApiProperty()

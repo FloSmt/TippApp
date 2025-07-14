@@ -56,7 +56,6 @@ export default [
       'import/no-cycle': 'error',
       'import/no-useless-path-segments': 'warn',
       'import/newline-after-import': 'warn',
-      '@angular-eslint/component-selector': 'warn',
       'import/order': [
         'error',
         {

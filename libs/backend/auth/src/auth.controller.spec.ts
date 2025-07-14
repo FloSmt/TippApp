@@ -1,13 +1,15 @@
-import {AuthController} from './auth.controller';
-import {AuthService} from './auth.service';
-import {createMock, DeepMocked} from '@golevelup/ts-jest';
-import {JwtService} from '@nestjs/jwt';
-import {ConfigService} from '@nestjs/config';
-import {Test, TestingModule} from '@nestjs/testing';
-import {UserService} from '@tippapp/backend/user';
-import {AuthResponseDto} from '@tippapp/shared/data-access';
-import {LoginDto} from '@tippapp/shared/data-access';
-import {RegisterDto} from '@tippapp/shared/data-access';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserService } from '@tippapp/backend/user';
+import {
+  AuthResponseDto,
+  LoginDto,
+  RegisterDto,
+} from '@tippapp/shared/data-access';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -15,21 +17,29 @@ describe('AuthController', () => {
 
   const mocks = {
     get authResponse(): AuthResponseDto {
-      return {userId: 1, accessToken: 'accessToken', refreshToken: 'refreshToken'};
+      return {
+        userId: 1,
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      };
     },
 
     get loginData(): LoginDto {
-      return {email: 'test@email.de', password: 'password'}
+      return { email: 'test@email.de', password: 'password' };
     },
 
     get registerData(): RegisterDto {
-      return { username: 'username', email: 'test@email.de', password: 'password'}
+      return {
+        username: 'username',
+        email: 'test@email.de',
+        password: 'password',
+      };
     },
 
     get refreshData() {
-      return { userId: 1, refreshToken: 'refreshToken'}
-    }
-  }
+      return { userId: 1, refreshToken: 'refreshToken' };
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,12 +55,12 @@ describe('AuthController', () => {
         },
         {
           provide: ConfigService,
-          useValue: createMock<ConfigService>()
+          useValue: createMock<ConfigService>(),
         },
         {
           provide: UserService,
-          useValue: createMock<UserService>()
-        }
+          useValue: createMock<UserService>(),
+        },
       ],
     }).compile();
 
@@ -78,7 +88,10 @@ describe('AuthController', () => {
     authService.refreshTokens.mockResolvedValueOnce(mocks.authResponse);
     const result = await authController.refresh(mocks.refreshData);
 
-    expect(authService.refreshTokens).toHaveBeenCalledWith(mocks.refreshData.userId, mocks.refreshData.refreshToken);
+    expect(authService.refreshTokens).toHaveBeenCalledWith(
+      mocks.refreshData.userId,
+      mocks.refreshData.refreshToken
+    );
     expect(result).toEqual(mocks.authResponse);
   });
 });
