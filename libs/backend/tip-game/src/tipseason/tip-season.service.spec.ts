@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { TipSeason } from '@tippapp/backend/database';
-import { CreateTipSeasonDto } from '@tippapp/shared/data-access';
+import { CreateTipSeasonDto, TipSeason } from '@tippapp/shared/data-access';
 import { Repository } from 'typeorm';
 import { TipSeasonService } from './tip-season.service';
 import { MatchdayService } from '../matchday';

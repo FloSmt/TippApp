@@ -3,8 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
-import { LoginDto, RegisterDto } from '@tippapp/shared/data-access';
-import { User } from '@tippapp/backend/database';
+import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
 import { UserService } from '@tippapp/backend/user';
 import { AuthService } from './auth.service';
 

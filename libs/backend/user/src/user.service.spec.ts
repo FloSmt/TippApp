@@ -1,8 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Tipgroup, TipgroupUser, User } from '@tippapp/backend/database';
-import { RegisterDto } from '@tippapp/shared/data-access';
+import {
+  RegisterDto,
+  Tipgroup,
+  TipgroupUser,
+  User,
+} from '@tippapp/shared/data-access';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UserService } from './user.service';
 

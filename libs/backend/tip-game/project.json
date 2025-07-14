@@ -1,5 +1,5 @@
 {
-  "name": "tip-game",
+  "name": "backend-tip-game",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/backend/tip-game/src",
   "projectType": "library",

@@ -2,12 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Repository } from 'typeorm';
 import {
+  CreateTipgroupDto,
   Match,
   Matchday,
   Tipgroup,
   TipSeason,
   User,
-} from '@tippapp/backend/database';
+} from '@tippapp/shared/data-access';
 import {
   ApiService,
   GroupResponseMock,
@@ -16,7 +17,6 @@ import {
 } from '@tippapp/backend/api';
 import { UserService } from '@tippapp/backend/user';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { CreateTipgroupDto } from '@tippapp/shared/data-access';
 import { NotFoundException } from '@nestjs/common';
 import { TipgroupService } from './tipgroup.service';
 import { TipSeasonService } from '../tipseason';

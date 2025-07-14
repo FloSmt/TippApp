@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
   CreateTipgroupDto,
+  Tipgroup,
   TipgroupResponseDto,
 } from '@tippapp/shared/data-access';
-import { Tipgroup } from '@tippapp/backend/database';
 import { TipgroupService } from './tipgroup.service';
 import { TipgroupController } from './tipgroup.controller';
 

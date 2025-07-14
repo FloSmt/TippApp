@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Tipgroup } from '@tippapp/backend/database';
+import { Tipgroup } from '@tippapp/shared/data-access';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
