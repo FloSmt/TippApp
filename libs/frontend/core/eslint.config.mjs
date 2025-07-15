@@ -17,7 +17,7 @@ export default [
         },
       ],
       '@angular-eslint/component-selector': [
-        'error',
+        'warn',
         {
           type: 'element',
           prefix: 'lib',

@@ -1,6 +1,6 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {MatchService} from './match.service';
-import {CreateMatchDto} from "@tippapp/shared/data-access";
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateMatchDto } from '@tippapp/shared/data-access';
+import { MatchService } from './match.service';
 
 describe('MatchService', () => {
   let service: MatchService;
@@ -19,8 +19,8 @@ describe('MatchService', () => {
 
   it('should return a Match Entity', () => {
     const createMatchDtoMock = {
-      api_matchId: 2
-    } as CreateMatchDto
+      api_matchId: 2,
+    } as CreateMatchDto;
 
     const response = service.createMatch(createMatchDtoMock);
 

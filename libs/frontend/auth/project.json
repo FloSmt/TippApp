@@ -4,7 +4,7 @@
   "sourceRoot": "libs/frontend/auth/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:frontend", "type:lib"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

@@ -28,7 +28,8 @@
       "@tippapp/frontend/shared-components": [
         "libs/frontend/ui/shared-components/src/index.ts"
       ],
-      "@tippapp/shared/data-access": ["libs/shared/data-access/src/index.ts"]
+      "@tippapp/shared/data-access": ["libs/shared/data-access/src/index.ts"],
+      "@tippapp/backend/test-helper": ["libs/backend/test-helper/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

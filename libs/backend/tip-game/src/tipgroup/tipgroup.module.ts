@@ -1,11 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { TipgroupService } from './tipgroup.service';
-import { TipgroupController } from './tipgroup.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TipSeasonModule } from '../tipseason';
-import { Tipgroup } from '@tippapp/backend/database';
+import { Tipgroup } from '@tippapp/shared/data-access';
 import { ApiModule } from '@tippapp/backend/api';
 import { UserModule } from '@tippapp/backend/user';
+import { TipSeasonModule } from '../tipseason';
+import { TipgroupController } from './tipgroup.controller';
+import { TipgroupService } from './tipgroup.service';
 
 @Module({
   imports: [

@@ -1,9 +1,9 @@
 {
-  "name": "user",
+  "name": "backend-user",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/backend/user/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:backend", "type:lib"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

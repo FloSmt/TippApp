@@ -1,6 +1,13 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Tipgroup} from "./tipgroup.entity";
-import {Matchday} from "./matchday.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Tipgroup } from './tipgroup.entity';
+import { Matchday } from './matchday.entity';
 
 @Entity('seasons')
 export class TipSeason {

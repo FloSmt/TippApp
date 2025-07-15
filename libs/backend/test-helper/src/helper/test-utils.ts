@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import {INestApplication} from '@nestjs/common';
-import {API_ROUTES} from "./routes";
+import { INestApplication } from '@nestjs/common';
+import { API_ROUTES } from './routes';
 
 export class TestApi {
   private readonly app: INestApplication;
@@ -12,7 +12,7 @@ export class TestApi {
   async loginAndGetToken(email: string, password: string): Promise<string> {
     const response = await this.getAgent()
       .post(API_ROUTES.AUTH.LOGIN)
-      .send({email, password})
+      .send({ email, password });
 
     return response.body.accessToken;
   }
@@ -27,7 +27,7 @@ export class TestApi {
     return await this.getAgent()
       .post(API_ROUTES.TIPGROUP.CREATE)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(data)
+      .send(data);
   }
 
   private getAgent() {

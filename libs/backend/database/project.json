@@ -1,9 +1,9 @@
 {
-  "name": "database",
+  "name": "backend-database",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/backend/database/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:backend", "type:lib"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",

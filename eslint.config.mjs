@@ -7,7 +7,13 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/node_modules'],
+    ignores: [
+      '**/dist',
+      '**/node_modules',
+      '**/coverage',
+      '**/build',
+      '**/android',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -19,8 +25,40 @@ export default [
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
           depConstraints: [
             {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
+              sourceTag: 'scope:shared',
+              onlyDependOnLibsWithTags: ['scope:shared'],
+            },
+            {
+              sourceTag: 'scope:backend',
+              onlyDependOnLibsWithTags: ['scope:backend', 'scope:shared'],
+            },
+            {
+              sourceTag: 'scope:frontend',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:frontend'],
+            },
+            {
+              sourceTag: 'type:app',
+              onlyDependOnLibsWithTags: ['type:app', 'type:core'],
+            },
+            {
+              sourceTag: 'type:core',
+              onlyDependOnLibsWithTags: [
+                'type:lib',
+                'type:core',
+                'type:data-access',
+              ],
+            },
+            {
+              sourceTag: 'type:e2e',
+              onlyDependOnLibsWithTags: [
+                'type:data-access',
+                'type:app',
+                'type:testing',
+              ],
+            },
+            {
+              sourceTag: 'type:lib',
+              onlyDependOnLibsWithTags: ['type:data-access', 'type:lib'],
             },
           ],
         },
@@ -39,17 +77,28 @@ export default [
       '**/*.mjs',
     ],
     plugins: {
-      'import': importPlugin,
+      import: importPlugin,
     },
     rules: {
       ...ts.configs.recommended.rules,
-      '@typescript-eslint/no-require-imports': "off",
-      '@typescript-eslint/no-explicit-any': "warn",
-      '@typescript-eslint/no-unused-vars': "warn",
-      '@typescript-eslint/no-non-null-assertion': "warn",
-      'import/no-cycle': "error",
-      'import/no-useless-path-segments': "warn",
-      'import/newline-after-import': "warn",
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      'import/no-cycle': 'error',
+      'import/no-useless-path-segments': 'warn',
+      'import/newline-after-import': 'warn',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+        },
+      ],
     },
   },
 ];

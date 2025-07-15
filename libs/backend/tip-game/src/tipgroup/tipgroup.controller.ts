@@ -1,7 +1,17 @@
-import {Body, Controller, HttpCode, HttpStatus, Post, Request} from '@nestjs/common';
-import {TipgroupService} from './tipgroup.service';
-import {CreateTipgroupDto, TipgroupResponseDto,} from '@tippapp/shared/data-access';
-import {ApiBearerAuth, ApiOkResponse, ApiOperation} from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Request,
+} from '@nestjs/common';
+import {
+  CreateTipgroupDto,
+  TipgroupResponseDto,
+} from '@tippapp/shared/data-access';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { TipgroupService } from './tipgroup.service';
 
 @Controller('tipgroup')
 export class TipgroupController {
@@ -33,4 +43,3 @@ export class TipgroupController {
     };
   }
 }
-

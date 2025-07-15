@@ -1,8 +1,8 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {createMock, DeepMocked} from "@golevelup/ts-jest";
-import {UserController} from "./user.controller";
-import {UserService} from "./user.service";
-import {Tipgroup} from "@tippapp/backend/database";
+import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Tipgroup } from '@tippapp/shared/data-access';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -15,8 +15,8 @@ describe('UserController', () => {
         UserService,
         {
           provide: UserService,
-          useValue: createMock<UserService>()
-        }
+          useValue: createMock<UserService>(),
+        },
       ],
     }).compile();
 
@@ -37,14 +37,16 @@ describe('UserController', () => {
     tipgroup2.id = 102;
     tipgroup2.name = 'Group2';
 
-    const req = {user: {id: 1}};
+    const req = { user: { id: 1 } };
 
     userService.getTipGroupsByUserId.mockResolvedValue([tipgroup1, tipgroup2]);
     const result = await controller.getTipgroups(req);
 
     expect(userService.getTipGroupsByUserId).toHaveBeenCalledTimes(1);
     expect(userService.getTipGroupsByUserId).toHaveBeenCalledWith(req.user.id);
-    expect(result).toEqual([{name: tipgroup1.name, id: tipgroup1.id}, {name: tipgroup2.name, id: tipgroup2.id}]);
-
+    expect(result).toEqual([
+      { name: tipgroup1.name, id: tipgroup1.id },
+      { name: tipgroup2.name, id: tipgroup2.id },
+    ]);
   });
 });

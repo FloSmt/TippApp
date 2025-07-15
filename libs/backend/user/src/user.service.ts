@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Tipgroup, TipgroupUser, User } from '@tippapp/backend/database';
+import {
+  RegisterDto,
+  Tipgroup,
+  TipgroupUser,
+  User,
+} from '@tippapp/shared/data-access';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RegisterDto } from '@tippapp/shared/data-access';
 
 @Injectable()
 export class UserService {

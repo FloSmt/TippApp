@@ -1,11 +1,21 @@
-import {Injectable, InternalServerErrorException, NotFoundException,} from '@nestjs/common';
-import {CreateTipgroupDto, GroupResponse, MatchResponse,} from '@tippapp/shared/data-access';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {Tipgroup, TipgroupUser, User} from '@tippapp/backend/database';
-import {ApiService} from '@tippapp/backend/api';
-import {TipSeasonService} from '../tipseason';
-import {UserService} from '@tippapp/backend/user';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateTipgroupDto,
+  GroupResponse,
+  MatchResponse,
+  Tipgroup,
+  TipgroupUser,
+  User,
+} from '@tippapp/shared/data-access';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ApiService } from '@tippapp/backend/api';
+import { UserService } from '@tippapp/backend/user';
+import { TipSeasonService } from '../tipseason';
 
 @Injectable()
 export class TipgroupService {
@@ -28,7 +38,7 @@ export class TipgroupService {
 
     await this.validateAndGetAvailableLeagues(createTipgroupDto.leagueShortcut);
 
-    const {matchDays, matches} = await this.getApiMatchData(
+    const { matchDays, matches } = await this.getApiMatchData(
       createTipgroupDto.leagueShortcut,
       createTipgroupDto.currentSeason
     );
@@ -62,7 +72,9 @@ export class TipgroupService {
       });
 
       // Save new TipSeason
-      const savedTipSeason = await this.TipSeasonService.saveTipSeason(newTipSeason);
+      const savedTipSeason = await this.TipSeasonService.saveTipSeason(
+        newTipSeason
+      );
       newTipgroup.seasons.push(savedTipSeason);
 
       return this.tipgroupRepository.save(newTipgroup);
@@ -71,8 +83,12 @@ export class TipgroupService {
     throw new InternalServerErrorException();
   }
 
-  private async validateAndGetAvailableLeagues(leagueShortcut: string): Promise<void> {
-    const availableLeagues = (await this.apiService.getAvailableLeagues()).map(league => league.leagueShortcut);
+  private async validateAndGetAvailableLeagues(
+    leagueShortcut: string
+  ): Promise<void> {
+    const availableLeagues = (await this.apiService.getAvailableLeagues()).map(
+      (league) => league.leagueShortcut
+    );
     if (!availableLeagues.includes(leagueShortcut)) {
       throw new NotFoundException('LeagueShortcut was not found');
     }
@@ -81,18 +97,27 @@ export class TipgroupService {
   private async getApiMatchData(
     leagueShortcut: string,
     currentSeason: number
-  ): Promise<{ matchDays: GroupResponse[], matches: MatchResponse[] }> {
-    const matchDaysFromApi: GroupResponse[] = await this.apiService.getAvailableGroups(leagueShortcut, currentSeason);
-    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchData(leagueShortcut, currentSeason);
+  ): Promise<{ matchDays: GroupResponse[]; matches: MatchResponse[] }> {
+    const matchDaysFromApi: GroupResponse[] =
+      await this.apiService.getAvailableGroups(leagueShortcut, currentSeason);
+    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchData(
+      leagueShortcut,
+      currentSeason
+    );
 
     if (!matchDaysFromApi || !matchesFromApi) {
-      throw new InternalServerErrorException('Failed to retrieve match data from external API.');
+      throw new InternalServerErrorException(
+        'Failed to retrieve match data from external API.'
+      );
     }
-    return {matchDays: matchDaysFromApi, matches: matchesFromApi};
+    return { matchDays: matchDaysFromApi, matches: matchesFromApi };
   }
 
-  private createNewTipgroupEntity(name: string, passwordHash?: string): Tipgroup {
-    const newTipgroup = this.tipgroupRepository.create({name, passwordHash});
+  private createNewTipgroupEntity(
+    name: string,
+    passwordHash?: string
+  ): Tipgroup {
+    const newTipgroup = this.tipgroupRepository.create({ name, passwordHash });
     newTipgroup.users = [];
     newTipgroup.seasons = [];
     return newTipgroup;

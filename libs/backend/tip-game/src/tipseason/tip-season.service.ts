@@ -1,9 +1,8 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {MatchdayService} from '../matchday';
-import {TipSeason} from '@tippapp/backend/database';
-import {CreateTipSeasonDto} from '@tippapp/shared/data-access';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateTipSeasonDto, TipSeason } from '@tippapp/shared/data-access';
+import { MatchdayService } from '../matchday';
 
 @Injectable()
 export class TipSeasonService {

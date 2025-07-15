@@ -1,6 +1,12 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {TipgroupUser} from "./tipgroupUser.entity";
-import {TipSeason} from "./tipSeason.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { TipgroupUser } from './tipgroupUser.entity';
+import { TipSeason } from './tipSeason.entity';
 
 @Entity('tipgroups')
 export class Tipgroup {
