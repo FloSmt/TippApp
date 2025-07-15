@@ -7,4 +7,4 @@ For Frontend-UI-tests the project uses **Playwright**.
 
 ## Current Nx-Graph:
 ![Nx-Graph](/assets/graph.png)
-(17.07.2024)
+(15.07.2024)
