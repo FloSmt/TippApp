@@ -42,7 +42,23 @@ export default [
             },
             {
               sourceTag: 'type:core',
-              onlyDependOnLibsWithTags: ['type:lib', 'type:core'],
+              onlyDependOnLibsWithTags: [
+                'type:lib',
+                'type:core',
+                'type:data-access',
+              ],
+            },
+            {
+              sourceTag: 'type:e2e',
+              onlyDependOnLibsWithTags: [
+                'type:data-access',
+                'type:app',
+                'type:testing',
+              ],
+            },
+            {
+              sourceTag: 'type:lib',
+              onlyDependOnLibsWithTags: ['type:data-access', 'type:lib'],
             },
           ],
         },

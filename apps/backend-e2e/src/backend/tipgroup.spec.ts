@@ -11,13 +11,13 @@ import {
   User,
 } from '@tippapp/shared/data-access';
 import {
+  AVAILABLE_GROUPS_MOCK,
+  MATCHDATA_MOCK,
   registerMultipleUsers,
   setupE2ETestEnvironment,
-} from './helper/setup-tests';
-import { AVAILABLE_GROUPS_MOCK } from './api-mocks/getAvailableGroups.mock';
-import { MATCHDATA_MOCK } from './api-mocks/getMatchData.mock';
-import { setupMockApi } from './helper/mockserver.helper';
-import { TestApi } from './helper/test-utils';
+  setupMockApi,
+  TestApi,
+} from '@tippapp/backend/test-helper';
 
 describe('TipgroupController (e2e)', () => {
   let app: INestApplication;

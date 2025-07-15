@@ -1,0 +1,21 @@
+{
+  "name": "backend-test-helper",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/test-helper/src",
+  "projectType": "library",
+  "tags": ["scope:backend", "type:testing"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/test-helper",
+        "main": "libs/backend/test-helper/src/index.ts",
+        "tsConfig": "libs/backend/test-helper/tsconfig.lib.json",
+        "assets": ["libs/backend/test-helper/*.md"],
+        "format": ["cjs"],
+        "generatePackageJson": true
+      }
+    }
+  }
+}

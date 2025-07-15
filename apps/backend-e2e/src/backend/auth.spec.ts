@@ -3,8 +3,10 @@ import request from 'supertest';
 import * as bcrypt from 'bcrypt';
 import { DataSource, Repository } from 'typeorm';
 import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
-import { setupE2ETestEnvironment } from './helper/setup-tests';
-import { API_ROUTES } from './helper/routes';
+import {
+  API_ROUTES,
+  setupE2ETestEnvironment,
+} from '@tippapp/backend/test-helper';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;

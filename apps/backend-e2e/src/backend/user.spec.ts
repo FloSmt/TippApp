@@ -13,9 +13,9 @@ import {
 import {
   registerMultipleUsers,
   setupE2ETestEnvironment,
-} from './helper/setup-tests';
-import { setupMockApi } from './helper/mockserver.helper';
-import { TestApi } from './helper/test-utils';
+  setupMockApi,
+  TestApi,
+} from '@tippapp/backend/test-helper';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
