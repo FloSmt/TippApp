@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '@nestjs/jwt';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
-import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
-import { UserService } from '@tippapp/backend/user';
-import { AuthService } from './auth.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {JwtService} from '@nestjs/jwt';
+import {createMock, DeepMocked} from '@golevelup/ts-jest';
+import {ConfigService} from '@nestjs/config';
+import {ConflictException, UnauthorizedException} from '@nestjs/common';
+import {LoginDto, RegisterDto, User} from '@tippapp/shared/data-access';
+import {UserService} from '@tippapp/backend/user';
+import {AuthService} from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -67,6 +67,11 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     userService = module.get(UserService);
+
+    jest.spyOn(service, 'generateTokens').mockReturnValue({
+      accessToken: 'newAccessToken',
+      refreshToken: 'newRefreshToken',
+    });
   });
 
   describe('login', () => {
@@ -93,23 +98,18 @@ describe('AuthService', () => {
       );
     });
 
-    it('should return id, refreshToken and accessToken', async () => {
+    it('should return refreshToken and accessToken', async () => {
       userService.findByEmail.mockResolvedValueOnce(mocks.userData);
       jest.spyOn(service, 'comparePasswords').mockResolvedValueOnce(true);
-      jest.spyOn(service, 'generateTokens').mockReturnValue({
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
-      });
 
       await expect(service.login(mocks.loginData[1])).resolves.toEqual({
-        userId: mocks.userData.id,
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
+        accessToken: 'newAccessToken',
+        refreshToken: 'newRefreshToken',
       });
       expect(service.generateTokens).toHaveBeenCalled();
       expect(userService.updateRefreshToken).toHaveBeenCalledWith(
         mocks.userData.id,
-        'refreshToken'
+        'newRefreshToken'
       );
     });
   });
@@ -121,6 +121,10 @@ describe('AuthService', () => {
       await expect(service.register(mocks.registerData[0])).rejects.toThrow(
         new ConflictException('Email already exists')
       );
+
+      expect(userService.findByEmail).toHaveBeenCalledWith(
+        mocks.registerData[0].email
+      );
     });
 
     it('should create a new User with hashed Password', async () => {
@@ -129,64 +133,48 @@ describe('AuthService', () => {
         .mockResolvedValueOnce('hashedPassword');
       userService.findByEmail.mockResolvedValueOnce(null);
       userService.create.mockResolvedValueOnce(mocks.userData);
-      jest.spyOn(service, 'generateTokens').mockReturnValue({
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
-      });
 
       await expect(service.register(mocks.registerData[0])).resolves.toEqual({
-        userId: mocks.userData.id,
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
+        accessToken: 'newAccessToken',
+        refreshToken: 'newRefreshToken',
       });
+
       expect(userService.create).toHaveBeenCalledWith({
         ...mocks.registerData[0],
         password: 'hashedPassword',
       });
+
       expect(service.generateTokens).toHaveBeenCalled();
       expect(userService.updateRefreshToken).toHaveBeenCalledWith(
         mocks.userData.id,
-        'refreshToken'
+        'newRefreshToken'
       );
     });
   });
 
   describe('refreshTokens', () => {
-    it('should throw a NotFoundException if the User was not found', async () => {
-      userService.findById.mockResolvedValueOnce(null);
-      await expect(service.refreshTokens(1, 'token')).rejects.toThrow(
-        new UnauthorizedException('User not found')
-      );
-      expect(userService.findById).toHaveBeenCalledWith(1);
-    });
-
     it('should throw an UnauthorizedException if refreshToken is not equal', async () => {
-      userService.findById.mockResolvedValueOnce(mocks.userData);
-      await expect(service.refreshTokens(1, 'invalidToken')).rejects.toThrow(
+      userService.findByRefreshToken.mockResolvedValueOnce(null);
+      await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
         new UnauthorizedException('Invalid refreshToken')
       );
-      expect(userService.findById).toHaveBeenCalledWith(1);
+      expect(userService.findByRefreshToken).toHaveBeenCalledWith('invalidToken');
     });
 
     it('should generate new Tokens', async () => {
-      userService.findById.mockResolvedValueOnce(mocks.userData);
-      jest.spyOn(service, 'generateTokens').mockReturnValue({
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
-      });
+      userService.findByRefreshToken.mockResolvedValueOnce(mocks.userData);
 
       await expect(
-        service.refreshTokens(1, mocks.userData.refreshToken!)
+        service.refreshTokens(mocks.userData.refreshToken)
       ).resolves.toEqual({
-        userId: mocks.userData.id,
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
+        accessToken: 'newAccessToken',
+        refreshToken: 'newRefreshToken',
       });
 
       expect(service.generateTokens).toHaveBeenCalled();
       expect(userService.updateRefreshToken).toHaveBeenCalledWith(
         mocks.userData.id,
-        'refreshToken'
+        'newRefreshToken'
       );
     });
   });

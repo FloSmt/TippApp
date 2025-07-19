@@ -1,7 +1,7 @@
 import {ConflictException, Injectable, UnauthorizedException,} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {UserService} from '@tippapp/backend/user';
-import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
 import {ConfigService} from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 
@@ -13,7 +13,7 @@ export class AuthService {
     private readonly configService: ConfigService
   ) {}
 
-  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+  async login(loginDto: LoginDto): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.userService.findByEmail(loginDto.email);
 
     if (!user) {
@@ -32,13 +32,12 @@ export class AuthService {
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
-      userId: user.id,
       accessToken: newTokens.accessToken,
       refreshToken: newTokens.refreshToken,
     };
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
+  async register(registerDto: RegisterDto): Promise<{ refreshToken: string; accessToken: string }> {
     const userAlreadyExists =
       (await this.userService.findByEmail(registerDto.email)) != null;
 
@@ -54,23 +53,17 @@ export class AuthService {
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
-      userId: user.id,
       accessToken: newTokens.accessToken,
       refreshToken: newTokens.refreshToken,
     };
   }
 
   async refreshTokens(
-    userId: number,
     refreshToken: string
-  ): Promise<AuthResponseDto> {
-    const user = await this.userService.findById(userId);
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const user = await this.userService.findByRefreshToken(refreshToken);
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-
-    if (user.refreshToken !== refreshToken) {
       throw new UnauthorizedException('Invalid refreshToken');
     }
 
@@ -81,7 +74,6 @@ export class AuthService {
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
-      userId: user.id,
       accessToken: newTokens.accessToken,
       refreshToken: newTokens.refreshToken,
     };

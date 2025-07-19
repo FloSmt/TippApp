@@ -7,11 +7,13 @@ import {Logger, ValidationPipe} from '@nestjs/common';
 import {NestFactory} from '@nestjs/core';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {AppModule} from "@tippapp/backend/core";
+import cookieParser from "cookie-parser";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('TippApp - Backend API')

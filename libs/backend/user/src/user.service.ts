@@ -1,12 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import {
-  RegisterDto,
-  Tipgroup,
-  TipgroupUser,
-  User,
-} from '@tippapp/shared/data-access';
-import { InjectRepository } from '@nestjs/typeorm';
+import {Injectable} from '@nestjs/common';
+import {Repository} from 'typeorm';
+import {RegisterDto, Tipgroup, TipgroupUser, User,} from '@tippapp/shared/data-access';
+import {InjectRepository} from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
@@ -26,6 +21,10 @@ export class UserService {
 
   async findById(id: number): Promise<User | null> {
     return this.userRepository.findOneBy({ id });
+  }
+
+  async findByRefreshToken(refreshToken: string): Promise<User | null> {
+    return this.userRepository.findOneBy({refreshToken});
   }
 
   async findByEmail(email: string): Promise<User | null> {
