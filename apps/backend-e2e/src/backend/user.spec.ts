@@ -1,32 +1,16 @@
-import { INestApplication } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import {
-  CreateTipgroupDto,
-  Match,
-  Matchday,
-  RegisterDto,
-  Tipgroup,
-  TipgroupUser,
-  TipSeason,
-  User,
-} from '@tippapp/shared/data-access';
-import {
-  registerMultipleUsers,
-  setupE2ETestEnvironment,
-  setupMockApi,
-  TestApi,
-} from '@tippapp/backend/test-helper';
+import {INestApplication} from '@nestjs/common';
+import {DataSource} from 'typeorm';
+import {CreateTipgroupDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {setupE2ETestEnvironment, setupMockApi, TipgroupFactory, UserFactory,} from '@tippapp/backend/test-helper';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
-  let testApi: TestApi;
-
-  let authToken: string;
-  let testUser: User[];
+  let userFactory: UserFactory;
+  let tipgroupFactory: TipgroupFactory;
 
   const mocks = {
-    get createTipgroupData(): CreateTipgroupDto[] {
+    get createTipGroupData(): CreateTipgroupDto[] {
       return [
         {
           name: 'Tipgroup1',
@@ -62,41 +46,40 @@ describe('UserController (e2e)', () => {
     const setup = await setupE2ETestEnvironment();
     app = setup.app;
     dataSource = setup.dataSource;
-    testApi = setup.testApi;
-
-    testUser = await registerMultipleUsers(
-      mocks.registerData,
-      setup.userRepository,
-      setup.authService
-    );
-    authToken = await testApi.loginAndGetToken(
-      mocks.registerData[0].email,
-      mocks.registerData[0].password
-    );
+    userFactory = new UserFactory(app, dataSource);
+    tipgroupFactory = new TipgroupFactory(app, dataSource);
   });
 
   describe('/tipgroups (GET)', () => {
+    let accessTokenFirstUser: string;
     beforeEach(async () => {
       await setupMockApi({
         matchDataResponse: [],
         availableGroupsResponse: [],
       });
+
+      // Create two test users
+      await userFactory.createUserInDatabase(mocks.registerData[0]);
+      await userFactory.createUserInDatabase(mocks.registerData[1]);
+
+      // Login to the first user and get the access token
+      accessTokenFirstUser = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
     });
 
     it('should return an empty list of tipgroups for a new user', async () => {
-      const response = await testApi.getTipgroups(authToken);
+      const response = await userFactory.getTipGroups(accessTokenFirstUser);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
     });
 
     it('should return correct Lists for two users after creating tipgroups', async () => {
-      // Create 2 Tipgroups for the User
-      await testApi.createTipgroup(mocks.createTipgroupData[0], authToken);
-      await testApi.createTipgroup(mocks.createTipgroupData[1], authToken);
+      // Create 2 Tipgroups for the User1
+      await tipgroupFactory.createTipGroup(accessTokenFirstUser, mocks.createTipGroupData[0]);
+      await tipgroupFactory.createTipGroup(accessTokenFirstUser, mocks.createTipGroupData[1]);
 
       // Check if User has 2 tipgroups
-      let response = await testApi.getTipgroups(authToken);
+      let response = await userFactory.getTipGroups(accessTokenFirstUser);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([
@@ -105,12 +88,9 @@ describe('UserController (e2e)', () => {
       ]);
 
       //Login to other User
-      const authTokenForSecondUser = await testApi.loginAndGetToken(
-        mocks.registerData[1].email,
-        mocks.registerData[1].password
-      );
+      const authTokenForSecondUser = await userFactory.loginUser(mocks.registerData[1].email, mocks.registerData[1].password);
 
-      response = await testApi.getTipgroups(authTokenForSecondUser);
+      response = await userFactory.getTipGroups(authTokenForSecondUser);
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
     });
@@ -121,11 +101,6 @@ describe('UserController (e2e)', () => {
   });
 
   afterEach(async () => {
-    // Clear Database Table after Test
-    await dataSource.createQueryBuilder().delete().from(TipgroupUser).execute();
-    await dataSource.createQueryBuilder().delete().from(Tipgroup).execute();
-    await dataSource.createQueryBuilder().delete().from(TipSeason).execute();
-    await dataSource.createQueryBuilder().delete().from(Matchday).execute();
-    await dataSource.createQueryBuilder().delete().from(Match).execute();
+    await userFactory.clearDatabase();
   });
 });

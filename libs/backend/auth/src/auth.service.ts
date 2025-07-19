@@ -22,7 +22,7 @@ export class AuthService {
 
     const isPasswordMatch = await this.comparePasswords(
       loginDto.password,
-      user.password!
+      user.password
     );
     if (!isPasswordMatch) {
       throw new UnauthorizedException('Invalid credentials');
@@ -63,7 +63,7 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.userService.findByRefreshToken(refreshToken);
 
-    if (!user) {
+    if (!user || !refreshToken) {
       throw new UnauthorizedException('Invalid refreshToken');
     }
 
