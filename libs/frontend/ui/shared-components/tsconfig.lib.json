@@ -5,6 +5,7 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
+    "skipLibCheck": false,
     "types": []
   },
   "exclude": [
@@ -13,5 +14,7 @@
     "jest.config.ts",
     "src/**/*.test.ts"
   ],
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts"
+  ]
 }

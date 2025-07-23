@@ -7,11 +7,15 @@ ion-input {
   width: 100%;
 }
 
+ion-content {
+  --keyboard-offset: 0 !important;
+}
+
 .center-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80%;
+  height: 100%;
   width: 100%;
 
   div {
@@ -24,7 +28,7 @@ ion-input {
   }
 
   #register-button {
-    margin-top: 4rem;
+    margin-top: 5rem;
     margin-bottom: 2rem;
   }
 

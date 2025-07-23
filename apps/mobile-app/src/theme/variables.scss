@@ -224,6 +224,11 @@ ion-input {
     }
   }
 
+  .input-outline-container {
+    background: var(--ion-background-color-step-50);
+    border-radius: var(--ion-border-radius-m);
+  }
+
   .input-bottom {
     position: absolute;
   }

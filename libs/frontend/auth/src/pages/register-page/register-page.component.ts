@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import {
@@ -11,6 +11,9 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { addIcons } from 'ionicons';
+import { mail } from 'ionicons/icons';
+import { AuthStore } from '@tippapp/frontend/core';
 
 @Component({
   selector: 'lib-register-page',
@@ -19,6 +22,8 @@ import {
   styleUrl: './register-page.component.scss',
 })
 export class RegisterPageComponent {
+  readonly authStore = inject(AuthStore);
+
   registerForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
@@ -35,9 +40,19 @@ export class RegisterPageComponent {
     ]),
   });
 
+  isLoading = this.authStore.isLoading;
+
+  constructor() {
+    addIcons({ mail });
+    effect(() => {
+      console.log('AuthStore state changed:', this.isLoading());
+    });
+  }
+
   onRegister() {
     // Handle registration logic here
     console.log('Registration form submitted');
+    this.authStore.registerNewUser();
   }
 
   disableRegistration(): boolean {
