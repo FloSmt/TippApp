@@ -46,7 +46,14 @@
           id="register-button"
           color="primary"
           size="large"
-          expand="block">Registrieren
+          expand="block">
+          <ion-label>
+            @if (isLoading()) {
+              <ion-spinner></ion-spinner>
+            } @else {
+              Registrieren
+            }
+          </ion-label>
         </ion-button>
         <div class="link-to-login">
           <a>Zur Anmeldung</a>

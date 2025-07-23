@@ -1,6 +1,5 @@
 import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import {
   AbstractControl,
   FormControl,
@@ -13,11 +12,29 @@ import {
 } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { mail } from 'ionicons/icons';
-import { AuthStore } from '@tippapp/frontend/core';
+import { AuthStore } from '@tippapp/utils';
+import {
+  IonButton,
+  IonContent,
+  IonInput,
+  IonInputPasswordToggle,
+  IonLabel,
+  IonSpinner,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'lib-register-page',
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    IonLabel,
+    IonSpinner,
+    IonButton,
+    IonInputPasswordToggle,
+    IonInput,
+    IonContent,
+  ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
 })
@@ -56,7 +73,7 @@ export class RegisterPageComponent {
   }
 
   disableRegistration(): boolean {
-    return this.registerForm.invalid;
+    return this.registerForm.invalid || this.isLoading();
   }
 
   getErrorMessage(controlName: string): string {
