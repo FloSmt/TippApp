@@ -4,7 +4,7 @@ import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
 import {patchState, signalStore, withComputed, withMethods, withState,} from '@ngrx/signals';
 import {RegisterDto} from "@tippapp/shared/data-access";
 import {AxiosError} from "axios";
-import {AuthService} from '../services';
+import {AuthService} from '../auth';
 
 type AuthState = {
   isLoading: boolean;
@@ -34,6 +34,14 @@ export const AuthStore = signalStore(
     registrationFailure: (error: string) => {
       patchState(store, {isLoading: false, error});
     },
+
+    refreshSuccess: (accessToken: string) => {
+      patchState(store, {isLoading: false, accessToken});
+    },
+
+    refreshFailure: (error: string) => {
+      patchState(store, {isLoading: false, error});
+    },
   })),
 
   withMethods((store, authService = inject(AuthService)) => ({
@@ -51,5 +59,20 @@ export const AuthStore = signalStore(
         ),
       )
     ),
-  }))
+
+    refreshAccessToken: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, {isLoading: true, error: null})),
+        switchMap(() =>
+          authService.refreshAccessToken().pipe(
+            tap(response => store.refreshSuccess(response.accessToken)),
+            catchError((err: AxiosError) => {
+              store.refreshFailure(err.message);
+              return EMPTY;
+            })
+          )
+        )
+      )
+    )
+  })),
 );

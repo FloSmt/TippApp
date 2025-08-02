@@ -13,7 +13,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-  app.enableCors();
+  app.enableCors({
+    credentials: true,
+    origin: [
+      'http://localhost:4200',        // Angular Entwicklungs-Server
+      'http://localhost',             // Ionic Android App (Capacitor)
+      'capacitor://localhost',        // Ionic iOS App (Capacitor)
+      // Weitere Produktions-Ursprünge (deine Live-Domains)
+    ],
+  });
   app.use(cookieParser());
 
   const config = new DocumentBuilder()

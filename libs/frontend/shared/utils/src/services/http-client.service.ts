@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
-import {Router} from '@angular/router';
 import {defer, map, Observable} from "rxjs";
 
 @Injectable({
@@ -9,7 +8,7 @@ import {defer, map, Observable} from "rxjs";
 export class HttpClientService {
   private axiosInstance: AxiosInstance;
 
-  constructor(private router: Router) {
+  constructor() {
     this.axiosInstance = axios.create({
       baseURL: 'http://localhost:3000/api',
       timeout: 10000,
