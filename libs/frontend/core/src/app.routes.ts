@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export const routes: Routes = [
   {
@@ -9,13 +9,12 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'register',
-    loadComponent: () =>
-      import('@tippapp/frontend/auth').then((m) => m.RegisterPageComponent),
+    path: 'auth',
+    loadChildren: () => import('@tippapp/frontend/auth').then((m) => m.routes)
   },
   {
-    path: 'login',
-    loadComponent: () =>
-      import('@tippapp/frontend/auth').then((m) => m.RegisterPageComponent),
-  },
+    path: '**',
+    redirectTo: '/',
+    pathMatch: "full"
+  }
 ];

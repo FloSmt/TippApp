@@ -1,13 +1,17 @@
-import { Injectable } from '@angular/core';
-import { AuthResponseDto } from '@tippapp/shared/data-access';
-import { Observable, of } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {AuthResponseDto, RegisterDto} from '@tippapp/shared/data-access';
+import {Observable} from 'rxjs';
+import {HttpClientService} from "./http-client.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  registerNewUser(): Observable<AuthResponseDto> {
-    return of();
-    // TODO: Implement the logic to register a new user
+
+  constructor(public httpClient: HttpClientService) {
+  }
+
+  registerNewUser(registerDto: RegisterDto): Observable<AuthResponseDto> {
+    return this.httpClient.post<AuthResponseDto>('auth/register', registerDto);
   }
 }

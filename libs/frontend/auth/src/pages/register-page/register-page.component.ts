@@ -1,5 +1,5 @@
-import { Component, effect, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, effect, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {
   AbstractControl,
   FormControl,
@@ -10,9 +10,9 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { addIcons } from 'ionicons';
-import { mail } from 'ionicons/icons';
-import { AuthStore } from '@tippapp/utils';
+import {addIcons} from 'ionicons';
+import {mail} from 'ionicons/icons';
+import {AuthStore} from '@tippapp/utils';
 import {
   IonButton,
   IonContent,
@@ -21,6 +21,7 @@ import {
   IonLabel,
   IonSpinner,
 } from '@ionic/angular/standalone';
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'lib-register-page',
@@ -34,6 +35,7 @@ import {
     IonInputPasswordToggle,
     IonInput,
     IonContent,
+    RouterLink,
   ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
@@ -59,17 +61,27 @@ export class RegisterPageComponent {
 
   isLoading = this.authStore.isLoading;
 
-  constructor() {
-    addIcons({ mail });
+  constructor(public router: Router) {
+    addIcons({mail});
     effect(() => {
-      console.log('AuthStore state changed:', this.isLoading());
+      if (this.authStore.isAuthenticated()) {
+        this.router.navigate(['/']);
+      }
     });
   }
 
   onRegister() {
-    // Handle registration logic here
-    console.log('Registration form submitted');
-    this.authStore.registerNewUser();
+    const username = this.registerForm.get('username')?.value;
+    const email = this.registerForm.get('email')?.value;
+    const password = this.registerForm.get('password')?.value;
+
+    if (!this.registerForm.invalid && username && email && password) {
+      this.authStore.registerNewUser({
+        registerDto: {
+          username, email, password
+        }
+      });
+    }
   }
 
   disableRegistration(): boolean {
@@ -100,7 +112,7 @@ export class RegisterPageComponent {
       if (!formGroup) return null;
       const password = formGroup.get('password')?.value;
       const confirmPassword = control.value;
-      return password !== confirmPassword ? { passwordMismatch: true } : null;
+      return password !== confirmPassword ? {passwordMismatch: true} : null;
     };
   }
 }

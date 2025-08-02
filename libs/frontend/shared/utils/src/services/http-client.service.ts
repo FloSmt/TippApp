@@ -1,14 +1,13 @@
-import { inject, Injectable } from '@angular/core';
-import axios, { AxiosInstance } from 'axios';
-import { Router } from '@angular/router';
-import { AuthStore } from '../stores';
+import {Injectable} from '@angular/core';
+import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
+import {Router} from '@angular/router';
+import {defer, map, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpClientService {
   private axiosInstance: AxiosInstance;
-  private authStore = inject(AuthStore);
 
   constructor(private router: Router) {
     this.axiosInstance = axios.create({
@@ -20,5 +19,35 @@ export class HttpClientService {
     });
 
     // this.setupInterceptors();
+  }
+
+  get<T>(url: string, config?: AxiosRequestConfig): Observable<T | void> {
+    return defer(() => this.axiosInstance.get<T>(url, config)).pipe(
+      map(result => result.data)
+    );
+  }
+
+  post<T>(url: string, data?: object, config?: AxiosRequestConfig): Observable<T> {
+    return defer(() => this.axiosInstance.post<T>(url, data, config)).pipe(
+      map(result => result.data)
+    );
+  }
+
+  put<T>(url: string, data?: object, config?: AxiosRequestConfig): Observable<T> {
+    return defer(() => this.axiosInstance.delete<T>(url, config)).pipe(
+      map(result => result.data)
+    );
+  }
+
+  delete<T>(url: string, config?: AxiosRequestConfig): Observable<T> {
+    return defer(() => this.axiosInstance.delete<T>(url, config)).pipe(
+      map(result => result.data)
+    );
+  }
+
+  patch<T>(url: string, data?: object, config?: AxiosRequestConfig): Observable<T> {
+    return defer(() => this.axiosInstance.patch<T>(url, data, config)).pipe(
+      map(result => result.data)
+    );
   }
 }
