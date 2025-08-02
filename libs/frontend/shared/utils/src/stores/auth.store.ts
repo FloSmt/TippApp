@@ -2,7 +2,7 @@ import {computed, inject} from '@angular/core';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
 import {patchState, signalStore, withComputed, withMethods, withState,} from '@ngrx/signals';
-import {RegisterDto} from "@tippapp/shared/data-access";
+import {LoginDto, RegisterDto} from "@tippapp/shared/data-access";
 import {AxiosError} from "axios";
 import {AuthService} from '../auth';
 
@@ -35,6 +35,14 @@ export const AuthStore = signalStore(
       patchState(store, {isLoading: false, error});
     },
 
+    loginSuccess: (accessToken: string) => {
+      patchState(store, {isLoading: false, accessToken});
+    },
+
+    loginFailure: (error: string) => {
+      patchState(store, {isLoading: false, error});
+    },
+
     refreshSuccess: (accessToken: string) => {
       patchState(store, {isLoading: false, accessToken});
     },
@@ -53,6 +61,21 @@ export const AuthStore = signalStore(
             tap(response => store.registrationSuccess(response.accessToken)),
             catchError((err: AxiosError) => {
               store.registrationFailure(err.message);
+              return EMPTY;
+            })
+          ),
+        ),
+      )
+    ),
+
+    loginUser: rxMethod<{ loginDto: LoginDto }>(
+      pipe(
+        tap(() => patchState(store, {isLoading: true, error: null})),
+        switchMap(({loginDto}) =>
+          authService.loginUser(loginDto).pipe(
+            tap(response => store.loginSuccess(response.accessToken)),
+            catchError((err: AxiosError) => {
+              store.loginFailure(err.message);
               return EMPTY;
             })
           ),

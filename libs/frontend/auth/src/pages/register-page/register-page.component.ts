@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, effect, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
   AbstractControl,
@@ -63,6 +63,11 @@ export class RegisterPageComponent {
 
   constructor(public router: Router) {
     addIcons({mail});
+    effect(() => {
+      if (this.authStore.isAuthenticated()) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   onRegister() {

@@ -1,1 +1,47 @@
-<p>login-page works!</p>
+<ion-content class="ion-padding">
+  <div class="center-content">
+    <div>
+      <h1>Login</h1>
+      <form [formGroup]="registerForm" class="form-input">
+        <ion-input
+          [errorText]="getErrorMessage('email')"
+          autofocus="true"
+          fill="outline"
+          formControlName="email"
+          label="Email"
+          label-placement="floating"
+          type="email">
+        </ion-input>
+        <ion-input
+          [errorText]="getErrorMessage('password')"
+          fill="outline"
+          formControlName="password"
+          label="Password"
+          label-placement="floating"
+          type="password"
+        >
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-button
+          (click)="onLogin()"
+          [disabled]="disableLogin()"
+          color="primary"
+          expand="block"
+          id="login-button"
+          size="large">
+          <ion-label>
+            @if (isLoading()) {
+              <ion-spinner></ion-spinner>
+            } @else {
+              Anmelden
+            }
+          </ion-label>
+        </ion-button>
+        <div class="link-to-register">
+          <a [routerLink]="'/auth/register'">Account erstellen</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</ion-content>
+
