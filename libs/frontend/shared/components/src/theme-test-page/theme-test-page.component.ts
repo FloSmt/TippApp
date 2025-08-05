@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, signal, WritableSignal} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {
   IonButton,
   IonButtons,
@@ -26,17 +26,11 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  add,
-  close,
-  library,
-  personCircle,
-  playCircle,
-  radio,
-  search,
-} from 'ionicons/icons';
-import { ReactiveFormsModule } from '@angular/forms';
+import {addIcons} from 'ionicons';
+import {add, close, library, personCircle, playCircle, radio, search,} from 'ionicons/icons';
+import {ReactiveFormsModule} from '@angular/forms';
+import {AuthService} from "@tippapp/frontend/utils";
+import {TipgroupResponseDto} from "@tippapp/shared/data-access";
 
 @Component({
   selector: 'lib-theme-test-page',
@@ -72,7 +66,13 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrl: './theme-test-page.component.scss',
 })
 export class ThemeTestPageComponent {
-  constructor() {
-    addIcons({ playCircle, radio, library, search, close, add, personCircle });
+  protected testResponse: WritableSignal<TipgroupResponseDto | undefined> = signal(undefined);
+
+  constructor(public authService: AuthService) {
+    addIcons({playCircle, radio, library, search, close, add, personCircle});
+  }
+
+  testRequest() {
+    this.authService.testRequest().subscribe();
   }
 }

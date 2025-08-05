@@ -12,7 +12,7 @@ import {
 } from '@angular/forms';
 import {addIcons} from 'ionicons';
 import {mail} from 'ionicons/icons';
-import {AuthStore} from '@tippapp/utils';
+import {AuthStore} from '@tippapp/frontend/utils';
 import {
   IonButton,
   IonContent,

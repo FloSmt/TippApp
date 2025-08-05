@@ -53,7 +53,7 @@
       "@tippapp/shared/data-access": [
         "libs/shared/data-access/src/index.ts"
       ],
-      "@tippapp/utils": [
+      "@tippapp/frontend/utils": [
         "libs/frontend/shared/utils/src/index.ts"
       ]
     }

@@ -1,2 +1,3 @@
 export * from './auth.service';
-export * from './guards/auth.guard';
+export * from './guards';
+export * from './auth.store';

@@ -2,7 +2,7 @@ import {Component, effect, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner} from "@ionic/angular/standalone";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {AuthStore} from "@tippapp/utils";
+import {AuthStore} from "@tippapp/frontend/utils";
 import {Router, RouterLink} from "@angular/router";
 import {addIcons} from "ionicons";
 import {mail} from "ionicons/icons";

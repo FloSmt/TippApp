@@ -1,6 +1,5 @@
 import {Routes} from '@angular/router';
-import {authGuard} from "@tippapp/utils";
-import {publicAuthGuard} from "../../shared/utils/src/auth/guards/public-auth.guard";
+import {authGuard, publicAuthGuard} from "@tippapp/frontend/utils";
 
 export const routes: Routes = [
   {

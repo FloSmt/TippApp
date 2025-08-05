@@ -1,20 +1,14 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import {
-  PreloadAllModules,
-  provideRouter,
-  RouteReuseStrategy,
-  withPreloading,
-} from '@angular/router';
-import {
-  IonicRouteStrategy,
-  provideIonicAngular,
-} from '@ionic/angular/standalone';
-import { AppComponent, routes } from '@tippapp/frontend/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {PreloadAllModules, provideRouter, RouteReuseStrategy, withPreloading,} from '@angular/router';
+import {IonicRouteStrategy, provideIonicAngular,} from '@ionic/angular/standalone';
+import {AppComponent, authInterceptor, routes} from '@tippapp/frontend/core';
+import {provideHttpClient, withInterceptors} from "@angular/common/http";
 
 bootstrapApplication(AppComponent, {
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     provideIonicAngular(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(routes, withPreloading(PreloadAllModules)),
   ],
 });
