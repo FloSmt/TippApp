@@ -4,7 +4,7 @@ import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
 import {patchState, signalStore, withComputed, withMethods, withState,} from '@ngrx/signals';
 import {LoginDto, RegisterDto} from "@tippapp/shared/data-access";
 import {AxiosError} from "axios";
-import {AuthService} from './index';
+import {AuthService} from '../index';
 
 type AuthState = {
   isLoading: boolean;
@@ -23,7 +23,7 @@ export const AuthStore = signalStore(
   withState(initialState),
   withComputed((store) => ({
     isAuthenticated: computed(() => !!store.accessToken()),
-    hasError: computed(() => !!store.error),
+    hasError: computed(() => !!store.error()),
   })),
 
   withMethods((store, authService = inject(AuthService)) => ({
