@@ -21,7 +21,7 @@ import {
   IonLabel,
   IonSpinner,
 } from '@ionic/angular/standalone';
-import {Router, RouterLink} from "@angular/router";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'lib-register-page',
@@ -35,7 +35,6 @@ import {Router, RouterLink} from "@angular/router";
     IonInputPasswordToggle,
     IonInput,
     IonContent,
-    RouterLink,
   ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
@@ -94,7 +93,9 @@ export class RegisterPageComponent {
       return `Dieses Feld ist erforderlich.`;
     }
     if (control?.hasError('minlength')) {
-      return `Nutzername muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`;
+      return controlName === 'username'
+        ? `Nutzername muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`
+        : `Passwort muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`
     }
     if (control?.hasError('email')) {
       return 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
@@ -114,5 +115,9 @@ export class RegisterPageComponent {
       const confirmPassword = control.value;
       return password !== confirmPassword ? {passwordMismatch: true} : null;
     };
+  }
+
+  navigateToLoginPage() {
+    this.router.navigate(['auth/login']);
   }
 }

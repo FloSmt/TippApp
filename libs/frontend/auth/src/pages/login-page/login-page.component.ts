@@ -3,20 +3,20 @@ import {CommonModule} from '@angular/common';
 import {IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner} from "@ionic/angular/standalone";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AuthStore} from "@tippapp/frontend/utils";
-import {Router, RouterLink} from "@angular/router";
+import {Router} from "@angular/router";
 import {addIcons} from "ionicons";
 import {mail} from "ionicons/icons";
 
 @Component({
   selector: 'lib-login-page',
-  imports: [CommonModule, IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner, ReactiveFormsModule],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })
 export class LoginPageComponent {
   readonly authStore = inject(AuthStore);
 
-  registerForm = new FormGroup({
+  loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
       Validators.required,
@@ -36,10 +36,10 @@ export class LoginPageComponent {
   }
 
   onLogin() {
-    const email = this.registerForm.get('email')?.value;
-    const password = this.registerForm.get('password')?.value;
+    const email = this.loginForm.get('email')?.value;
+    const password = this.loginForm.get('password')?.value;
 
-    if (!this.registerForm.invalid && email && password) {
+    if (!this.loginForm.invalid && email && password) {
       this.authStore.loginUser({
         loginDto: {
           email, password
@@ -49,21 +49,25 @@ export class LoginPageComponent {
   }
 
   disableLogin(): boolean {
-    return this.registerForm.invalid || this.isLoading();
+    return this.loginForm.invalid || this.isLoading();
   }
 
   getErrorMessage(controlName: string): string {
-    const control = this.registerForm.get(controlName);
+    const control = this.loginForm.get(controlName);
     if (control?.hasError('required')) {
       return `Dieses Feld ist erforderlich.`;
     }
     if (control?.hasError('minlength')) {
-      return `Nutzername muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`;
+      return `Passwort muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`;
     }
     if (control?.hasError('email')) {
       return 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
     }
 
     return '';
+  }
+
+  navigateToRegisterPage() {
+    this.router.navigate(['auth/register'])
   }
 }
