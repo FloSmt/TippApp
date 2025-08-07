@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {RegisterDto} from '@tippapp/shared/data-access';
+import {LoginDto, RegisterDto} from '@tippapp/shared/data-access';
 import {delay, of, throwError} from 'rxjs';
 import {AxiosError} from 'axios';
 import {AuthService} from '../index';
@@ -8,7 +8,7 @@ import {AuthStore} from './auth.store';
 describe('AuthStore', () => {
   let store: InstanceType<typeof AuthStore>;
   let authService: AuthService;
-  
+
   const mockAuthService = {
     registerNewUser: jest.fn(),
     loginUser: jest.fn(),
@@ -114,6 +114,41 @@ describe('AuthStore', () => {
         jest.spyOn(authService, 'registerNewUser').mockReturnValue(throwError(() => mockError));
 
         store.registerNewUser({registerDto});
+
+        expect(store.isLoading()).toBe(false);
+        expect(store.accessToken()).toBeNull();
+        expect(store.error()).toBe(errorMessage);
+      });
+    });
+    
+    describe('loginUser', () => {
+      it('should patch state on success correctly', (done) => {
+        const loginDto: LoginDto = {email: 'test@example.com', password: 'password123'};
+        const apiResponse = {accessToken: 'api-access-token'};
+
+        jest.spyOn(authService, 'loginUser').mockReturnValue(of(apiResponse).pipe(delay(1)));
+
+        store.loginUser({loginDto});
+
+        expect(store.isLoading()).toBe(true);
+        expect(authService.loginUser).toHaveBeenCalledWith(loginDto);
+
+
+        setTimeout(() => {
+          expect(store.isLoading()).toBe(false);
+          expect(store.accessToken()).toBe(apiResponse.accessToken);
+          done();
+        }, 5);
+      });
+
+      it('should patch state on error correctly', () => {
+        const loginDto: LoginDto = {email: 'test@example.com', password: 'password123'};
+        const errorMessage = 'API-Error';
+        const mockError = new AxiosError(errorMessage, '400');
+
+        jest.spyOn(authService, 'loginUser').mockReturnValue(throwError(() => mockError));
+
+        store.loginUser({loginDto});
 
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
