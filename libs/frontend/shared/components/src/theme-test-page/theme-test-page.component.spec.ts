@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ThemeTestPageComponent} from './theme-test-page.component';
 import {provideHttpClient} from "@angular/common/http";
+import {ThemeTestPageComponent} from './theme-test-page.component';
 
 describe('ThemeTestPageComponent', () => {
   let component: ThemeTestPageComponent;
