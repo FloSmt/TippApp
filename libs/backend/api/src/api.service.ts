@@ -28,6 +28,7 @@ export class ApiService {
       }
 
       const response = await firstValueFrom(this.httpService.get(url));
+      console.log('Match Data:', response.data);
 
       return response.data.map((match: any) => new MatchResponse(match));
     } catch (error) {
