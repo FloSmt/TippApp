@@ -17,7 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(newRequest).pipe(
     catchError((err) => {
-      if (err.status === 401) {
+      if (err.status === 401 && !newRequest.url.endsWith('auth/refresh')) {
         if (!authInterceptorService.isRefreshing) {
           authInterceptorService.isRefreshing = true;
           authInterceptorService.refreshTokenSignal.set(null);

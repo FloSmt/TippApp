@@ -10,6 +10,7 @@
           formControlName="email"
           label="Email"
           label-placement="floating"
+          data-testid="input-email"
           type="email">
         </ion-input>
         <ion-input
@@ -19,6 +20,7 @@
           label="Password"
           label-placement="floating"
           type="password"
+          data-testid="input-password"
         >
           <ion-input-password-toggle slot="end"></ion-input-password-toggle>
         </ion-input>
@@ -28,6 +30,7 @@
           color="primary"
           expand="block"
           id="login-button"
+          data-testid="login-button"
           size="large">
           <ion-label>
             @if (isLoading()) {
@@ -38,7 +41,10 @@
           </ion-label>
         </ion-button>
         <div class="link-to-register">
-          <ion-button (click)="navigateToRegisterPage()" fill="clear" size="size">Account erstellen</ion-button>
+          <ion-button (click)="navigateToRegisterPage()" data-testid="switch-to-register-button" fill="clear"
+                      size="size">
+            Account erstellen
+          </ion-button>
         </div>
       </form>
     </div>
