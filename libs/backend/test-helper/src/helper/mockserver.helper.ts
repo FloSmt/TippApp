@@ -1,9 +1,5 @@
-import { mockServerClient } from 'mockserver-client';
-import {
-  AVAILABLE_GROUPS_MOCK,
-  AVAILABLE_LEAGUES_MOCK,
-  MATCHDATA_MOCK,
-} from '../api-mocks';
+import {mockServerClient} from 'mockserver-client';
+import {AVAILABLE_GROUPS_MOCK, AVAILABLE_LEAGUES_MOCK, MATCHDATA_MOCK,} from '../api-mocks';
 
 export interface MockApiOptions {
   matchDataResponse?: any;
@@ -17,7 +13,7 @@ export const setupMockApi = async (
     matchDataResponse: MATCHDATA_MOCK,
     availableGroupsResponse: AVAILABLE_GROUPS_MOCK,
     availableLeaguesResponse: AVAILABLE_LEAGUES_MOCK,
-    errorCode: undefined,
+    errorCode: 200,
   }
 ) => {
   const client = mockServerClient('localhost', 1080);
@@ -28,9 +24,9 @@ export const setupMockApi = async (
       path: '/getmatchdata/.*',
     },
     httpResponse: {
-      statusCode: options.errorCode ?? 200,
+      statusCode: options.errorCode,
       body: JSON.stringify(options.matchDataResponse),
-      headers: [{ name: 'Content-Type', values: ['application/json'] }],
+      headers: [{name: 'Content-Type', values: ['application/json']}],
     },
   });
 
@@ -40,9 +36,9 @@ export const setupMockApi = async (
       path: '/getavailableleagues/',
     },
     httpResponse: {
-      statusCode: options.errorCode ?? 200,
+      statusCode: options.errorCode,
       body: JSON.stringify(options.availableLeaguesResponse),
-      headers: [{ name: 'Content-Type', values: ['application/json'] }],
+      headers: [{name: 'Content-Type', values: ['application/json']}],
     },
   });
 
@@ -52,9 +48,9 @@ export const setupMockApi = async (
       path: '/getavailablegroups/.*',
     },
     httpResponse: {
-      statusCode: options.errorCode ?? 200,
+      statusCode: options.errorCode,
       body: JSON.stringify(options.availableGroupsResponse),
-      headers: [{ name: 'Content-Type', values: ['application/json'] }],
+      headers: [{name: 'Content-Type', values: ['application/json']}],
     },
   });
 };
