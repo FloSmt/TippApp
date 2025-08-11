@@ -54,8 +54,6 @@ export const setupMockApi = async (
     },
   });
 
-  console.log(2);
-
   await client.mockAnyResponse({
     httpRequest: {
       method: 'GET',
@@ -68,6 +66,5 @@ export const setupMockApi = async (
     },
   });
 
-  console.log(3);
   console.log('Mock server setup complete.');
 };

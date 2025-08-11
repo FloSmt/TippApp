@@ -56,14 +56,16 @@ describe('UserController (e2e)', () => {
     tipgroupFactory = new TipgroupFactory(app, dataSource);
   });
 
+  beforeEach(async () => {
+    await setupMockApi({
+      matchDataResponse: [],
+      availableGroupsResponse: [],
+    });
+  });
+
   describe('/tipgroups (GET)', () => {
     let accessTokenFirstUser: string;
     beforeEach(async () => {
-      await setupMockApi({
-        matchDataResponse: [],
-        availableGroupsResponse: [],
-      });
-
       // Create two test users
       await userFactory.createUserInDatabase(mocks.registerData[0]);
       await userFactory.createUserInDatabase(mocks.registerData[1]);
