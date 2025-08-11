@@ -73,10 +73,6 @@ describe('UserController (e2e)', () => {
         mocks.registerData[0].email,
         mocks.registerData[0].password
       );
-
-      afterEach(async () => {
-        await resetMockApi();
-      });
     });
 
     it('should return an empty list of tipgroups for a new user', async () => {
@@ -123,6 +119,7 @@ describe('UserController (e2e)', () => {
   });
 
   afterEach(async () => {
+    await resetMockApi();
     await userFactory.clearDatabase();
   });
 });

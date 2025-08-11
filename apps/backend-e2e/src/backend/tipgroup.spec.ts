@@ -59,7 +59,6 @@ describe('TipgroupController (e2e)', () => {
   };
 
   beforeAll(async () => {
-    await setupMockApi();
     const setup = await setupE2ETestEnvironment();
     app = setup.app;
     dataSource = setup.dataSource;
@@ -74,15 +73,12 @@ describe('TipgroupController (e2e)', () => {
   });
 
   beforeEach(async () => {
+    await setupMockApi();
     testUser = await userFactory.createUserInDatabase(mocks.registerData[0]);
     accessToken = await userFactory.loginUser(
       mocks.registerData[0].email,
       mocks.registerData[0].password
     );
-  });
-
-  beforeAll(async () => {
-    await resetMockApi();
   });
 
   describe('/create (POST)', () => {
@@ -145,6 +141,7 @@ describe('TipgroupController (e2e)', () => {
   });
 
   afterEach(async () => {
+    await resetMockApi();
     await userFactory.clearDatabase();
   });
 });
