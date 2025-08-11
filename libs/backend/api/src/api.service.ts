@@ -32,8 +32,6 @@ export class ApiService {
 
       const response = await firstValueFrom(this.httpService.get(url));
 
-      console.log('getMatchData response:', response);
-
       return response.data.map((match: any) => new MatchResponse(match));
     } catch (error) {
       throw new HttpException(
@@ -48,7 +46,7 @@ export class ApiService {
       const url = `${this.apiUrl}/getavailableleagues/`;
       const response = await firstValueFrom(this.httpService.get(url));
 
-      console.log('get AvailableLeagues response', response);
+      console.log('get AvailableLeagues response', response.data);
 
       // Filters only Men/Women football with the targeted Season
       const filteredMatches = response.data.filter(
@@ -72,8 +70,6 @@ export class ApiService {
     try {
       const url = `${this.apiUrl}/getavailablegroups/${leagueShortcut}/${season}`;
       const response = await firstValueFrom(this.httpService.get(url));
-
-      console.log('get Available Groups response', response);
 
       return response.data.map((group: any) => new GroupResponse(group));
     } catch (error) {
