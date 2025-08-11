@@ -48,13 +48,6 @@ export class ApiService {
 
       console.log('Response from external API:', response);
 
-      if (!response.data || !Array.isArray(response.data)) {
-        throw new HttpException(
-          'Invalid response from external API',
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
       // Filters only Men/Women football with the targeted Season
       const filteredMatches = response.data.filter(
         (league: any) =>

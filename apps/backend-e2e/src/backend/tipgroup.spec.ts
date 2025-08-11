@@ -1,5 +1,5 @@
-import {INestApplication} from '@nestjs/common';
-import {DataSource, Repository} from 'typeorm';
+import { INestApplication } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import {
   CreateTipgroupDto,
   Match,
@@ -58,7 +58,6 @@ describe('TipgroupController (e2e)', () => {
   };
 
   beforeAll(async () => {
-    await setupMockApi();
     const setup = await setupE2ETestEnvironment();
     app = setup.app;
     dataSource = setup.dataSource;
@@ -73,9 +72,13 @@ describe('TipgroupController (e2e)', () => {
   });
 
   beforeEach(async () => {
+    await setupMockApi();
     testUser = await userFactory.createUserInDatabase(mocks.registerData[0]);
-    accessToken = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
-  })
+    accessToken = await userFactory.loginUser(
+      mocks.registerData[0].email,
+      mocks.registerData[0].password
+    );
+  });
 
   describe('/create (POST)', () => {
     it('should create tipgroup, tipseason, matchdays and matches', async () => {

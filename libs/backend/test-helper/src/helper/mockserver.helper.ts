@@ -1,5 +1,9 @@
-import {mockServerClient} from 'mockserver-client';
-import {AVAILABLE_GROUPS_MOCK, AVAILABLE_LEAGUES_MOCK, MATCHDATA_MOCK,} from '../api-mocks';
+import { mockServerClient } from 'mockserver-client';
+import {
+  AVAILABLE_GROUPS_MOCK,
+  AVAILABLE_LEAGUES_MOCK,
+  MATCHDATA_MOCK,
+} from '../api-mocks';
 
 export interface MockApiOptions {
   matchDataResponse?: any;
@@ -18,6 +22,11 @@ export const setupMockApi = async (
 ) => {
   const client = mockServerClient('localhost', 1080);
 
+  console.log('Resetting mock server...');
+  await client.reset();
+
+  console.log('Setting up mock server...');
+
   await client.mockAnyResponse({
     httpRequest: {
       method: 'GET',
@@ -26,7 +35,7 @@ export const setupMockApi = async (
     httpResponse: {
       statusCode: options.errorCode,
       body: JSON.stringify(options.matchDataResponse),
-      headers: [{name: 'Content-Type', values: ['application/json']}],
+      headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
 
@@ -38,9 +47,11 @@ export const setupMockApi = async (
     httpResponse: {
       statusCode: options.errorCode,
       body: JSON.stringify(options.availableLeaguesResponse),
-      headers: [{name: 'Content-Type', values: ['application/json']}],
+      headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
+
+  console.log(2);
 
   await client.mockAnyResponse({
     httpRequest: {
@@ -50,7 +61,10 @@ export const setupMockApi = async (
     httpResponse: {
       statusCode: options.errorCode,
       body: JSON.stringify(options.availableGroupsResponse),
-      headers: [{name: 'Content-Type', values: ['application/json']}],
+      headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
+
+  console.log(3);
+  console.log('Mock server setup complete.');
 };
