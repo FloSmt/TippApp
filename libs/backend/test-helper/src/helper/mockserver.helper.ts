@@ -26,6 +26,14 @@ export const setupMockApi = async (
     errorCode: 200,
   }
 ) => {
+  const optionsWithDefaults: MockApiOptions = {
+    matchDataResponse: options.matchDataResponse || MATCHDATA_MOCK,
+    availableGroupsResponse:
+      options.availableGroupsResponse || AVAILABLE_GROUPS_MOCK,
+    availableLeaguesResponse:
+      options.availableLeaguesResponse || AVAILABLE_LEAGUES_MOCK,
+    errorCode: options.errorCode || 200,
+  };
   const client = mockServerClient('localhost', 1080);
 
   console.log('Setting up mock server...');
@@ -37,8 +45,8 @@ export const setupMockApi = async (
       path: '/getmatchdata/.*',
     },
     httpResponse: {
-      statusCode: options.errorCode,
-      body: JSON.stringify(options.matchDataResponse),
+      statusCode: optionsWithDefaults.errorCode,
+      body: JSON.stringify(optionsWithDefaults.matchDataResponse),
       headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
@@ -49,8 +57,8 @@ export const setupMockApi = async (
       path: '/getavailableleagues/',
     },
     httpResponse: {
-      statusCode: options.errorCode,
-      body: JSON.stringify(options.availableLeaguesResponse),
+      statusCode: optionsWithDefaults.errorCode,
+      body: JSON.stringify(optionsWithDefaults.availableLeaguesResponse),
       headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
@@ -61,8 +69,8 @@ export const setupMockApi = async (
       path: '/getavailablegroups/.*',
     },
     httpResponse: {
-      statusCode: options.errorCode,
-      body: JSON.stringify(options.availableGroupsResponse),
+      statusCode: optionsWithDefaults.errorCode,
+      body: JSON.stringify(optionsWithDefaults.availableGroupsResponse),
       headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
