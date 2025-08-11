@@ -29,6 +29,7 @@ export const setupMockApi = async (
   const client = mockServerClient('localhost', 1080);
 
   console.log('Setting up mock server...');
+  await client.reset();
 
   await client.mockAnyResponse({
     httpRequest: {
