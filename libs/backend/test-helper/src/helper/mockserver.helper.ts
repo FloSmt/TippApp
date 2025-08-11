@@ -12,6 +12,12 @@ export interface MockApiOptions {
   errorCode?: number | undefined;
 }
 
+export const resetMockApi = async () => {
+  const client = mockServerClient('localhost', 1080);
+  console.log('Resetting mock server...');
+  await client.reset();
+};
+
 export const setupMockApi = async (
   options: MockApiOptions = {
     matchDataResponse: MATCHDATA_MOCK,
