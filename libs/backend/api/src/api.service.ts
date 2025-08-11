@@ -1,16 +1,19 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {HttpService} from '@nestjs/axios';
-import {firstValueFrom} from 'rxjs';
-import {GroupResponse, LeagueResponse, MatchResponse,} from '@tippapp/shared/data-access';
-import {ConfigService} from '@nestjs/config';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import {
+  GroupResponse,
+  LeagueResponse,
+  MatchResponse,
+} from '@tippapp/shared/data-access';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApiService {
   constructor(
     private readonly httpService: HttpService,
     private readonly config: ConfigService
-  ) {
-  }
+  ) {}
 
   private readonly apiUrl = this.config.get<string>('EXTERNAL_API_BASE_URL');
 
@@ -42,6 +45,15 @@ export class ApiService {
     try {
       const url = `${this.apiUrl}/getavailableleagues/`;
       const response = await firstValueFrom(this.httpService.get(url));
+
+      console.log('Response from external API:', response);
+
+      if (!response.data || !Array.isArray(response.data)) {
+        throw new HttpException(
+          'Invalid response from external API',
+          HttpStatus.BAD_REQUEST
+        );
+      }
 
       // Filters only Men/Women football with the targeted Season
       const filteredMatches = response.data.filter(
