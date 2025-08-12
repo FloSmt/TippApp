@@ -2,7 +2,6 @@ import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateTipgroupDto, RegisterDto } from '@tippapp/shared/data-access';
 import {
-  resetMockApi,
   setupE2ETestEnvironment,
   setupMockApi,
   TipgroupFactory,
@@ -121,7 +120,6 @@ describe('UserController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await resetMockApi();
     await userFactory.clearDatabase();
   });
 });

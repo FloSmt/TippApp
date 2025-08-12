@@ -46,8 +46,6 @@ export class ApiService {
       const url = `${this.apiUrl}/getavailableleagues/`;
       const response = await firstValueFrom(this.httpService.get(url));
 
-      console.log('get AvailableLeagues response', response.data);
-
       // Filters only Men/Women football with the targeted Season
       const filteredMatches = response.data.filter(
         (league: any) =>

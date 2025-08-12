@@ -13,7 +13,6 @@ import {
 import {
   AVAILABLE_GROUPS_MOCK,
   MATCHDATA_MOCK,
-  resetMockApi,
   setupE2ETestEnvironment,
   setupMockApi,
   TipgroupFactory,
@@ -141,7 +140,6 @@ describe('TipgroupController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await resetMockApi();
     await userFactory.clearDatabase();
   });
 });

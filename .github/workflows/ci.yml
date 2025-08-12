@@ -138,7 +138,7 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run Backend E2E Tests
-        run: npx nx e2e backend-e2e -- --runInBand
+        run: npx nx e2e backend-e2e
 
   # Job 4: Run Frontend (Playwright) E2E Tests (Depends on Prepare)
   run-frontend-e2e:
