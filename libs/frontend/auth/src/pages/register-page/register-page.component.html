@@ -2,14 +2,71 @@
   <div class="center-content">
     <div>
       <h1>Registrieren</h1>
-      <form class="form-input">
-        <ion-input class="custom" required="true" label="Nutzername" label-placement="floating" fill="outline" type="text"></ion-input>
-        <ion-input label="Email" label-placement="floating" fill="outline" type="email"></ion-input>
-        <ion-input label="Password" label-placement="floating" fill="outline" type="password"></ion-input>
-        <ion-input label="Password wiederholen" label-placement="floating" fill="outline" type="password"></ion-input>
-        <ion-button id="register-button" color="primary" size="large" expand="block">Register</ion-button>
-        <a class="link-to-login">Anmelden</a>
+      <form class="form-input" [formGroup]="registerForm">
+        <ion-input
+          class="custom"
+          formControlName="username"
+          required="true"
+          label="Nutzername"
+          label-placement="floating"
+          fill="outline"
+          type="text"
+          [errorText]="getErrorMessage('username')"
+          autofocus="true"
+          data-testid="input-username">
+        </ion-input>
+        <ion-input
+          label="Email"
+          formControlName="email"
+          label-placement="floating"
+          fill="outline"
+          type="email"
+          [errorText]="getErrorMessage('email')"
+          data-testid="input-email">
+        </ion-input>
+        <ion-input
+          label="Password"
+          formControlName="password"
+          label-placement="floating"
+          fill="outline"
+          type="password"
+          [errorText]="getErrorMessage('password')"
+          data-testid="input-password"
+        >
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-input
+          label="Password wiederholen"
+          formControlName="confirmPassword"
+          label-placement="floating"
+          fill="outline" type="password"
+          [errorText]="getErrorMessage('confirmPassword')"
+          data-testid="input-confirm-password">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-button
+          (click)="onRegister()"
+          [disabled]="disableRegistration()"
+          id="register-button"
+          color="primary"
+          size="large"
+          data-testid="register-button"
+          expand="block">
+          <ion-label>
+            @if (isLoading()) {
+              <ion-spinner></ion-spinner>
+            } @else {
+              Registrieren
+            }
+          </ion-label>
+        </ion-button>
+        <div class="link-to-login">
+          <ion-button (click)="navigateToLoginPage()" data-testid="switch-to-login-button" fill="clear" size="size">Zur
+            Anmeldung
+          </ion-button>
+        </div>
       </form>
     </div>
   </div>
 </ion-content>
+

@@ -1,41 +1,40 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import {
-  AuthResponseDto,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-} from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { Public } from './guards/jwt-auth.guard';
+import {Body, Controller, HttpCode, HttpStatus, Post, Req, Res} from '@nestjs/common';
+import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {Request, Response} from 'express';
+import {ApiOkResponse, ApiOperation, ApiResponse,} from '@nestjs/swagger';
+import {AuthService} from './auth.service';
+import {Public} from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {
+  }
 
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: AuthResponseDto })
+  @ApiOkResponse({type: AuthResponseDto})
   @ApiOperation({
     summary: 'returns accessToken, refreshToken and userId for User login',
   })
-  @ApiResponse({ status: 200, type: AuthResponseDto })
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  @ApiResponse({status: 200, type: AuthResponseDto})
+  async login(@Body() loginDto: LoginDto, @Res({passthrough: true}) response: Response) {
+    const newTokens = await this.authService.login(loginDto);
+    this.setRefreshTokenCookie(response, newTokens.refreshToken);
+
+    return {accessToken: newTokens.accessToken};
   }
 
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'creates a User if email not exists' })
-  @ApiResponse({ status: 201, type: AuthResponseDto })
-  async register(@Body() registerDto: RegisterDto) {
-    return await this.authService.register(registerDto);
+  @ApiOperation({summary: 'creates a User if email not exists'})
+  @ApiResponse({status: 201, type: AuthResponseDto})
+  async register(@Body() registerDto: RegisterDto, @Res({passthrough: true}) response: Response) {
+    const newTokens = await this.authService.register(registerDto);
+    this.setRefreshTokenCookie(response, newTokens.refreshToken);
+
+    return {accessToken: newTokens.accessToken};
   }
 
   @Public()
@@ -44,10 +43,27 @@ export class AuthController {
   @ApiOperation({
     summary: 'generates a new accessToken with existing refreshToken',
   })
-  @ApiParam({ name: 'userId', type: 'number' })
-  @ApiParam({ name: 'refreshToken', type: 'string' })
-  @ApiResponse({ status: 200, type: AuthResponseDto })
-  async refresh(@Body() body: { userId: number; refreshToken: string }) {
-    return this.authService.refreshTokens(body.userId, body.refreshToken);
+  @ApiResponse({status: 200, type: AuthResponseDto})
+  async refresh(@Req() request: Request, @Res({passthrough: true}) response: Response) {
+    const refreshToken = request.cookies['refreshToken'];
+
+    const newTokens = await this.authService.refreshTokens(refreshToken);
+
+    this.setRefreshTokenCookie(response, newTokens.refreshToken);
+
+    return {accessToken: newTokens.accessToken};
+  }
+
+  setRefreshTokenCookie(
+    response: Response,
+    refreshToken: string
+  ): void {
+    response.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 Tage
+      path: '/'
+    });
   }
 }

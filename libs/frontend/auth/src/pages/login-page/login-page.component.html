@@ -1,0 +1,53 @@
+<ion-content class="ion-padding">
+  <div class="center-content">
+    <div>
+      <h1>Login</h1>
+      <form [formGroup]="loginForm" class="form-input">
+        <ion-input
+          [errorText]="getErrorMessage('email')"
+          autofocus="true"
+          fill="outline"
+          formControlName="email"
+          label="Email"
+          label-placement="floating"
+          data-testid="input-email"
+          type="email">
+        </ion-input>
+        <ion-input
+          [errorText]="getErrorMessage('password')"
+          fill="outline"
+          formControlName="password"
+          label="Password"
+          label-placement="floating"
+          type="password"
+          data-testid="input-password"
+        >
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-button
+          (click)="onLogin()"
+          [disabled]="disableLogin()"
+          color="primary"
+          expand="block"
+          id="login-button"
+          data-testid="login-button"
+          size="large">
+          <ion-label>
+            @if (isLoading()) {
+              <ion-spinner></ion-spinner>
+            } @else {
+              Anmelden
+            }
+          </ion-label>
+        </ion-button>
+        <div class="link-to-register">
+          <ion-button (click)="navigateToRegisterPage()" data-testid="switch-to-register-button" fill="clear"
+                      size="size">
+            Account erstellen
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ion-content>
+

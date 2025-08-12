@@ -1,1 +1,2 @@
-export * from './pages/register-page/register-page.component';
+export * from './pages';
+export * from './auth.routes';

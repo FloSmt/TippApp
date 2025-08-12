@@ -1,8 +1,12 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {HttpService} from '@nestjs/axios';
-import {firstValueFrom} from 'rxjs';
-import {GroupResponse, LeagueResponse, MatchResponse,} from '@tippapp/shared/data-access';
-import {ConfigService} from '@nestjs/config';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import {
+  GroupResponse,
+  LeagueResponse,
+  MatchResponse,
+} from '@tippapp/shared/data-access';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApiService {

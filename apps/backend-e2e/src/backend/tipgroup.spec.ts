@@ -13,16 +13,17 @@ import {
 import {
   AVAILABLE_GROUPS_MOCK,
   MATCHDATA_MOCK,
-  registerMultipleUsers,
   setupE2ETestEnvironment,
   setupMockApi,
-  TestApi,
+  TipgroupFactory,
+  UserFactory,
 } from '@tippapp/backend/test-helper';
 
 describe('TipgroupController (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
-  let testApi: TestApi;
+  let userFactory: UserFactory;
+  let tipgroupFactory: TipgroupFactory;
 
   let tipgroupRepository: Repository<Tipgroup>;
   let tipseasonRepository: Repository<TipSeason>;
@@ -30,8 +31,8 @@ describe('TipgroupController (e2e)', () => {
   let matchRepository: Repository<Match>;
   let tipgroupUserRepository: Repository<TipgroupUser>;
 
-  let authToken: string;
-  let testUser: User[];
+  let testUser: User;
+  let accessToken: string;
 
   const mocks = {
     get createTipgroupData(): CreateTipgroupDto[] {
@@ -57,24 +58,23 @@ describe('TipgroupController (e2e)', () => {
   };
 
   beforeAll(async () => {
-    await setupMockApi();
     const setup = await setupE2ETestEnvironment();
     app = setup.app;
     dataSource = setup.dataSource;
-    testApi = setup.testApi;
+    userFactory = new UserFactory(app, dataSource);
+    tipgroupFactory = new TipgroupFactory(app, dataSource);
 
     tipgroupRepository = dataSource.getRepository(Tipgroup);
     tipseasonRepository = dataSource.getRepository(TipSeason);
     matchdayRepository = dataSource.getRepository(Matchday);
     matchRepository = dataSource.getRepository(Match);
     tipgroupUserRepository = dataSource.getRepository(TipgroupUser);
+  });
 
-    testUser = await registerMultipleUsers(
-      mocks.registerData,
-      setup.userRepository,
-      setup.authService
-    );
-    authToken = await testApi.loginAndGetToken(
+  beforeEach(async () => {
+    await setupMockApi();
+    testUser = await userFactory.createUserInDatabase(mocks.registerData[0]);
+    accessToken = await userFactory.loginUser(
       mocks.registerData[0].email,
       mocks.registerData[0].password
     );
@@ -82,16 +82,17 @@ describe('TipgroupController (e2e)', () => {
 
   describe('/create (POST)', () => {
     it('should create tipgroup, tipseason, matchdays and matches', async () => {
-      const response = await testApi.createTipgroup(
-        mocks.createTipgroupData[0],
-        authToken
+      const response = await tipgroupFactory.createTipGroup(
+        accessToken,
+        mocks.createTipgroupData[0]
       );
+
       expect(response.status).toBe(201);
 
       // Check if user is set
       const tipgroupUser: TipgroupUser[] = await tipgroupUserRepository.find();
       expect(tipgroupUser.length).toBe(1);
-      expect(tipgroupUser[0].userId).toEqual(testUser[0].id);
+      expect(tipgroupUser[0].userId).toEqual(testUser.id);
       expect(tipgroupUser[0].isAdmin).toBeTruthy();
       expect(tipgroupUser[0].tipgroupId).toEqual(response.body.id);
 
@@ -125,9 +126,9 @@ describe('TipgroupController (e2e)', () => {
     });
 
     it('should throw Error 401 if user is not authorized', async () => {
-      const response = await testApi.createTipgroup(
-        mocks.createTipgroupData[0],
-        'wrongToken'
+      const response = await tipgroupFactory.createTipGroup(
+        'wrongToken',
+        mocks.createTipgroupData[0]
       );
 
       expect(response.status).toBe(401);
@@ -139,11 +140,6 @@ describe('TipgroupController (e2e)', () => {
   });
 
   afterEach(async () => {
-    // Clear Database Table after Test
-    await dataSource.createQueryBuilder().delete().from(TipgroupUser).execute();
-    await dataSource.createQueryBuilder().delete().from(Tipgroup).execute();
-    await dataSource.createQueryBuilder().delete().from(TipSeason).execute();
-    await dataSource.createQueryBuilder().delete().from(Matchday).execute();
-    await dataSource.createQueryBuilder().delete().from(Match).execute();
+    await userFactory.clearDatabase();
   });
 });

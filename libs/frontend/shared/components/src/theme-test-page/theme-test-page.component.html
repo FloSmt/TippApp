@@ -11,6 +11,9 @@
 
     <ion-content [fullscreen]="true" class="ion-padding">
       <h1 data-testid="test-header">Welcome</h1>
+      <h2>TestResponse</h2>
+      <ion-button (click)="testRequest()" fill="clear" size="small">Start</ion-button>
+      <p>response: {{ testResponse() }}</p>
       <h2>Small</h2>
       <ion-button fill="clear" size="small">Clear</ion-button>
       <ion-button fill="outline" size="small">Outline</ion-button>
