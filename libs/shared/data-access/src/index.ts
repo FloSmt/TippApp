@@ -1,3 +1,4 @@
-export * from './dtos/index';
-export * from './apiResponses/index';
-export * from './entities/index';
+export * from './dtos';
+export * from './apiResponses';
+export * from './entities';
+export * from './errors';

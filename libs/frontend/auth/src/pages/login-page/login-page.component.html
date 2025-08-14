@@ -24,6 +24,7 @@
         >
           <ion-input-password-toggle slot="end"></ion-input-password-toggle>
         </ion-input>
+        <p>{{ error() }}</p>
         <ion-button
           (click)="onLogin()"
           [disabled]="disableLogin()"

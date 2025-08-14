@@ -1,15 +1,36 @@
-import {Component, effect, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner} from "@ionic/angular/standalone";
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {AuthStore} from "@tippapp/frontend/utils";
-import {Router} from "@angular/router";
-import {addIcons} from "ionicons";
-import {mail} from "ionicons/icons";
+import { Component, effect, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  IonButton,
+  IonContent,
+  IonInput,
+  IonInputPasswordToggle,
+  IonLabel,
+  IonSpinner,
+} from '@ionic/angular/standalone';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { AuthStore } from '@tippapp/frontend/utils';
+import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { mail } from 'ionicons/icons';
 
 @Component({
   selector: 'lib-login-page',
-  imports: [CommonModule, IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    IonButton,
+    IonContent,
+    IonInput,
+    IonInputPasswordToggle,
+    IonLabel,
+    IonSpinner,
+    ReactiveFormsModule,
+  ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })
@@ -25,9 +46,10 @@ export class LoginPageComponent {
   });
 
   isLoading = this.authStore.isLoading;
+  error = this.authStore.error;
 
   constructor(public router: Router) {
-    addIcons({mail});
+    addIcons({ mail });
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
@@ -42,8 +64,9 @@ export class LoginPageComponent {
     if (!this.loginForm.invalid && email && password) {
       this.authStore.loginUser({
         loginDto: {
-          email, password
-        }
+          email,
+          password,
+        },
       });
     }
   }
@@ -68,6 +91,6 @@ export class LoginPageComponent {
   }
 
   navigateToRegisterPage() {
-    this.router.navigate(['auth/register'])
+    this.router.navigate(['auth/register']);
   }
 }
