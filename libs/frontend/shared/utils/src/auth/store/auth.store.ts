@@ -124,7 +124,7 @@ export const AuthStore = signalStore(
           authService.refreshAccessToken().pipe(
             tap((response) => store.refreshSuccess(response.accessToken)),
             catchError((err) => {
-              store.refreshFailure(err.message);
+              store.refreshFailure(err);
               store.logoutAndRedirect();
               return EMPTY;
             })

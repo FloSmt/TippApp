@@ -14,10 +14,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthStore } from '@tippapp/frontend/utils';
+import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { mail } from 'ionicons/icons';
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 
 @Component({
   selector: 'lib-login-page',
@@ -36,6 +37,7 @@ import { mail } from 'ionicons/icons';
 })
 export class LoginPageComponent {
   readonly authStore = inject(AuthStore);
+  readonly errorManagagementService = inject(ErrorManagementService);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -53,6 +55,19 @@ export class LoginPageComponent {
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
+      }
+
+      if (this.authStore.hasError()) {
+        const errorMessages: ApiValidationErrorMessage[] | null =
+          this.authStore.error();
+        if (errorMessages) {
+          errorMessages.forEach((error) => {
+            const control = this.loginForm.get(error.property);
+            if (control) {
+              control.setErrors({ backendError: error });
+            }
+          });
+        }
       }
     });
   }
@@ -85,6 +100,12 @@ export class LoginPageComponent {
     }
     if (control?.hasError('email')) {
       return 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+    }
+
+    if (control?.hasError('backendError')) {
+      return this.errorManagagementService.getMessageForValidationError(
+        control.errors?.['backendError'] as ApiValidationErrorMessage
+      );
     }
 
     return '';

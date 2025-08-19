@@ -1,8 +1,8 @@
-import {CanActivateFn} from '@angular/router';
-import {inject} from "@angular/core";
-import {toObservable} from "@angular/core/rxjs-interop";
-import {filter, map, takeUntil} from "rxjs";
-import {AuthStore} from "../store/auth.store";
+import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, map, takeUntil } from 'rxjs';
+import { AuthStore } from '../store/auth.store';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authStore = inject(AuthStore);
@@ -15,12 +15,15 @@ export const authGuard: CanActivateFn = (route, state) => {
     authStore.refreshAccessToken();
     return toObservable(authStore.isLoading).pipe(
       filter((isLoading) => !isLoading),
-      takeUntil(toObservable(authStore.isLoading).pipe(filter((isLoading) => !isLoading))),
+      takeUntil(
+        toObservable(authStore.isLoading).pipe(
+          filter((isLoading) => !isLoading)
+        )
+      ),
       map(() => {
         const authenticated = authStore.isAuthenticated();
         if (authenticated) {
           return true;
-
         } else {
           authStore.logoutAndRedirect();
           return false;
