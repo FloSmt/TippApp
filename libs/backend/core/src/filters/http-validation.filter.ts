@@ -6,11 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-
-export interface ValidationMessage {
-  property: string;
-  constraints: { [key: string]: string };
-}
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 
 @Catch(BadRequestException)
 export class HttpValidationFilter implements ExceptionFilter {
@@ -20,7 +16,7 @@ export class HttpValidationFilter implements ExceptionFilter {
     const status = HttpStatus.UNPROCESSABLE_ENTITY;
 
     const exceptionResponse = exception.getResponse();
-    let validationMessages: ValidationMessage[] = [];
+    let validationMessages: ApiValidationErrorMessage[] = [];
 
     if (
       typeof exceptionResponse === 'object' &&

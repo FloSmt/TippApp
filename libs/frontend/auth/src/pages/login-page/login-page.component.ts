@@ -93,4 +93,6 @@ export class LoginPageComponent {
   navigateToRegisterPage() {
     this.router.navigate(['auth/register']);
   }
+
+  protected readonly JSON = JSON;
 }

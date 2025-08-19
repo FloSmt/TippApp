@@ -3,6 +3,11 @@ export interface ApiErrorDetail {
   message: string;
 }
 
+export interface ApiValidationErrorMessage {
+  property: string;
+  constraints: { [key: string]: string };
+}
+
 export abstract class ErrorCodes {
   protected abstract readonly prefix: string;
 

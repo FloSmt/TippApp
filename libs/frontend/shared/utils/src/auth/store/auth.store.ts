@@ -8,14 +8,19 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { LoginDto, RegisterDto } from '@tippapp/shared/data-access';
-import { AxiosError } from 'axios';
+import {
+  ApiValidationErrorMessage,
+  LoginDto,
+  RegisterDto,
+} from '@tippapp/shared/data-access';
+import { HttpErrorResponse } from '@angular/common/module.d-CnjH8Dlt';
 import { AuthService } from '../index';
+import { ErrorManagementService } from '../../error-management/error-management.service';
 
 type AuthState = {
   isLoading: boolean;
   accessToken: string | null;
-  error: string | null;
+  error: ApiValidationErrorMessage[] | null;
 };
 
 const initialState: AuthState = {
@@ -32,36 +37,51 @@ export const AuthStore = signalStore(
     hasError: computed(() => !!store.error()),
   })),
 
-  withMethods((store, authService = inject(AuthService)) => ({
-    registrationSuccess: (accessToken: string) => {
-      patchState(store, { isLoading: false, accessToken });
-    },
+  withMethods(
+    (
+      store,
+      authService = inject(AuthService),
+      errorService = inject(ErrorManagementService)
+    ) => ({
+      registrationSuccess: (accessToken: string) => {
+        patchState(store, { isLoading: false, accessToken });
+      },
 
-    registrationFailure: (error: string) => {
-      patchState(store, { isLoading: false, error });
-    },
+      registrationFailure: (error: HttpErrorResponse) => {
+        patchState(store, {
+          isLoading: false,
+          error: errorService.handleValidationError(error),
+        });
+      },
 
-    loginSuccess: (accessToken: string) => {
-      patchState(store, { isLoading: false, accessToken });
-    },
+      loginSuccess: (accessToken: string) => {
+        patchState(store, { isLoading: false, accessToken });
+      },
 
-    loginFailure: (error: string) => {
-      patchState(store, { isLoading: false, error });
-    },
+      loginFailure: (error: HttpErrorResponse) => {
+        patchState(store, {
+          isLoading: false,
+          error: errorService.handleValidationError(error),
+        });
+      },
 
-    refreshSuccess: (accessToken: string) => {
-      patchState(store, { isLoading: false, accessToken });
-    },
+      refreshSuccess: (accessToken: string) => {
+        patchState(store, { isLoading: false, accessToken });
+      },
 
-    refreshFailure: (error: string) => {
-      patchState(store, { isLoading: false, error });
-    },
+      refreshFailure: (error: HttpErrorResponse) => {
+        patchState(store, {
+          isLoading: false,
+          error: errorService.handleValidationError(error),
+        });
+      },
 
-    logoutAndRedirect: () => {
-      patchState(store, { isLoading: false, accessToken: null });
-      authService.logoutAndRedirect();
-    },
-  })),
+      logoutAndRedirect: () => {
+        patchState(store, { isLoading: false, accessToken: null });
+        authService.logoutAndRedirect();
+      },
+    })
+  ),
 
   withMethods((store, authService = inject(AuthService)) => ({
     registerNewUser: rxMethod<{ registerDto: RegisterDto }>(
@@ -70,8 +90,8 @@ export const AuthStore = signalStore(
         switchMap(({ registerDto }) =>
           authService.registerNewUser(registerDto).pipe(
             tap((response) => store.registrationSuccess(response.accessToken)),
-            catchError((err: AxiosError) => {
-              store.registrationFailure(err.message);
+            catchError((err) => {
+              store.registrationFailure(err);
               return EMPTY;
             })
           )
@@ -87,7 +107,7 @@ export const AuthStore = signalStore(
             tap((response) => store.loginSuccess(response.accessToken)),
             catchError((err) => {
               console.log('Login error:', err);
-              store.loginFailure(err.message);
+              store.loginFailure(err);
               return EMPTY;
             })
           )
