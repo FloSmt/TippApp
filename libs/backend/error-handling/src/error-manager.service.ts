@@ -14,6 +14,6 @@ export class ErrorManagerService {
       httpStatus || HttpStatus.BAD_REQUEST
     );
 
-    throw new HttpException(errorBody, errorBody.httpStatus);
+    throw new HttpException(errorBody, errorBody.status);
   }
 }
