@@ -21,7 +21,7 @@ export class AuthService {
     const user = await this.userService.findByEmail(loginDto.email);
 
     if (!user) {
-      this.errorManager.createError(
+      throw this.errorManager.createError(
         ErrorCodes.Auth.USER_NOT_FOUND,
         HttpStatus.NOT_FOUND
       );
@@ -32,7 +32,7 @@ export class AuthService {
       user.password
     );
     if (!isPasswordMatch) {
-      this.errorManager.createError(
+      throw this.errorManager.createError(
         ErrorCodes.Auth.INVALID_CREDENTIALS,
         HttpStatus.UNAUTHORIZED
       );
@@ -54,7 +54,7 @@ export class AuthService {
       (await this.userService.findByEmail(registerDto.email)) != null;
 
     if (userAlreadyExists) {
-      this.errorManager.createError(
+      throw this.errorManager.createError(
         ErrorCodes.Auth.EMAIL_ALREADY_EXISTS,
         HttpStatus.CONFLICT
       );
@@ -79,7 +79,7 @@ export class AuthService {
     const user = await this.userService.findByRefreshToken(refreshToken);
 
     if (!user || !refreshToken) {
-      this.errorManager.createError(
+      throw this.errorManager.createError(
         ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
         HttpStatus.UNAUTHORIZED
       );
