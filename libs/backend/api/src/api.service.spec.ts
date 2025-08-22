@@ -1,16 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpService } from '@nestjs/axios';
-import { of, throwError } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import {
-  GroupResponse,
-  LeagueResponse,
-  MatchResponse,
-} from '@tippapp/shared/data-access';
-import { HttpException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { MatchResponseMock } from './mocks';
-import { ApiService } from './api.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {HttpService} from '@nestjs/axios';
+import {of, throwError} from 'rxjs';
+import {AxiosResponse} from 'axios';
+import {GroupResponse, LeagueResponse, MatchResponse,} from '@tippapp/shared/data-access';
+import {HttpException} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {MatchResponseMock} from './mocks';
+import {ApiService} from './api.service';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -24,7 +20,7 @@ describe('ApiService', () => {
       providers: [
         ApiService,
         ConfigService,
-        { provide: HttpService, useValue: mockHttpService },
+        {provide: HttpService, useValue: mockHttpService},
       ],
     }).compile();
 
@@ -49,6 +45,10 @@ describe('ApiService', () => {
       const result = await service.getMatchData('bl1', 2024, 1);
       expect(result).toHaveLength(2);
       expect(result[0]).toBeInstanceOf(MatchResponse);
+
+      const resultWithoutMatchday = await service.getMatchData('bl1', 2024);
+      expect(resultWithoutMatchday).toHaveLength(2);
+      expect(resultWithoutMatchday[0]).toBeInstanceOf(MatchResponse);
     });
 
     it('should throw HttpException on error', async () => {
@@ -65,9 +65,9 @@ describe('ApiService', () => {
   describe('getAvailableLeagues', () => {
     it('should return filtered LeagueResponse[]', async () => {
       const mockData = [
-        { sport: { sportId: 1 }, name: 'League 1' },
-        { sport: { sportId: 79 }, name: 'League 2' },
-        { sport: { sportId: 5 }, name: 'Other' },
+        {sport: {sportId: 1}, name: 'League 1'},
+        {sport: {sportId: 79}, name: 'League 2'},
+        {sport: {sportId: 5}, name: 'Other'},
       ];
       const response: AxiosResponse = {
         data: mockData,
@@ -98,7 +98,7 @@ describe('ApiService', () => {
 
   describe('getAvailableGroups', () => {
     it('should return GroupResponse[]', async () => {
-      const mockData = [{ groupId: 1 }, { groupId: 2 }];
+      const mockData = [{groupId: 1}, {groupId: 2}];
       const response: AxiosResponse = {
         data: mockData,
         status: 200,
