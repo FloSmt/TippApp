@@ -13,7 +13,7 @@ import {
   LoginDto,
   RegisterDto,
 } from '@tippapp/shared/data-access';
-import { HttpErrorResponse } from '@angular/common/module.d-CnjH8Dlt';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../index';
 import { ErrorManagementService } from '../../error-management/error-management.service';
 

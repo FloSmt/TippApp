@@ -1,12 +1,16 @@
-import {TestBed} from '@angular/core/testing';
-import {HttpErrorResponse, HttpEvent, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpInterceptorFn,
+  HttpRequest,
+} from '@angular/common/http';
 
-import {signal} from "@angular/core";
-import {AuthStore} from "@tippapp/frontend/utils";
-import {firstValueFrom, of, throwError} from "rxjs";
-import {authInterceptor} from "./auth.interceptor";
-import {AuthInterceptorService} from "./auth-interceptor.service";
-
+import { signal } from '@angular/core';
+import { AuthStore } from '@tippapp/frontend/utils';
+import { firstValueFrom, of, throwError } from 'rxjs';
+import { authInterceptor } from './auth.interceptor';
+import { AuthInterceptorService } from './auth-interceptor.service';
 
 describe('authInterceptor', () => {
   const interceptor: HttpInterceptorFn = (req, next) =>
@@ -18,9 +22,8 @@ describe('authInterceptor', () => {
 
   const mockAuthInterceptorService = {
     isRefreshing: false,
-    refreshTokenSignal: signal<string | null>(null)
-
-  }
+    refreshTokenSignal: signal<string | null>(null),
+  };
 
   const mockAuthStore = {
     accessToken: signal<string | null>(null),
@@ -28,20 +31,20 @@ describe('authInterceptor', () => {
     isLoading: jest.fn().mockReturnValue(false),
     refreshAccessToken: jest.fn(),
     logoutAndRedirect: jest.fn(),
-  }
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
           provide: AuthStore,
-          useValue: mockAuthStore
+          useValue: mockAuthStore,
         },
         {
           provide: AuthInterceptorService,
-          useValue: mockAuthInterceptorService
-        }
-      ]
+          useValue: mockAuthInterceptorService,
+        },
+      ],
     });
   });
 
@@ -69,14 +72,21 @@ describe('authInterceptor', () => {
 
     interceptor(mockRequest, nextMock).subscribe(() => {
       expect(nextMock).toHaveBeenCalled();
-      const modifiedRequest = Array.from(nextMock.mock.calls[0])[0] as HttpRequest<any>;
-      expect(modifiedRequest.headers.get('Authorization')).toBe(`Bearer ${accessToken}`);
+      const modifiedRequest = Array.from(
+        nextMock.mock.calls[0]
+      )[0] as HttpRequest<any>;
+      expect(modifiedRequest.headers.get('Authorization')).toBe(
+        `Bearer ${accessToken}`
+      );
       done();
     });
   });
 
   it('should pass the request if no Unauthorized-Error', async () => {
-    const mockError = new HttpErrorResponse({status: 500, statusText: 'Internal Server Error'});
+    const mockError = new HttpErrorResponse({
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
     nextMock.mockReturnValue(throwError(() => mockError));
 
     try {
@@ -89,8 +99,31 @@ describe('authInterceptor', () => {
     expect(mockAuthStore.logoutAndRedirect).not.toHaveBeenCalled();
   });
 
+  it('should pass the request if auth-route has Unauthorized-Error', async () => {
+    const mockError = new HttpErrorResponse({
+      status: 401,
+      statusText: 'Unauthorized',
+    });
+    nextMock.mockReturnValue(throwError(() => mockError));
+
+    const mockRequestWithAuthRoute = mockRequest.clone({
+      url: '/api/auth/login',
+    });
+
+    try {
+      await firstValueFrom(interceptor(mockRequestWithAuthRoute, nextMock));
+    } catch (error: any) {
+      expect(error.status).toBe(401);
+      expect(error.statusText).toBe('Unauthorized');
+    }
+    expect(mockAuthStore.refreshAccessToken).not.toHaveBeenCalled();
+    expect(mockAuthStore.logoutAndRedirect).not.toHaveBeenCalled();
+  });
+
   it('should handle a 401 error and initiate a token refresh', async () => {
-    nextMock.mockReturnValueOnce(throwError(() => new HttpErrorResponse({status: 401})));
+    nextMock.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 401 }))
+    );
 
     //Simulate refreshed accessToken
     mockAuthStore.accessToken.set('access-token');
@@ -101,12 +134,18 @@ describe('authInterceptor', () => {
     expect(mockAuthStore.refreshAccessToken).toHaveBeenCalled();
     expect(nextMock).toHaveBeenCalledTimes(2);
 
-    const secondRequest = Array.from(nextMock.mock.calls[1])[0] as HttpRequest<any>;
-    expect(secondRequest.headers.get('Authorization')).toBe('Bearer access-token');
+    const secondRequest = Array.from(
+      nextMock.mock.calls[1]
+    )[0] as HttpRequest<any>;
+    expect(secondRequest.headers.get('Authorization')).toBe(
+      'Bearer access-token'
+    );
   });
 
   it('should pass 401-Error if refresh Token failed', async () => {
-    nextMock.mockReturnValueOnce(throwError(() => new HttpErrorResponse({status: 401})));
+    nextMock.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 401 }))
+    );
 
     mockAuthStore.refreshAccessToken.mockImplementationOnce(() => {
       mockAuthStore.accessToken.set(null);
@@ -128,7 +167,9 @@ describe('authInterceptor', () => {
       mockAuthInterceptorService.refreshTokenSignal.set('refreshed-token');
     }, 10);
 
-    nextMock.mockReturnValueOnce(throwError(() => new HttpErrorResponse({status: 401})));
+    nextMock.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 401 }))
+    );
     nextMock.mockReturnValueOnce(of({} as HttpEvent<any>));
 
     await firstValueFrom(interceptor(mockRequest, nextMock));
@@ -136,7 +177,11 @@ describe('authInterceptor', () => {
     expect(mockAuthStore.refreshAccessToken).not.toHaveBeenCalled();
     expect(nextMock).toHaveBeenCalledTimes(2);
 
-    const secondRequest = Array.from(nextMock.mock.calls[1])[0] as HttpRequest<any>;
-    expect(secondRequest.headers.get('Authorization')).toBe('Bearer refreshed-token');
+    const secondRequest = Array.from(
+      nextMock.mock.calls[1]
+    )[0] as HttpRequest<any>;
+    expect(secondRequest.headers.get('Authorization')).toBe(
+      'Bearer refreshed-token'
+    );
   });
 });
