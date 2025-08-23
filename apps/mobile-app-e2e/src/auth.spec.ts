@@ -34,6 +34,36 @@ test.describe('Authentication', () => {
       await loginPage.switchToRegisterButton.click();
       await expect(loginPage.page).toHaveURL('/auth/register');
     });
+
+    test('should show error message below input-field if Backend throw Validation-Error', async ({loginPage, page}) => {
+      await mockResponse(page, 'api/auth/login', {
+        status: 422,
+        body: {
+          status: 422,
+          message: "Validation failed.",
+          validationMessages: [
+            {
+              property: "email",
+              constraints: {
+                isEmail: "dummyMessage"
+              }
+            },
+            {
+              property: "password",
+              constraints: {
+                dummyKey: "dummyMessage",
+              }
+            },
+          ]
+        }
+      });
+
+      await loginPage.fillInputs('test@email.de', '123456');
+      await loginPage.loginButton.click();
+
+      await expect(loginPage.inputErrorText(loginPage.emailInputContainer)).toHaveText('Ungültige E-Mail-Adresse.');
+      await expect(loginPage.inputErrorText(loginPage.passwordInputContainer)).toHaveText('Ungültige Eingabe.');
+    })
   });
 
   test.describe('Register Page', () => {
@@ -71,6 +101,47 @@ test.describe('Authentication', () => {
       await registerPage.switchToLoginButton.click();
       await expect(registerPage.page).toHaveURL('/auth/login');
     });
+
+    test('should show error message below input-field if Backend throw Validation-Error', async ({
+                                                                                                   registerPage,
+                                                                                                   page
+                                                                                                 }) => {
+      await mockResponse(page, 'api/auth/register', {
+        status: 422,
+        body: {
+          status: 422,
+          message: "Validation failed.",
+          validationMessages: [
+            {
+              property: "email",
+              constraints: {
+                isEmail: "email must be an email"
+              }
+            },
+            {
+              property: "password",
+              constraints: {
+                dummyKey: "dummyMessage",
+              }
+            },
+            {
+              property: "username",
+              constraints: {
+                dummyKey: "dummyMessage",
+              }
+            },
+          ]
+        }
+      });
+
+      await registerPage.fillInputs('testUser', 'test@email.de', '123456', '123456');
+      await registerPage.registerButton.click();
+
+      await expect(registerPage.inputErrorText(registerPage.usernameInputContainer)).toHaveText('Ungültige Eingabe.');
+      await expect(registerPage.inputErrorText(registerPage.emailInputContainer)).toHaveText('Ungültige E-Mail-Adresse.');
+      await expect(registerPage.inputErrorText(registerPage.passwordInputContainer)).toHaveText('Ungültige Eingabe.');
+      await expect(registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)).toBeHidden()
+    })
   });
 
   test.describe('Refresh-Flow', () => {
@@ -90,5 +161,42 @@ test.describe('Authentication', () => {
       await page.goto('');
       await expect(page.getByTestId('test-header')).toBeVisible();
     });
+  });
+
+  test.describe('Error Toast-Notifications', () => {
+    test('should show toast with correct message if backend returns specific error-codes', async ({
+                                                                                                    loginPage,
+                                                                                                    page
+                                                                                                  }) => {
+      await mockResponse(page, 'api/auth/login', {
+        status: 401,
+        body: {
+          status: 401,
+          message: "dummyMessage",
+          code: "AUTH.INVALID_CREDENTIALS"
+        }
+      });
+
+      await loginPage.fillInputs('test@email.de', '123456');
+      await loginPage.loginButton.click();
+      await expect(loginPage.toastNotification()).toHaveText('Passwort und Nutzername stimmen nicht überein.');
+    });
+
+    test('should show toast with correct message if backend returns a unexpected Backend-Error', async ({
+                                                                                                          loginPage,
+                                                                                                          page
+                                                                                                        }) => {
+      await mockResponse(page, 'api/auth/login', {
+        status: 401,
+        body: {
+          status: 401,
+          message: "dummyMessage"
+        }
+      });
+
+      await loginPage.fillInputs('test@email.de', '123456');
+      await loginPage.loginButton.click();
+      await expect(loginPage.toastNotification()).toHaveText('Unbekannter Fehler ist aufgetreten. Versuche es später erneut.');
+    })
   });
 });

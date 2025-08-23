@@ -1,5 +1,5 @@
-import {Component, effect, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { Component, effect, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormControl,
@@ -10,9 +10,9 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import {addIcons} from 'ionicons';
-import {mail} from 'ionicons/icons';
-import {AuthStore} from '@tippapp/frontend/utils';
+import { addIcons } from 'ionicons';
+import { mail } from 'ionicons/icons';
+import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
 import {
   IonButton,
   IonContent,
@@ -21,7 +21,8 @@ import {
   IonLabel,
   IonSpinner,
 } from '@ionic/angular/standalone';
-import {Router} from "@angular/router";
+import { Router } from '@angular/router';
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 
 @Component({
   selector: 'lib-register-page',
@@ -41,6 +42,8 @@ import {Router} from "@angular/router";
 })
 export class RegisterPageComponent {
   readonly authStore = inject(AuthStore);
+  readonly errorManagagementService = inject(ErrorManagementService);
+  readonly router = inject(Router);
 
   registerForm = new FormGroup({
     username: new FormControl('', [
@@ -60,11 +63,24 @@ export class RegisterPageComponent {
 
   isLoading = this.authStore.isLoading;
 
-  constructor(public router: Router) {
-    addIcons({mail});
+  constructor() {
+    addIcons({ mail });
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
+      }
+
+      if (this.authStore.hasError()) {
+        const errorMessages: ApiValidationErrorMessage[] | null =
+          this.authStore.error();
+        if (errorMessages) {
+          errorMessages.forEach((error) => {
+            const control = this.registerForm.get(error.property);
+            if (control) {
+              control.setErrors({ backendError: error });
+            }
+          });
+        }
       }
     });
   }
@@ -77,8 +93,10 @@ export class RegisterPageComponent {
     if (!this.registerForm.invalid && username && email && password) {
       this.authStore.registerNewUser({
         registerDto: {
-          username, email, password
-        }
+          username,
+          email,
+          password,
+        },
       });
     }
   }
@@ -95,7 +113,7 @@ export class RegisterPageComponent {
     if (control?.hasError('minlength')) {
       return controlName === 'username'
         ? `Nutzername muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`
-        : `Passwort muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`
+        : `Passwort muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`;
     }
     if (control?.hasError('email')) {
       return 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
@@ -104,6 +122,13 @@ export class RegisterPageComponent {
     if (control?.hasError('passwordMismatch')) {
       return 'Die Passwörter stimmen nicht überein.';
     }
+
+    if (control?.hasError('backendError')) {
+      return this.errorManagagementService.getMessageForValidationError(
+        control.errors?.['backendError'] as ApiValidationErrorMessage
+      );
+    }
+
     return '';
   }
 
@@ -113,7 +138,7 @@ export class RegisterPageComponent {
       if (!formGroup) return null;
       const password = formGroup.get('password')?.value;
       const confirmPassword = control.value;
-      return password !== confirmPassword ? {passwordMismatch: true} : null;
+      return password !== confirmPassword ? { passwordMismatch: true } : null;
     };
   }
 

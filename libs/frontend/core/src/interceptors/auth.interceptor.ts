@@ -1,15 +1,17 @@
-import {HttpInterceptorFn, HttpRequest} from '@angular/common/http';
-import {inject} from "@angular/core";
-import {AuthStore} from "@tippapp/frontend/utils";
-import {catchError, filter, switchMap, take, throwError} from "rxjs";
-import {toObservable} from "@angular/core/rxjs-interop";
-import {AuthInterceptorService} from "./auth-interceptor.service";
+import { HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthStore } from '@tippapp/frontend/utils';
+import { catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { AuthInterceptorService } from './auth-interceptor.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authStore = inject(AuthStore);
   const authInterceptorService = inject(AuthInterceptorService);
   const tokenRefresh$ = toObservable(authStore.accessToken);
-  const refreshTokenSignal$ = toObservable(authInterceptorService.refreshTokenSignal);
+  const refreshTokenSignal$ = toObservable(
+    authInterceptorService.refreshTokenSignal
+  );
 
   const newRequest = authStore.accessToken()
     ? addToken(req, authStore.accessToken()!)
@@ -17,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(newRequest).pipe(
     catchError((err) => {
-      if (err.status === 401 && !newRequest.url.endsWith('auth/refresh')) {
+      if (err.status === 401 && !newRequest.url.includes('/auth/')) {
         if (!authInterceptorService.isRefreshing) {
           authInterceptorService.isRefreshing = true;
           authInterceptorService.refreshTokenSignal.set(null);
@@ -53,7 +55,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             switchMap((token) => {
               return next(addToken(newRequest, token!));
             })
-          )
+          );
         }
       }
 

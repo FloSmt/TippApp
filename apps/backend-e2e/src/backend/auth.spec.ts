@@ -76,7 +76,8 @@ describe('AuthController (e2e)', () => {
 
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('Email already exists');
+      expect(response.body.message).toBe('email address already exists.');
+      expect(response.body.code).toBe('AUTH.EMAIL_ALREADY_EXISTS');
     });
   });
 
@@ -112,24 +113,29 @@ describe('AuthController (e2e)', () => {
       checkCookieResponse(response, newRefreshToken);
     });
 
-    it('should throw Error 401 if user was not found or password is wrong', async () => {
-      // Login with wrong email
-      let response = await request(app.getHttpServer())
+    it('should throw Error 404 if user was not found', async () => {
+      const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.LOGIN)
         .send({email: 'wrongEmail@email.de', password: registerDto.password} as LoginDto);
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('User not found');
+      expect(response.body).toHaveProperty('code');
+      expect(response.body.message).toBe('User not found.');
+      expect(response.body.code).toBe('AUTH.USER_NOT_FOUND');
+    });
 
+    it('should throw Error 401 if password is wrong', async () => {
       // Login with wrong password
-      response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.LOGIN)
         .send({email: registerDto.email, password: 'wrongPassword'} as LoginDto);
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('Invalid credentials');
+      expect(response.body).toHaveProperty('code');
+      expect(response.body.message).toBe('invalid credentials provided.');
+      expect(response.body.code).toBe('AUTH.INVALID_CREDENTIALS');
     });
   });
 
@@ -173,7 +179,9 @@ describe('AuthController (e2e)', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('Invalid refreshToken');
+      expect(response.body).toHaveProperty('code');
+      expect(response.body.message).toBe('invalid refresh token provided.');
+      expect(response.body.code).toBe('AUTH.INVALID_REFRESH_TOKEN');
     });
 
     it('should throw Error 401 if no refreshToken was send', async () => {
@@ -183,7 +191,9 @@ describe('AuthController (e2e)', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('Invalid refreshToken');
+      expect(response.body).toHaveProperty('code');
+      expect(response.body.message).toBe('invalid refresh token provided.');
+      expect(response.body.code).toBe('AUTH.INVALID_REFRESH_TOKEN');
     });
   });
 

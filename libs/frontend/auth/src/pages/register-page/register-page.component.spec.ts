@@ -1,11 +1,17 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {provideHttpClient} from "@angular/common/http";
-import {Router} from "@angular/router";
-import {FormControl, FormGroup} from "@angular/forms";
-import {AuthStore} from "@tippapp/frontend/utils";
-import {DeepPartial} from "typeorm";
-import {signal} from "@angular/core";
-import {RegisterPageComponent} from "./register-page.component";
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { FormControl, FormGroup } from '@angular/forms';
+import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
+import { DeepPartial } from 'typeorm';
+import { signal } from '@angular/core';
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
+import { RegisterPageComponent } from './register-page.component';
 
 describe('RegisterPageComponent', () => {
   let component: RegisterPageComponent;
@@ -15,19 +21,25 @@ describe('RegisterPageComponent', () => {
   const mockAuthStore = {
     registerNewUser: jest.fn(),
     isAuthenticated: isAuthenticatedSignal,
-    isLoading: jest.fn()
-  }
+    isLoading: jest.fn(),
+    error: signal<ApiValidationErrorMessage[] | null>(null),
+    hasError: signal<boolean>(false),
+  };
+
+  const mockErrorManagementService = {
+    getMessageForValidationError: jest.fn(),
+  };
 
   const mockRouter = {
-    navigate: jest.fn()
-  }
+    navigate: jest.fn(),
+  };
 
   const defaultFormInput: FormInput = {
     username: 'testUser',
     email: 'test@user.de',
     password: 'testPassword',
-    confirmPassword: 'testPassword'
-  }
+    confirmPassword: 'testPassword',
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -36,13 +48,17 @@ describe('RegisterPageComponent', () => {
         provideHttpClient(),
         {
           provide: Router,
-          useValue: mockRouter
+          useValue: mockRouter,
         },
         {
           provide: AuthStore,
-          useValue: mockAuthStore
-        }
-      ]
+          useValue: mockAuthStore,
+        },
+        {
+          provide: ErrorManagementService,
+          useValue: mockErrorManagementService,
+        },
+      ],
     }).compileComponents();
 
     isAuthenticatedSignal.set(false);
@@ -76,14 +92,14 @@ describe('RegisterPageComponent', () => {
         username: defaultFormInput.username,
         email: defaultFormInput.email,
         password: defaultFormInput.password,
-      }
+      },
     });
   });
 
   describe('disable registration button', () => {
     beforeEach(() => {
       fillFormHelper();
-    })
+    });
     it('should disable if the Form is valid but component is Loading', () => {
       jest.spyOn(component, 'isLoading').mockReturnValue(true);
 
@@ -92,53 +108,100 @@ describe('RegisterPageComponent', () => {
     });
 
     it('should disable if the Form is invalid but component is not Loading', () => {
-      fillFormHelper({email: ''})
+      fillFormHelper({ email: '' });
       jest.spyOn(component, 'isLoading').mockReturnValue(false);
 
       expect(component.registerForm.invalid).toBeTruthy();
       expect(component.disableRegistration()).toBeTruthy();
     });
-  })
+  });
 
   describe('FormGroup', () => {
     describe('Errormessages', () => {
+      it('should set a Validation-error from the backend', fakeAsync(() => {
+        fixture = TestBed.createComponent(RegisterPageComponent);
+        component = fixture.componentInstance;
+
+        fillFormHelper({ email: 'test@email.de', password: 'test123' });
+
+        const backendError: ApiValidationErrorMessage = {
+          property: 'email',
+          constraints: { isEmail: 'Test-Message' },
+        };
+
+        mockErrorManagementService.getMessageForValidationError.mockReturnValue(
+          'Test-Message'
+        );
+
+        mockAuthStore.hasError.set(true);
+        mockAuthStore.error.set([backendError]);
+        fixture.detectChanges();
+
+        const emailControl = component.registerForm.get('email');
+        expect(emailControl?.hasError('backendError')).toBeTruthy();
+        expect(emailControl?.errors?.['backendError']).toEqual(backendError);
+        expect(
+          mockErrorManagementService.getMessageForValidationError
+        ).toHaveBeenCalledWith(backendError);
+        expect(component.getErrorMessage('email')).toBe('Test-Message');
+      }));
       it('should return the required-message if the inputs are is empty', () => {
         fillFormHelper({
           username: '',
           email: '',
           password: '',
-          confirmPassword: ''
-        })
+          confirmPassword: '',
+        });
 
-        expect(component.getErrorMessage('username')).toBe('Dieses Feld ist erforderlich.');
-        expect(component.getErrorMessage('email')).toBe('Dieses Feld ist erforderlich.');
-        expect(component.getErrorMessage('password')).toBe('Dieses Feld ist erforderlich.');
-        expect(component.getErrorMessage('confirmPassword')).toBe('Dieses Feld ist erforderlich.');
+        expect(component.getErrorMessage('username')).toBe(
+          'Dieses Feld ist erforderlich.'
+        );
+        expect(component.getErrorMessage('email')).toBe(
+          'Dieses Feld ist erforderlich.'
+        );
+        expect(component.getErrorMessage('password')).toBe(
+          'Dieses Feld ist erforderlich.'
+        );
+        expect(component.getErrorMessage('confirmPassword')).toBe(
+          'Dieses Feld ist erforderlich.'
+        );
       });
 
       it('should return the minlength-message if the inputs are is to short', () => {
         fillFormHelper({
           username: '12',
-          password: '12345'
-        })
+          password: '12345',
+        });
 
-        expect(component.getErrorMessage('username')).toBe('Nutzername muss mindestens 3 Zeichen lang sein.');
-        expect(component.getErrorMessage('password')).toBe('Passwort muss mindestens 6 Zeichen lang sein.');
+        expect(component.getErrorMessage('username')).toBe(
+          'Nutzername muss mindestens 3 Zeichen lang sein.'
+        );
+        expect(component.getErrorMessage('password')).toBe(
+          'Passwort muss mindestens 6 Zeichen lang sein.'
+        );
       });
 
       it('should return email-message if the email-input is no email', () => {
-        fillFormHelper({email: 'wrongEmail'});
-        expect(component.getErrorMessage('email')).toBe('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        fillFormHelper({ email: 'wrongEmail' });
+        expect(component.getErrorMessage('email')).toBe(
+          'Bitte geben Sie eine gültige E-Mail-Adresse ein.'
+        );
       });
-    })
+    });
 
     describe('confirmPasswordValidator', () => {
       let formGroup: FormGroup;
 
-      const setupFormGroup = (passwordValue: string, confirmPasswordValue: string) => {
+      const setupFormGroup = (
+        passwordValue: string,
+        confirmPasswordValue: string
+      ) => {
         formGroup = new FormGroup({
           password: new FormControl(passwordValue),
-          confirmPassword: new FormControl(confirmPasswordValue, component.confirmPasswordValidator())
+          confirmPassword: new FormControl(
+            confirmPasswordValue,
+            component.confirmPasswordValidator()
+          ),
         });
       };
 
@@ -160,31 +223,35 @@ describe('RegisterPageComponent', () => {
         const confirmPasswordControl = formGroup.get('confirmPassword');
         confirmPasswordControl?.updateValueAndValidity();
 
-        expect(confirmPasswordControl?.errors).toEqual({passwordMismatch: true});
+        expect(confirmPasswordControl?.errors).toEqual({
+          passwordMismatch: true,
+        });
       });
-    })
-  })
+    });
+  });
 
   it('should navigate to Login-page', () => {
     component.navigateToLoginPage();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['auth/login'])
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['auth/login']);
   });
 
   function fillFormHelper(formInput?: DeepPartial<FormInput>) {
-    const fullFormInput: FormInput = {...defaultFormInput, ...formInput};
+    const fullFormInput: FormInput = { ...defaultFormInput, ...formInput };
     component.registerForm.get('username')?.setValue(fullFormInput.username);
     component.registerForm.get('email')?.setValue(fullFormInput.email);
     component.registerForm.get('password')?.setValue(fullFormInput.password);
-    component.registerForm.get('confirmPassword')?.setValue(fullFormInput.confirmPassword);
+    component.registerForm
+      .get('confirmPassword')
+      ?.setValue(fullFormInput.confirmPassword);
 
     component.registerForm.get('username')?.markAsTouched();
     fixture.detectChanges();
   }
 
   interface FormInput {
-    username: string,
-    email: string,
-    password: string,
-    confirmPassword: string
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
   }
 });

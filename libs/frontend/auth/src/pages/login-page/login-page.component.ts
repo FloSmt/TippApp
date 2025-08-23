@@ -1,20 +1,43 @@
-import {Component, effect, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner} from "@ionic/angular/standalone";
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {AuthStore} from "@tippapp/frontend/utils";
-import {Router} from "@angular/router";
-import {addIcons} from "ionicons";
-import {mail} from "ionicons/icons";
+import { Component, effect, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  IonButton,
+  IonContent,
+  IonInput,
+  IonInputPasswordToggle,
+  IonLabel,
+  IonSpinner,
+} from '@ionic/angular/standalone';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
+import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { mail } from 'ionicons/icons';
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 
 @Component({
   selector: 'lib-login-page',
-  imports: [CommonModule, IonButton, IonContent, IonInput, IonInputPasswordToggle, IonLabel, IonSpinner, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    IonButton,
+    IonContent,
+    IonInput,
+    IonInputPasswordToggle,
+    IonLabel,
+    IonSpinner,
+    ReactiveFormsModule,
+  ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })
 export class LoginPageComponent {
   readonly authStore = inject(AuthStore);
+  readonly errorManagagementService = inject(ErrorManagementService);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -25,12 +48,26 @@ export class LoginPageComponent {
   });
 
   isLoading = this.authStore.isLoading;
+  error = this.authStore.error;
 
   constructor(public router: Router) {
-    addIcons({mail});
+    addIcons({ mail });
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
+      }
+
+      if (this.authStore.hasError()) {
+        const errorMessages: ApiValidationErrorMessage[] | null =
+          this.authStore.error();
+        if (errorMessages) {
+          errorMessages.forEach((error) => {
+            const control = this.loginForm.get(error.property);
+            if (control) {
+              control.setErrors({ backendError: error });
+            }
+          });
+        }
       }
     });
   }
@@ -42,8 +79,9 @@ export class LoginPageComponent {
     if (!this.loginForm.invalid && email && password) {
       this.authStore.loginUser({
         loginDto: {
-          email, password
-        }
+          email,
+          password,
+        },
       });
     }
   }
@@ -64,10 +102,18 @@ export class LoginPageComponent {
       return 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
     }
 
+    if (control?.hasError('backendError')) {
+      return this.errorManagagementService.getMessageForValidationError(
+        control.errors?.['backendError'] as ApiValidationErrorMessage
+      );
+    }
+
     return '';
   }
 
   navigateToRegisterPage() {
-    this.router.navigate(['auth/register'])
+    this.router.navigate(['auth/register']);
   }
+
+  protected readonly JSON = JSON;
 }
