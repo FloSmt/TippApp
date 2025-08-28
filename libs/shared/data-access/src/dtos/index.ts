@@ -8,3 +8,4 @@ export * from './tipgroup/update-tipgroup.dto';
 export * from './tipseason/create-tip-season.dto';
 export * from './matchday/create-matchday.dto';
 export * from './match/create-match.dto';
+export * from './error/api-error.dto';

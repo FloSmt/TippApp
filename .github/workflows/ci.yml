@@ -55,7 +55,9 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: |
+          node -v
+          npm install
 
       - uses: nrwl/nx-set-shas@v4
 
@@ -88,7 +90,14 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run All Unit Tests
-        run: npx nx run-many --target=test --all --parallel --configuration=ci
+        run: npx nx run-many --target=test --all --parallel --configuration=ci --coverage
+
+      - name: Upload Coverage Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: 'coverage/'
 
   # Job 3: Run Backend E2E Tests (Depends on Prepare)
   run-backend-e2e:
