@@ -13,7 +13,7 @@ export default {
     ],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-preset-angular|@angular|@ionic|@stencil/core|@ngrx|@tippapp)/)'
+    'node_modules/(?!(@angular|@ionic|ionicons|@stencil|@ionic/core|@ngrx)/)',
   ],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
