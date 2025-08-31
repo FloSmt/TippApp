@@ -1,24 +1,35 @@
+<ion-header [translucent]="false" class="page-title" mode="ios">
+  <ion-toolbar>
+    <h1>Deine Tippgruppen</h1>
+    <p class="subtile">Wähle eine Tippgruppe aus oder erstelle eine neue.</p>
+  </ion-toolbar>
+</ion-header>
 <ion-content class="ion-padding">
-  <div>
-    <div class="title">
-      <h1>Deine Tippgruppen</h1>
-      <p>Wähle eine Tippgruppe aus oder erstelle eine neue.</p>
-    </div>
-    <ion-item-group>
-      @for (tipgroup of tipgroups; track tipgroup) {
-        <ion-item>
-          <ion-label class="tipgroup-item">
-            <div class="information">
-              <h2>{{ tipgroup.name }}</h2>
-            </div>
-            <div class="icon">
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </div>
-          </ion-label>
-        </ion-item>
+  <ion-refresher slot="fixed">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-item-group class="tipgroup-list">
+    @for (tipgroup of tipgroups; track tipgroup) {
+      <ion-item href="/overview?tipgroup={{ tipgroup.id }}" lines="full">
+        <ion-label class="tipgroup-item">
+          <div class="information">
+            <h2>{{ tipgroup.name }}</h2>
+          </div>
+          <div class="icon">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </ion-label>
+      </ion-item>
 
-      }
-    </ion-item-group>
-  </div>
+    }
+  </ion-item-group>
+  <ion-footer class="button-container ion-no-border">
+    <ion-button expand="block" size="large">
+      Tippgruppe erstellen
+    </ion-button>
+    <ion-button expand="block" fill="outline" size="large">
+      Tippgruppe beitreten
+    </ion-button>
+  </ion-footer>
 </ion-content>
 

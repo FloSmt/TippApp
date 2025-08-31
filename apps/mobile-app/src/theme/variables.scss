@@ -41,6 +41,7 @@
   --ion-background-color-rgb: 251, 249, 244;
 
   --ion-text-color: #292929;
+  --ion-text-subtile-color: var(--ion-text-color-step-100);
   --ion-text-color-rgb: 41, 41, 41;
 
   --ion-text-color-step-50: #343333;
@@ -98,6 +99,30 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  font-size: clamp(0.8rem, 1.5vw + 0.1rem, 1.2rem);
+
+  .subtile {
+    color: var(--ion-text-subtile-color);
+  }
+}
+
+/* Page-Title */
+ion-header {
+  -webkit-box-shadow: none;
+  box-shadow: none !important;
+
+  &.page-title {
+    text-align: center;
+    padding-top: 2rem;
+
+    h1 {
+      font-size: 2.5em;
+    }
+
+    p {
+      font-size: 1.2em;
+    }
+  }
 }
 
 /*Footer Tab Bar*/
