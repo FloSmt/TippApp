@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {
   IonButton,
@@ -14,29 +14,45 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
-import {chevronForwardOutline, people} from 'ionicons/icons';
+import {banOutline, chevronForwardOutline, closeCircleOutline, people} from 'ionicons/icons';
 import {Router} from "@angular/router";
+import {TipgroupStore} from "@tippapp/frontend/utils";
+import {NgTemplateOutlet} from "@angular/common";
+import {toObservable} from "@angular/core/rxjs-interop";
+import {filter, take, tap} from "rxjs";
 
 @Component({
   selector: 'lib-tipgroup-list',
-  imports: [FormsModule, IonContent, IonItemGroup, IonItem, IonIcon, IonLabel, IonButton, IonFooter, IonRefresher, IonRefresherContent, IonHeader, IonToolbar],
+  imports: [FormsModule, IonContent, IonItemGroup, IonItem, IonIcon, IonLabel, IonButton, IonFooter, IonRefresher, IonRefresherContent, IonHeader, IonToolbar, NgTemplateOutlet],
   templateUrl: './tipgroup-list.page.component.html',
   styleUrl: './tipgroup-list.page.component.scss',
 })
-export class TipgroupListPageComponent {
+export class TipgroupListPageComponent implements OnInit {
   readonly router = inject(Router);
+  readonly tipgroupStore = inject(TipgroupStore);
 
-  readonly tipgroups = [
-    {id: 1, name: 'Tipgruppe A', memberCount: 5},
-    {id: 2, name: 'Tipgruppe B', memberCount: 3},
-    {id: 3, name: 'Tipgruppe C', memberCount: 8},
-  ];
+  isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoading);
+  availableTipgroups = this.tipgroupStore.availableTipgroups;
+  isLoading = this.tipgroupStore.isLoading;
+  hasError = this.tipgroupStore.hasError;
 
   constructor() {
-    addIcons({chevronForwardOutline, people});
+    addIcons({chevronForwardOutline, people, closeCircleOutline, banOutline});
   }
 
-  navigateToMainPage(tipgroupId: number) {
-    this.router.navigate(['/overview', tipgroupId]);
+  ngOnInit(): void {
+    this.tipgroupStore.loadAvailableTipgroups();
+  }
+
+
+  async refreshTipgroups(event: any) {
+
+    this.tipgroupStore.loadAvailableTipgroups();
+
+    this.isLoadingAfterRefresh$.pipe(
+      filter(isLoading => !isLoading),
+      take(1),
+      tap(() => event.target.complete())
+    ).subscribe();
   }
 }

@@ -1,10 +1,10 @@
-import { Routes } from '@angular/router';
-import { publicAuthGuard } from '@tippapp/frontend/utils';
+import {Routes} from '@angular/router';
+import {authGuard, publicAuthGuard} from '@tippapp/frontend/utils';
 
 export const routes: Routes = [
   {
     path: '',
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
     loadComponent: () =>
       import('@tippapp/frontend/tipgroup').then(
         (m) => m.TipgroupListPageComponent

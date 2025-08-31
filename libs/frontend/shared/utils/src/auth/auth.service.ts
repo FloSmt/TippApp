@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AuthResponseDto, LoginDto, RegisterDto, TipgroupResponseDto} from '@tippapp/shared/data-access';
+import {AuthResponseDto, LoginDto, RegisterDto} from '@tippapp/shared/data-access';
 import {Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";
@@ -24,10 +24,6 @@ export class AuthService {
 
   refreshAccessToken(): Observable<AuthResponseDto> {
     return this.httpClient.post<AuthResponseDto>(this.BACKEND_URL + 'auth/refresh', {}, {withCredentials: true})
-  }
-
-  testRequest(): Observable<TipgroupResponseDto> {
-    return this.httpClient.get<TipgroupResponseDto>(this.BACKEND_URL + 'user/tipgroups');
   }
 
   logoutAndRedirect() {

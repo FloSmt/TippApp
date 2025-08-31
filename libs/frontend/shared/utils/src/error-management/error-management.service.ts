@@ -1,7 +1,7 @@
-import { inject, Injectable } from '@angular/core';
-import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ToastController } from '@ionic/angular/standalone';
+import {inject, Injectable} from '@angular/core';
+import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ToastController} from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { ToastController } from '@ionic/angular/standalone';
 export class ErrorManagementService {
   private toastController = inject(ToastController);
 
-  handleValidationError(
+  handleApiError(
     error: HttpErrorResponse
   ): ApiValidationErrorMessage[] | null {
     if (error.status === 422 && error.error && error.error.validationMessages) {

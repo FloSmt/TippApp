@@ -106,6 +106,12 @@ body {
   }
 }
 
+.truncate-one-line-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Page-Title */
 ion-header {
   -webkit-box-shadow: none;
@@ -113,9 +119,9 @@ ion-header {
 
   &.page-title {
     text-align: center;
-    padding-top: 2rem;
 
     h1 {
+      margin-top: 2rem;
       font-size: 2.5em;
     }
 

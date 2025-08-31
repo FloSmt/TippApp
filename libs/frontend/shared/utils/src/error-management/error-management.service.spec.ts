@@ -1,13 +1,13 @@
-import { TestBed } from '@angular/core/testing';
-import { ToastController } from '@ionic/angular/standalone';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorManagementService } from './error-management.service';
+import {TestBed} from '@angular/core/testing';
+import {ToastController} from '@ionic/angular/standalone';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorManagementService} from './error-management.service';
 
 describe('ErrorManagementService', () => {
   let service: ErrorManagementService;
 
   const toastControllerMock = {
-    create: jest.fn().mockResolvedValue({ present: jest.fn() }),
+    create: jest.fn().mockResolvedValue({present: jest.fn()}),
   };
 
   beforeEach(() => {
@@ -32,13 +32,13 @@ describe('ErrorManagementService', () => {
       status: 422,
       error: {
         validationMessages: [
-          { property: 'email', constraints: { isEmail: 'invalid' } },
+          {property: 'email', constraints: {isEmail: 'invalid'}},
         ],
       },
     });
-    const result = service.handleValidationError(error);
+    const result = service.handleApiError(error);
     expect(result).toEqual([
-      { property: 'email', constraints: { isEmail: 'invalid' } },
+      {property: 'email', constraints: {isEmail: 'invalid'}},
     ]);
   });
 
@@ -47,9 +47,9 @@ describe('ErrorManagementService', () => {
 
     const error = new HttpErrorResponse({
       status: 400,
-      error: { code: 'AUTH.USER_NOT_FOUND' },
+      error: {code: 'AUTH.USER_NOT_FOUND'},
     });
-    const result = service.handleValidationError(error);
+    const result = service.handleApiError(error);
     expect(showToastSpy).toHaveBeenCalledWith('Nutzer wurde nicht gefunden.');
     expect(result).toBeNull();
   });
@@ -60,7 +60,7 @@ describe('ErrorManagementService', () => {
       status: 500,
       error: {},
     });
-    const result = service.handleValidationError(error);
+    const result = service.handleApiError(error);
     expect(showToastSpy).toHaveBeenCalledWith(
       'Unbekannter Fehler ist aufgetreten. Versuche es später erneut.'
     );
@@ -87,13 +87,13 @@ describe('ErrorManagementService', () => {
     expect(
       service.getMessageForValidationError({
         property: 'email',
-        constraints: { isEmail: 'invalid' },
+        constraints: {isEmail: 'invalid'},
       })
     ).toBe('Ungültige E-Mail-Adresse.');
     expect(
       service.getMessageForValidationError({
         property: 'foo',
-        constraints: { other: 'invalid' },
+        constraints: {other: 'invalid'},
       })
     ).toBe('Ungültige Eingabe.');
     expect(
@@ -106,12 +106,12 @@ describe('ErrorManagementService', () => {
 
   it('should call ToastController.create and present toast', async () => {
     const presentMock = jest.fn();
-    toastControllerMock.create.mockResolvedValue({ present: presentMock });
+    toastControllerMock.create.mockResolvedValue({present: presentMock});
 
     await service.showToastMessage('Test');
 
     expect(toastControllerMock.create).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'Test' })
+      expect.objectContaining({message: 'Test'})
     );
     expect(presentMock).toHaveBeenCalled();
   });

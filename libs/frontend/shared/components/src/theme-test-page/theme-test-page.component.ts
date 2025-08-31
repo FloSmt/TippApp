@@ -30,7 +30,7 @@ import {addIcons} from 'ionicons';
 import {add, close, library, personCircle, playCircle, radio, search,} from 'ionicons/icons';
 import {ReactiveFormsModule} from '@angular/forms';
 import {AuthService} from "@tippapp/frontend/utils";
-import {TipgroupResponseDto} from "@tippapp/shared/data-access";
+import {TipgroupEntryResponseDto} from "@tippapp/shared/data-access";
 
 @Component({
   selector: 'lib-theme-test-page',
@@ -66,7 +66,7 @@ import {TipgroupResponseDto} from "@tippapp/shared/data-access";
   styleUrl: './theme-test-page.component.scss',
 })
 export class ThemeTestPageComponent {
-  protected testResponse: WritableSignal<TipgroupResponseDto | undefined> = signal(undefined);
+  protected testResponse: WritableSignal<TipgroupEntryResponseDto | undefined> = signal(undefined);
 
   constructor(public authService: AuthService) {
     addIcons({playCircle, radio, library, search, close, add, personCircle});
