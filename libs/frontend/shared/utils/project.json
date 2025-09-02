@@ -6,7 +6,7 @@
   "projectType": "library",
   "tags": [
     "scope:frontend",
-    "type:lib"
+    "type:shared"
   ],
   "targets": {
     "test": {
