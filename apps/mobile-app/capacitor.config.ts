@@ -6,7 +6,8 @@ const config: CapacitorConfig = {
   webDir: '../../dist/apps/mobile-app/browser',
   bundledWebRuntime: false,
   server: {
-    androidScheme: 'https',
+    androidScheme: 'http', // Without https for local testing
+    cleartext: true, // Allow cleartext traffic for local testing
   },
 };
 

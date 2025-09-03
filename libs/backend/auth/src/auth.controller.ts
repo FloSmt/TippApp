@@ -92,6 +92,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response
   ) {
     const refreshToken = request.cookies['refreshToken'];
+    console.log('REFRESH TOKEN CALLED', JSON.stringify(request.cookies));
 
     const newTokens = await this.authService.refreshTokens(refreshToken);
 
@@ -103,8 +104,8 @@ export class AuthController {
   setRefreshTokenCookie(response: Response, refreshToken: string): void {
     response.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 Tage
       path: '/',
     });
