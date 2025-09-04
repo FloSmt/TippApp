@@ -9,6 +9,9 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <ion-item-group class="tipgroup-list">
+    @if (initialLoading()) {
+      <ng-container *ngTemplateOutlet="skweletonTemplate"></ng-container>
+    }
     @if (hasError() || availableTipgroups() === null && !isLoading()) {
       <ng-container *ngTemplateOutlet="errorTemplate"></ng-container>
     } @else if (availableTipgroups() && availableTipgroups()!.length === 0) {
@@ -38,6 +41,13 @@
     Tippgruppe beitreten
   </ion-button>
 </ion-footer>
+
+<ng-template #skweletonTemplate>
+  <div class="skeleton-item skeleton-animation"></div>
+  <div class="skeleton-item skeleton-animation"></div>
+  <div class="skeleton-item skeleton-animation"></div>
+  <div class="skeleton-item skeleton-animation"></div>
+</ng-template>
 
 <ng-template #errorTemplate>
   <ion-item>

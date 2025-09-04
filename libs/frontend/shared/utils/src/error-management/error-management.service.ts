@@ -10,7 +10,6 @@ export class ErrorManagementService {
   private toastController = inject(ToastController);
 
   handleApiError(error: HttpErrorResponse): ApiValidationErrorMessage[] | null {
-    console.log('API Error:', JSON.stringify(error));
     if (error.status === 422 && error.error && error.error.validationMessages) {
       return error.error.validationMessages;
     } else if (error.error.code) {

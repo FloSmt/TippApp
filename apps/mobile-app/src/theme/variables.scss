@@ -97,6 +97,23 @@
   src: url('./fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
 }
 
+// SKELETON
+
+.skeleton-animation {
+  animation: skeleton-background-animation 1s linear infinite alternate;
+}
+
+@keyframes skeleton-background-animation {
+  0% {
+    background-color: var(--ion-background-color-step-100);
+  }
+  100% {
+    background-color: var(--ion-background-color-step-50);
+  }
+}
+
+// GLOBAL STYLES
+
 body {
   font-family: 'Roboto', sans-serif;
   font-size: clamp(0.8rem, 1.5vw + 0.1rem, 1.2rem);
@@ -208,6 +225,25 @@ ion-segment {
 
 ion-list {
   --ion-item-background: transparent;
+}
+
+ion-item-group {
+  .skeleton-item {
+    border-radius: var(--ion-border-radius-xs);
+    background-color: var(--ion-background-color-step-50);
+    height: 6rem;
+    margin-bottom: 5px;
+
+    &:first-of-type {
+      border-top-left-radius: var(--ion-border-radius-l);
+      border-top-right-radius: var(--ion-border-radius-l);
+    }
+
+    &:last-of-type {
+      border-bottom-left-radius: var(--ion-border-radius-l);
+      border-bottom-right-radius: var(--ion-border-radius-l);
+    }
+  }
 }
 
 /* Item */

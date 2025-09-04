@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonButton,
@@ -21,7 +21,7 @@ import {
   people,
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
-import { TipgroupStore } from '@tippapp/frontend/utils';
+import { LoadingState, TipgroupStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
@@ -54,17 +54,20 @@ export class TipgroupListPageComponent implements OnInit {
   availableTipgroups = this.tipgroupStore.availableTipgroups;
   isLoading = this.tipgroupStore.isLoading;
   hasError = this.tipgroupStore.hasError;
+  initialLoading = computed(
+    () => this.tipgroupStore.loadingState() === LoadingState.INITIAL
+  );
 
   constructor() {
     addIcons({ chevronForwardOutline, people, closeCircleOutline, banOutline });
   }
 
   ngOnInit(): void {
-    this.tipgroupStore.loadAvailableTipgroups();
+    this.tipgroupStore.loadAvailableTipgroups({ reload: false });
   }
 
   async refreshTipgroups(event: any) {
-    this.tipgroupStore.loadAvailableTipgroups();
+    this.tipgroupStore.loadAvailableTipgroups({ reload: true });
 
     this.isLoadingAfterRefresh$
       .pipe(
