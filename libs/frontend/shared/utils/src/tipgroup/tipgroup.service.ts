@@ -14,7 +14,6 @@ export class TipgroupService {
   readonly BACKEND_URL = this.env.apiUrl;
 
   getAvailableTipgroups(): Observable<TipgroupEntryResponseDto[]> {
-    console.log('TipgroupService: getAvailableTipgroups');
     return this.httpClient.get<TipgroupEntryResponseDto[]>(
       this.BACKEND_URL + 'user/tipgroups'
     );
