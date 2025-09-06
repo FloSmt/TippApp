@@ -5,6 +5,7 @@ import {HttpTestingController, provideHttpClientTesting} from "@angular/common/h
 import {provideHttpClient} from "@angular/common/http";
 import {LoginDto, RegisterDto} from "@tippapp/shared/data-access";
 import {AuthService} from './auth.service';
+import {ENVIRONMENT} from "../environments/environment.token";
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,6 +13,10 @@ describe('AuthService', () => {
 
   const mockRouter = {
     navigate: jest.fn()
+  }
+
+  const environmentMock = {
+    apiUrl: 'testUrl'
   }
 
   beforeEach(() => {
@@ -22,6 +27,10 @@ describe('AuthService', () => {
         {
           provide: Router,
           useValue: mockRouter
+        },
+        {
+          provide: ENVIRONMENT,
+          useValue: environmentMock
         }
       ]
     });

@@ -1,12 +1,7 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import { TipgroupStore } from '@tippapp/frontend/utils';
-import { BehaviorSubject } from 'rxjs';
-import { TipgroupListPageComponent } from './tipgroup-list.page.component';
+import {ComponentFixture, fakeAsync, TestBed, tick,} from '@angular/core/testing';
+import {TipgroupStore} from '@tippapp/frontend/utils';
+import {BehaviorSubject} from 'rxjs';
+import {TipgroupListPageComponent} from './tipgroup-list.page.component';
 
 describe('TipgroupListPageComponent', () => {
   let component: TipgroupListPageComponent;
@@ -19,12 +14,13 @@ describe('TipgroupListPageComponent', () => {
     availableTipgroups: jest.fn(),
     hasError: jest.fn(),
     isLoading: jest.fn(),
+    loadingState: jest.fn()
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TipgroupListPageComponent],
-      providers: [{ provide: TipgroupStore, useValue: tipgroupStoreMock }],
+      providers: [{provide: TipgroupStore, useValue: tipgroupStoreMock}],
     }).compileComponents();
 
     isLoadingAfterRefreshSubject = new BehaviorSubject(false);
@@ -50,7 +46,7 @@ describe('TipgroupListPageComponent', () => {
   }));
 
   it('should refresh the tipgroup-list', () => {
-    const event = { target: { complete: jest.fn() } };
+    const event = {target: {complete: jest.fn()}};
     component.refreshTipgroups(event);
     expect(tipgroupStoreMock.loadAvailableTipgroups).toHaveBeenCalled();
     isLoadingAfterRefreshSubject.next(true);

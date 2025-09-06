@@ -1,21 +1,17 @@
-import { TestBed } from '@angular/core/testing';
-import {
-  ApiValidationErrorMessage,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
-import { delay, of, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorManagementService } from '../../error-management/error-management.service';
-import { AuthService } from '../index';
-import { AuthStore } from './auth.store';
+import {TestBed} from '@angular/core/testing';
+import {ApiValidationErrorMessage, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {delay, of, throwError} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorManagementService} from '../../error-management/error-management.service';
+import {AuthService} from '../index';
+import {AuthStore} from './auth.store';
 
 describe('AuthStore', () => {
   let store: InstanceType<typeof AuthStore>;
   let authService: AuthService;
 
   const mockErrorManagementService = {
-    handleValidationError: jest.fn(),
+    handleApiError: jest.fn(),
   };
 
   const mockAuthService = {
@@ -30,7 +26,7 @@ describe('AuthStore', () => {
       return [
         {
           property: 'email',
-          constraints: { isEmail: 'Email must be valid' },
+          constraints: {isEmail: 'Email must be valid'},
         },
       ];
     },
@@ -74,10 +70,10 @@ describe('AuthStore', () => {
     });
 
     it('should set hasError to true if an Error is set', () => {
-      mockErrorManagementService.handleValidationError.mockReturnValue(
+      mockErrorManagementService.handleApiError.mockReturnValue(
         mocks.mockValidationErrorContent
       );
-      store.loginFailure(new HttpErrorResponse({ error: 'test-error' }));
+      store.loginFailure(new HttpErrorResponse({error: 'test-error'}));
       expect(store.hasError()).toBe(true);
       expect(store.error()).toStrictEqual(mocks.mockValidationErrorContent);
     });
@@ -93,13 +89,13 @@ describe('AuthStore', () => {
     });
 
     it('should patch State for registrationFailure correctly', () => {
-      const mockError = new HttpErrorResponse({ error: 'test-error' });
+      const mockError = new HttpErrorResponse({error: 'test-error'});
 
       store.registrationFailure(mockError);
       expect(store.isLoading()).toBe(false);
       expect(store.accessToken()).toBeNull();
       expect(
-        mockErrorManagementService.handleValidationError
+        mockErrorManagementService.handleApiError
       ).toHaveBeenCalledWith(mockError);
     });
 
@@ -124,13 +120,13 @@ describe('AuthStore', () => {
           email: 'test@example.com',
           password: 'password123',
         };
-        const apiResponse = { accessToken: 'api-access-token' };
+        const apiResponse = {accessToken: 'api-access-token'};
 
         jest
           .spyOn(authService, 'registerNewUser')
           .mockReturnValue(of(apiResponse).pipe(delay(1)));
 
-        store.registerNewUser({ registerDto });
+        store.registerNewUser({registerDto});
 
         expect(store.isLoading()).toBe(true);
         expect(authService.registerNewUser).toHaveBeenCalledWith(registerDto);
@@ -152,7 +148,7 @@ describe('AuthStore', () => {
           error: mocks.mockValidationErrorContent,
         });
 
-        mockErrorManagementService.handleValidationError.mockReturnValue(
+        mockErrorManagementService.handleApiError.mockReturnValue(
           mocks.mockValidationErrorContent
         );
 
@@ -160,12 +156,12 @@ describe('AuthStore', () => {
           .spyOn(authService, 'registerNewUser')
           .mockReturnValue(throwError(() => mockError));
 
-        store.registerNewUser({ registerDto });
+        store.registerNewUser({registerDto});
 
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
         expect(
-          mockErrorManagementService.handleValidationError
+          mockErrorManagementService.handleApiError
         ).toHaveBeenCalledWith(mockError);
         expect(store.error()).toStrictEqual(mocks.mockValidationErrorContent);
       });
@@ -177,13 +173,13 @@ describe('AuthStore', () => {
           email: 'test@example.com',
           password: 'password123',
         };
-        const apiResponse = { accessToken: 'api-access-token' };
+        const apiResponse = {accessToken: 'api-access-token'};
 
         jest
           .spyOn(authService, 'loginUser')
           .mockReturnValue(of(apiResponse).pipe(delay(1)));
 
-        store.loginUser({ loginDto });
+        store.loginUser({loginDto});
 
         expect(store.isLoading()).toBe(true);
         expect(authService.loginUser).toHaveBeenCalledWith(loginDto);
@@ -204,7 +200,7 @@ describe('AuthStore', () => {
           error: mocks.mockValidationErrorContent,
         });
 
-        mockErrorManagementService.handleValidationError.mockReturnValue(
+        mockErrorManagementService.handleApiError.mockReturnValue(
           mocks.mockValidationErrorContent
         );
 
@@ -212,12 +208,12 @@ describe('AuthStore', () => {
           .spyOn(authService, 'loginUser')
           .mockReturnValue(throwError(() => mockError));
 
-        store.loginUser({ loginDto });
+        store.loginUser({loginDto});
 
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
         expect(
-          mockErrorManagementService.handleValidationError
+          mockErrorManagementService.handleApiError
         ).toHaveBeenCalledWith(mockError);
         expect(store.error()).toStrictEqual(mocks.mockValidationErrorContent);
       });
@@ -225,7 +221,7 @@ describe('AuthStore', () => {
 
     describe('refreshAccessToken', () => {
       it('should patch state on success correctly', (done) => {
-        const apiResponse = { accessToken: 'refreshed-token' };
+        const apiResponse = {accessToken: 'refreshed-token'};
         jest
           .spyOn(authService, 'refreshAccessToken')
           .mockReturnValue(of(apiResponse).pipe(delay(1)));
@@ -243,9 +239,9 @@ describe('AuthStore', () => {
       });
 
       it('should patch state on error correctly', () => {
-        const mockError = new HttpErrorResponse({ error: 'test-error' });
+        const mockError = new HttpErrorResponse({error: 'test-error'});
 
-        mockErrorManagementService.handleValidationError.mockReturnValue(null);
+        mockErrorManagementService.handleApiError.mockReturnValue(null);
 
         jest
           .spyOn(authService, 'refreshAccessToken')
@@ -256,7 +252,7 @@ describe('AuthStore', () => {
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
         expect(
-          mockErrorManagementService.handleValidationError
+          mockErrorManagementService.handleApiError
         ).toHaveBeenCalledWith(mockError);
         expect(store.error()).toBe(null);
         expect(mockAuthService.logoutAndRedirect).toHaveBeenCalledTimes(1);

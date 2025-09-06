@@ -1,14 +1,14 @@
 <ion-header [translucent]="false" class="page-title" mode="ios">
   <ion-toolbar>
-    <h1>Deine Tippgruppen</h1>
+    <h1 data-testid="header">Deine Tippgruppen</h1>
     <p class="subtile">Wähle eine Tippgruppe aus oder erstelle eine neue.</p>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-refresher (ionRefresh)="refreshTipgroups($event)" slot="fixed">
-    <ion-refresher-content></ion-refresher-content>
+    <ion-refresher-content data-testid="refresher-content"></ion-refresher-content>
   </ion-refresher>
-  <ion-item-group class="tipgroup-list">
+  <ion-item-group class="tipgroup-list" data-testid="item-group">
     @if (initialLoading()) {
       <ng-container *ngTemplateOutlet="skweletonTemplate"></ng-container>
     }
@@ -18,7 +18,7 @@
       <ng-container *ngTemplateOutlet="emptyListTemplate"></ng-container>
     } @else {
       @for (tipgroup of availableTipgroups(); track tipgroup) {
-        <ion-item href="/overview?tipgroup={{ tipgroup.id }}" lines="full">
+        <ion-item href="/overview?tipgroup={{ tipgroup.id }}" lines="full" data-testid="tipgroup-item">
           <ion-label class="tipgroup-item">
             <div class="information truncate-one-line-text">
               <h2>{{ tipgroup.name }}</h2>
@@ -34,16 +34,16 @@
   </ion-item-group>
 </ion-content>
 <ion-footer class="button-container ion-no-border ion-padding">
-  <ion-button expand="block" size="large">
+  <ion-button data-testid="create-tipgroup-button" expand="block" size="large">
     Tippgruppe erstellen
   </ion-button>
-  <ion-button expand="block" fill="outline" size="large">
+  <ion-button data-testid="join-tipgroup-button" expand="block" fill="outline" size="large">
     Tippgruppe beitreten
   </ion-button>
 </ion-footer>
 
 <ng-template #skweletonTemplate>
-  <div class="skeleton-item skeleton-animation"></div>
+  <div class="skeleton-item skeleton-animation" data-testid="skeleton-card"></div>
   <div class="skeleton-item skeleton-animation"></div>
   <div class="skeleton-item skeleton-animation"></div>
   <div class="skeleton-item skeleton-animation"></div>
@@ -51,7 +51,7 @@
 
 <ng-template #errorTemplate>
   <ion-item>
-    <ion-label class="error-card">
+    <ion-label class="error-card" data-testid="error-card">
       <div class="icon">
         <ion-icon name="close-circle-outline"></ion-icon>
       </div>
@@ -65,7 +65,7 @@
 
 <ng-template #emptyListTemplate>
   <ion-item>
-    <ion-label class="no-tipgroups-card">
+    <ion-label class="no-tipgroups-card" data-testid="empty-card">
       <div class="icon">
         <ion-icon name="ban-outline"></ion-icon>
       </div>
