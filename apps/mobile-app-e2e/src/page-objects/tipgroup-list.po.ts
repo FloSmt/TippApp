@@ -27,6 +27,7 @@ export class TipgroupListPage {
 
   async goto() {
     await this.page.goto('');
+    await this.page.waitForURL('')
   }
 
   getRefreshSpinner() {
