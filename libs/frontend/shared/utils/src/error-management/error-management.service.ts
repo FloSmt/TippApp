@@ -1,38 +1,18 @@
-import { inject, Injectable } from '@angular/core';
-import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ToastController } from '@ionic/angular/standalone';
+import {Injectable} from '@angular/core';
+import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ErrorManagementService {
-  private toastController = inject(ToastController);
 
-  handleApiError(error: HttpErrorResponse): ApiValidationErrorMessage[] | null {
+  getValidationError(error: HttpErrorResponse): ApiValidationErrorMessage[] | null {
     if (error.status === 422 && error.error && error.error.validationMessages) {
       return error.error.validationMessages;
-    } else if (error.error.code) {
-      this.showToastMessage(this.getMessageForErrorCode(error.error.code));
+    } else {
       return null;
     }
-
-    this.showToastMessage(
-      'Unbekannter Fehler ist aufgetreten. Versuche es später erneut.'
-    );
-    return null;
-  }
-
-  showToastMessage(message: string) {
-    this.toastController
-      .create({
-        message: message,
-        duration: 6000,
-        position: 'bottom',
-      })
-      .then((toast) => {
-        toast.present();
-      });
   }
 
   getMessageForErrorCode(errorCode: string): string {

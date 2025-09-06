@@ -1,20 +1,15 @@
-import { TestBed } from '@angular/core/testing';
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpInterceptorFn,
-  HttpRequest,
-} from '@angular/common/http';
+import {TestBed} from '@angular/core/testing';
+import {HttpErrorResponse, HttpEvent, HttpInterceptorFn, HttpRequest,} from '@angular/common/http';
 
-import { signal } from '@angular/core';
-import { AuthStore } from '@tippapp/frontend/utils';
-import { firstValueFrom, of, throwError } from 'rxjs';
-import { authInterceptor } from './auth.interceptor';
-import { AuthInterceptorService } from './auth-interceptor.service';
+import {signal} from '@angular/core';
+import {AuthStore} from '@tippapp/frontend/utils';
+import {firstValueFrom, of, throwError} from 'rxjs';
+import {authHeaderInterceptor} from './auth-header.interceptor';
+import {InterceptorService} from './interceptor.service';
 
-describe('authInterceptor', () => {
+describe('authHeaderInterceptor', () => {
   const interceptor: HttpInterceptorFn = (req, next) =>
-    TestBed.runInInjectionContext(() => authInterceptor(req, next));
+    TestBed.runInInjectionContext(() => authHeaderInterceptor(req, next));
 
   const mockRequest = new HttpRequest('GET', '/api');
 
@@ -41,7 +36,7 @@ describe('authInterceptor', () => {
           useValue: mockAuthStore,
         },
         {
-          provide: AuthInterceptorService,
+          provide: InterceptorService,
           useValue: mockAuthInterceptorService,
         },
       ],
@@ -122,7 +117,7 @@ describe('authInterceptor', () => {
 
   it('should handle a 401 error and initiate a token refresh', async () => {
     nextMock.mockReturnValueOnce(
-      throwError(() => new HttpErrorResponse({ status: 401 }))
+      throwError(() => new HttpErrorResponse({status: 401}))
     );
 
     //Simulate refreshed accessToken
@@ -144,7 +139,7 @@ describe('authInterceptor', () => {
 
   it('should pass 401-Error if refresh Token failed', async () => {
     nextMock.mockReturnValueOnce(
-      throwError(() => new HttpErrorResponse({ status: 401 }))
+      throwError(() => new HttpErrorResponse({status: 401}))
     );
 
     mockAuthStore.refreshAccessToken.mockImplementationOnce(() => {
@@ -168,7 +163,7 @@ describe('authInterceptor', () => {
     }, 10);
 
     nextMock.mockReturnValueOnce(
-      throwError(() => new HttpErrorResponse({ status: 401 }))
+      throwError(() => new HttpErrorResponse({status: 401}))
     );
     nextMock.mockReturnValueOnce(of({} as HttpEvent<any>));
 

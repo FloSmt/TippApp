@@ -36,7 +36,7 @@ describe('ErrorManagementService', () => {
         ],
       },
     });
-    const result = service.handleApiError(error);
+    const result = service.getValidationError(error);
     expect(result).toEqual([
       {property: 'email', constraints: {isEmail: 'invalid'}},
     ]);
@@ -49,7 +49,7 @@ describe('ErrorManagementService', () => {
       status: 400,
       error: {code: 'AUTH.USER_NOT_FOUND'},
     });
-    const result = service.handleApiError(error);
+    const result = service.getValidationError(error);
     expect(showToastSpy).toHaveBeenCalledWith('Nutzer wurde nicht gefunden.');
     expect(result).toBeNull();
   });
@@ -60,7 +60,7 @@ describe('ErrorManagementService', () => {
       status: 500,
       error: {},
     });
-    const result = service.handleApiError(error);
+    const result = service.getValidationError(error);
     expect(showToastSpy).toHaveBeenCalledWith(
       'Unbekannter Fehler ist aufgetreten. Versuche es später erneut.'
     );
