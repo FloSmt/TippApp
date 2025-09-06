@@ -1,24 +1,21 @@
-import { Component, effect, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, effect, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {
   IonButton,
   IonContent,
+  IonHeader,
   IonInput,
   IonInputPasswordToggle,
   IonLabel,
   IonSpinner,
+  IonToolbar,
 } from '@ionic/angular/standalone';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
-import { Router } from '@angular/router';
-import { addIcons } from 'ionicons';
-import { mail } from 'ionicons/icons';
-import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators,} from '@angular/forms';
+import {AuthStore, ErrorManagementService} from '@tippapp/frontend/utils';
+import {Router} from '@angular/router';
+import {addIcons} from 'ionicons';
+import {mail} from 'ionicons/icons';
+import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
 
 @Component({
   selector: 'lib-login-page',
@@ -31,6 +28,8 @@ import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
     IonLabel,
     IonSpinner,
     ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
@@ -51,7 +50,7 @@ export class LoginPageComponent {
   error = this.authStore.error;
 
   constructor(public router: Router) {
-    addIcons({ mail });
+    addIcons({mail});
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
@@ -64,7 +63,7 @@ export class LoginPageComponent {
           errorMessages.forEach((error) => {
             const control = this.loginForm.get(error.property);
             if (control) {
-              control.setErrors({ backendError: error });
+              control.setErrors({backendError: error});
             }
           });
         }

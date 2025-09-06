@@ -1,2 +1,4 @@
 export * from './auth';
+export * from './tipgroup';
+export * from './environments/environment.token';
 export * from './error-management/error-management.service';

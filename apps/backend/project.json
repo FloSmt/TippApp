@@ -3,27 +3,43 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/backend/src",
   "projectType": "application",
-  "tags": ["scope:backend", "type:app"],
+  "tags": [
+    "scope:backend",
+    "type:app"
+  ],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
         "command": "webpack-cli build",
-        "args": ["node-env=production"]
+        "args": [
+          "node-env=production"
+        ]
       },
       "configurations": {
         "development": {
-          "args": ["node-env=development"]
+          "args": [
+            "node-env=development"
+          ]
         },
         "production": {
-          "args": ["node-env=production"]
+          "args": [
+            "node-env=production"
+          ]
+        },
+        "mobile-test": {
+          "args": [
+            "node-env=mobile-test"
+          ]
         }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "options": {
         "buildTarget": "backend:build",
         "runBuildTargetDependencies": false
@@ -34,6 +50,9 @@
         },
         "production": {
           "buildTarget": "backend:build:production"
+        },
+        "mobile-test": {
+          "buildTarget": "backend:build:mobile-test"
         }
       }
     },

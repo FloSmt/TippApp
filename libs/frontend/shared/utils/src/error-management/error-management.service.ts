@@ -9,9 +9,7 @@ import { ToastController } from '@ionic/angular/standalone';
 export class ErrorManagementService {
   private toastController = inject(ToastController);
 
-  handleValidationError(
-    error: HttpErrorResponse
-  ): ApiValidationErrorMessage[] | null {
+  handleApiError(error: HttpErrorResponse): ApiValidationErrorMessage[] | null {
     if (error.status === 422 && error.error && error.error.validationMessages) {
       return error.error.validationMessages;
     } else if (error.error.code) {

@@ -38,12 +38,17 @@ export default [
             },
             {
               sourceTag: 'type:app',
-              onlyDependOnLibsWithTags: ['type:app', 'type:core'],
+              onlyDependOnLibsWithTags: [
+                'type:app',
+                'type:core',
+                'type:shared',
+              ],
             },
             {
               sourceTag: 'type:core',
               onlyDependOnLibsWithTags: [
                 'type:lib',
+                'type:shared',
                 'type:core',
                 'type:data-access',
               ],
@@ -58,7 +63,11 @@ export default [
             },
             {
               sourceTag: 'type:lib',
-              onlyDependOnLibsWithTags: ['type:data-access', 'type:lib'],
+              onlyDependOnLibsWithTags: [
+                'type:data-access',
+                'type:lib',
+                'type:shared',
+              ],
             },
           ],
         },

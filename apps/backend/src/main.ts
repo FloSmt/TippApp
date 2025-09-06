@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+import * as process from 'node:process';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -18,7 +19,8 @@ async function bootstrap() {
     origin: [
       'http://localhost:4200', // Angular Entwicklungs-Server
       'http://localhost', // Ionic Android App (Capacitor)
-      'capacitor://localhost', // Ionic iOS App (Capacitor)
+      'capacitor://localhost',
+      'http://' + process.env.LOCAL_IP_ADDRESS, // Ionic iOS App (Capacitor)
       // Weitere Produktions-Ursprünge (deine Live-Domains)
     ],
   });
@@ -46,10 +48,18 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpValidationFilter());
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
+  if (process.env.MOBILE_TEST === 'true') {
+    // Nur für mobile Tests mit dem Ionic DevApp
+    await app.listen(3000, process.env.LOCAL_IP_ADDRESS);
+    Logger.log(
+      `🚀 Application is running on: http://${process.env.LOCAL_IP_ADDRESS}:${port}/${globalPrefix}`
+    );
+  } else {
+    await app.listen(port);
+    Logger.log(
+      `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
+    );
+  }
 }
 
 bootstrap();

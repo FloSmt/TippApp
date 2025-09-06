@@ -40,7 +40,7 @@ export const AuthStore = signalStore(
       registrationFailure: (error: HttpErrorResponse) => {
         patchState(store, {
           isLoading: false,
-          error: errorService.handleValidationError(error),
+          error: errorService.handleApiError(error),
         });
       },
 
@@ -51,7 +51,7 @@ export const AuthStore = signalStore(
       loginFailure: (error: HttpErrorResponse) => {
         patchState(store, {
           isLoading: false,
-          error: errorService.handleValidationError(error),
+          error: errorService.handleApiError(error),
         });
       },
 
@@ -62,7 +62,7 @@ export const AuthStore = signalStore(
       refreshFailure: (error: HttpErrorResponse) => {
         patchState(store, {
           isLoading: false,
-          error: errorService.handleValidationError(error),
+          error: errorService.handleApiError(error),
         });
       },
 
