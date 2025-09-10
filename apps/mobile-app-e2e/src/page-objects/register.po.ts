@@ -50,8 +50,4 @@ export class RegisterPage {
   inputErrorText(inputObject: Locator) {
     return inputObject.locator('.error-text');
   }
-
-  toastNotification() {
-    return this.page.locator('ion-toast');
-  }
 }

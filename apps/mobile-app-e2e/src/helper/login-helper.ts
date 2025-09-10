@@ -1,9 +1,6 @@
-import {Page} from "@playwright/test";
-import {mockResponse} from "./response-helper";
+import { Page } from '@playwright/test';
+import { mockRefreshUserResponse } from './response-helper';
 
 export async function setLoginContent(page: Page) {
-  await mockResponse(page, 'api/auth/refresh', {
-    status: 200,
-    body: {accessToken: 'mock-accessToken'},
-  });
+  await mockRefreshUserResponse(page);
 }

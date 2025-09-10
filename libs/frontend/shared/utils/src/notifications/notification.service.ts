@@ -1,48 +1,65 @@
-import {inject, Injectable} from '@angular/core';
-import {ToastController} from "@ionic/angular/standalone";
-import {addIcons} from "ionicons";
-import {alertCircle, checkmarkCircle, closeCircle} from "ionicons/icons";
+import { inject, Injectable } from '@angular/core';
+import { ToastController } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { alertCircle, checkmarkCircle, closeCircle } from 'ionicons/icons';
 
 export enum NotificationType {
   INFO,
   ERROR,
-  SUCCESS
+  SUCCESS,
 }
 
 export interface NotificationInput {
-  header?: string,
-  message: string,
-  duration?: number
+  header?: string;
+  message: string;
+  duration?: number;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   private toastController = inject(ToastController);
 
   constructor() {
-    addIcons({alertCircle, checkmarkCircle, closeCircle})
+    addIcons({ alertCircle, checkmarkCircle, closeCircle });
   }
 
-  showTypeMessage(notificationInput: NotificationInput, notificationType: NotificationType) {
-
+  showTypeMessage(
+    notificationInput: NotificationInput,
+    notificationType: NotificationType
+  ) {
     switch (notificationType) {
       case NotificationType.ERROR:
-        this.showMessage({...notificationInput, duration: 6000, header: ''}, 'toast-error', closeCircle);
+        this.showMessage(
+          { ...notificationInput, duration: 6000, header: '' },
+          'toast-error',
+          closeCircle
+        );
         break;
 
       case NotificationType.INFO:
-        this.showMessage({...notificationInput, duration: 6000, header: ''}, 'toast-info', alertCircle);
+        this.showMessage(
+          { ...notificationInput, duration: 6000, header: '' },
+          'toast-info',
+          alertCircle
+        );
         break;
 
       case NotificationType.SUCCESS:
-        this.showMessage({...notificationInput, duration: 3000, header: ''}, 'toast-success', checkmarkCircle);
+        this.showMessage(
+          { ...notificationInput, duration: 3000, header: '' },
+          'toast-success',
+          checkmarkCircle
+        );
     }
   }
 
-
-  private showMessage(notificationInput: NotificationInput, cssClass: string, iconName: string) {
+  private showMessage(
+    notificationInput: NotificationInput,
+    cssClass: string,
+    iconName: string
+  ) {
     this.toastController
       .create({
         header: notificationInput.header,
@@ -52,7 +69,7 @@ export class NotificationService {
         icon: iconName,
         positionAnchor: 'footer',
         cssClass: 'toast-message ' + cssClass,
-        swipeGesture: 'vertical'
+        swipeGesture: 'vertical',
       })
       .then((toast) => {
         toast.present();
