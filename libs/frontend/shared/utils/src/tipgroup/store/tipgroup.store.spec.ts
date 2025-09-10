@@ -72,9 +72,7 @@ describe('TipgroupStore', () => {
     });
 
     it('should set hasError to true if loadingState is Error', () => {
-      store.loadAvailableGroupsFailure(
-        new HttpErrorResponse({ error: 'test-error' })
-      );
+      store.loadAvailableGroupsFailure();
       expect(store.hasError()).toBe(true);
       expect(store.loadingState()).toBe(LoadingState.ERROR);
     });
@@ -97,14 +95,9 @@ describe('TipgroupStore', () => {
     });
 
     it('should patch State for loadAvailableGroupsFailure correctly', () => {
-      const mockError = new HttpErrorResponse({ error: 'test-error' });
-
-      store.loadAvailableGroupsFailure(mockError);
+      store.loadAvailableGroupsFailure();
       expect(store.isLoading()).toBe(false);
       expect(store.availableTipgroups()).toBeNull();
-      expect(mockErrorManagementService.handleApiError).toHaveBeenCalledWith(
-        mockError
-      );
     });
   });
 
@@ -146,9 +139,6 @@ describe('TipgroupStore', () => {
         expect(store.availableTipgroups()).toBeNull();
         expect(tipgroupServiceMock.getAvailableTipgroups).toHaveBeenCalledTimes(
           1
-        );
-        expect(mockErrorManagementService.handleApiError).toHaveBeenCalledWith(
-          mockError
         );
         expect(store.loadingState()).toBe(LoadingState.ERROR);
       });

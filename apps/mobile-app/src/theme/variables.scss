@@ -441,3 +441,46 @@ ion-checkbox {
   --background-checked: var(--ion-color-primary-gradient);
   --border-color-checked: var(--ion-color-primary);
 }
+
+ion-toast {
+  --background: var(--ion-background-color-step-100);
+  --color: var(--ion-text-color);
+  --border-radius: var(--ion-border-radius-m);
+
+  &::part(container) {
+    border-radius: var(--ion-border-radius-m);
+    position: relative;
+  }
+
+  &::part(container):after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  &::part(icon) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &.toast-success {
+    &::part(icon) {
+      color: var(--ion-color-success);
+    }
+  }
+
+  &.toast-error {
+    &::part(icon) {
+      color: var(--ion-color-danger);
+    }
+  }
+
+  &.toast-info {
+    &::part(icon) {
+      color: var(--ion-color-primary);
+    }
+  }
+}

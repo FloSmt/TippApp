@@ -6,6 +6,7 @@ import {ApiValidationErrorMessage, LoginDto, RegisterDto,} from '@tippapp/shared
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '../index';
 import {ErrorManagementService} from '../../error-management/error-management.service';
+import {NotificationService, NotificationType} from "../../notifications/notification.service";
 
 type AuthState = {
   isLoading: boolean;
@@ -31,16 +32,18 @@ export const AuthStore = signalStore(
     (
       store,
       authService = inject(AuthService),
-      errorService = inject(ErrorManagementService)
+      errorService = inject(ErrorManagementService),
+      notificationService = inject(NotificationService)
     ) => ({
       registrationSuccess: (accessToken: string) => {
+        notificationService.showTypeMessage({message: 'Dein Account wurde erfolgreich angelegt.'}, NotificationType.SUCCESS);
         patchState(store, {isLoading: false, accessToken});
       },
 
       registrationFailure: (error: HttpErrorResponse) => {
         patchState(store, {
           isLoading: false,
-          error: errorService.handleApiError(error),
+          error: errorService.getValidationError(error),
         });
       },
 
@@ -51,7 +54,7 @@ export const AuthStore = signalStore(
       loginFailure: (error: HttpErrorResponse) => {
         patchState(store, {
           isLoading: false,
-          error: errorService.handleApiError(error),
+          error: errorService.getValidationError(error),
         });
       },
 
@@ -62,7 +65,7 @@ export const AuthStore = signalStore(
       refreshFailure: (error: HttpErrorResponse) => {
         patchState(store, {
           isLoading: false,
-          error: errorService.handleApiError(error),
+          error: errorService.getValidationError(error),
         });
       },
 

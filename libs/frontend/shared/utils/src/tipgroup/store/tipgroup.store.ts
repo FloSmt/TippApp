@@ -1,17 +1,9 @@
-import { computed, inject } from '@angular/core';
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
-import { TipgroupEntryResponseDto } from '@tippapp/shared/data-access';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { TipgroupService } from '../tipgroup.service';
-import { ErrorManagementService } from '../../error-management/error-management.service';
+import {computed, inject} from '@angular/core';
+import {patchState, signalStore, withComputed, withMethods, withState,} from '@ngrx/signals';
+import {TipgroupEntryResponseDto} from '@tippapp/shared/data-access';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
+import {TipgroupService} from '../tipgroup.service';
 
 export enum LoadingState {
   LOADING = 'LOADING',
@@ -31,7 +23,7 @@ const initialState: TipgroupState = {
 };
 
 export const TipgroupStore = signalStore(
-  { providedIn: 'root' },
+  {providedIn: 'root'},
   withState(initialState),
   withComputed((store) => ({
     hasTipgroups: computed(
@@ -45,7 +37,7 @@ export const TipgroupStore = signalStore(
     ),
   })),
 
-  withMethods((store, errorService = inject(ErrorManagementService)) => ({
+  withMethods((store) => ({
     loadAvailableGroupsSuccess: (
       availableGroups: TipgroupEntryResponseDto[]
     ) => {
@@ -55,8 +47,7 @@ export const TipgroupStore = signalStore(
       });
     },
 
-    loadAvailableGroupsFailure: (error: HttpErrorResponse) => {
-      errorService.handleApiError(error);
+    loadAvailableGroupsFailure: () => {
       patchState(store, {
         loadingState: LoadingState.ERROR,
       });
@@ -66,7 +57,7 @@ export const TipgroupStore = signalStore(
   withMethods((store, tipgroupService = inject(TipgroupService)) => ({
     loadAvailableTipgroups: rxMethod<{ reload: boolean }>(
       pipe(
-        tap(({ reload }) =>
+        tap(({reload}) =>
           patchState(store, {
             loadingState: reload ? LoadingState.LOADING : LoadingState.INITIAL,
           })
@@ -76,8 +67,8 @@ export const TipgroupStore = signalStore(
             tap((response: TipgroupEntryResponseDto[]) =>
               store.loadAvailableGroupsSuccess(response)
             ),
-            catchError((error) => {
-              store.loadAvailableGroupsFailure(error);
+            catchError(() => {
+              store.loadAvailableGroupsFailure();
               return EMPTY;
             })
           );
