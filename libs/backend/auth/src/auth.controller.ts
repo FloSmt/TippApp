@@ -1,32 +1,18 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
-import {
-  ApiErrorDto,
-  AuthResponseDto,
-  ErrorCodes,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
-import { Request, Response } from 'express';
-import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { Public } from './guards/jwt-auth.guard';
+import {Body, Controller, HttpCode, HttpStatus, Post,} from '@nestjs/common';
+import {ApiErrorDto, AuthResponseDto, ErrorCodes, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {ApiOkResponse, ApiOperation, ApiResponse} from '@nestjs/swagger';
+import {AuthService} from './auth.service';
+import {Public} from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {
+  }
 
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: AuthResponseDto })
+  @ApiOkResponse({type: AuthResponseDto})
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Invalid credentials',
@@ -42,22 +28,18 @@ export class AuthController {
   @ApiOperation({
     summary: 'returns accessToken, refreshToken and userId for User login',
   })
-  @ApiResponse({ status: 200, type: AuthResponseDto })
+  @ApiResponse({status: 200, type: AuthResponseDto})
   async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response
+    @Body() loginDto: LoginDto
   ) {
-    const newTokens = await this.authService.login(loginDto);
-    this.setRefreshTokenCookie(response, newTokens.refreshToken);
-
-    return { accessToken: newTokens.accessToken };
+    return await this.authService.login(loginDto);
   }
 
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'creates a User if email not exists' })
-  @ApiResponse({ status: 201, type: AuthResponseDto })
+  @ApiOperation({summary: 'creates a User if email not exists'})
+  @ApiResponse({status: 201, type: AuthResponseDto})
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description: 'Email already exists',
@@ -65,13 +47,9 @@ export class AuthController {
     example: ErrorCodes.Auth.EMAIL_ALREADY_EXISTS,
   })
   async register(
-    @Body() registerDto: RegisterDto,
-    @Res({ passthrough: true }) response: Response
+    @Body() registerDto: RegisterDto
   ) {
-    const newTokens = await this.authService.register(registerDto);
-    this.setRefreshTokenCookie(response, newTokens.refreshToken);
-
-    return { accessToken: newTokens.accessToken };
+    return await this.authService.register(registerDto);
   }
 
   @Public()
@@ -80,7 +58,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'generates a new accessToken with existing refreshToken',
   })
-  @ApiResponse({ status: 200, type: AuthResponseDto })
+  @ApiResponse({status: 200, type: AuthResponseDto})
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Invalid refresh token',
@@ -88,25 +66,10 @@ export class AuthController {
     example: ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
   })
   async refresh(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response
+    @Body() body: { refreshToken: string }
   ) {
-    const refreshToken = request.cookies['refreshToken'];
+    return await this.authService.refreshTokens(body.refreshToken);
 
-    const newTokens = await this.authService.refreshTokens(refreshToken);
 
-    this.setRefreshTokenCookie(response, newTokens.refreshToken);
-
-    return { accessToken: newTokens.accessToken };
-  }
-
-  setRefreshTokenCookie(response: Response, refreshToken: string): void {
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 Tage
-      path: '/',
-    });
   }
 }

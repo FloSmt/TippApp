@@ -36,6 +36,7 @@
     "@capacitor/haptics": "^6.0.0",
     "@capacitor/ios": "^6.0.0",
     "@capacitor/keyboard": "^6.0.0",
+    "@capacitor/preferences": "^6.0.0",
     "@capacitor/status-bar": "^6.0.0",
     "@golevelup/ts-jest": "^0.6.2",
     "@ionic/angular": "^8.0.0",

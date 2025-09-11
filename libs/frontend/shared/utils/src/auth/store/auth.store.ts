@@ -2,9 +2,9 @@ import {computed, inject} from '@angular/core';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
 import {patchState, signalStore, withComputed, withMethods, withState,} from '@ngrx/signals';
-import {ApiValidationErrorMessage, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {ApiValidationErrorMessage, AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
 import {HttpErrorResponse} from '@angular/common/http';
-import {AuthService} from '../index';
+import {AuthService, TokenStorageService} from '../index';
 import {ErrorManagementService} from '../../error-management/error-management.service';
 import {NotificationService, NotificationType} from "../../notifications/notification.service";
 
@@ -33,11 +33,13 @@ export const AuthStore = signalStore(
       store,
       authService = inject(AuthService),
       errorService = inject(ErrorManagementService),
-      notificationService = inject(NotificationService)
+      notificationService = inject(NotificationService),
+      tokenStorageService = inject(TokenStorageService)
     ) => ({
-      registrationSuccess: (accessToken: string) => {
+      registrationSuccess: async (response: AuthResponseDto) => {
         notificationService.showTypeMessage({message: 'Dein Account wurde erfolgreich angelegt.'}, NotificationType.SUCCESS);
-        patchState(store, {isLoading: false, accessToken});
+        patchState(store, {isLoading: false, accessToken: response.accessToken});
+        await tokenStorageService.setRefreshToken(response.refreshToken);
       },
 
       registrationFailure: (error: HttpErrorResponse) => {
@@ -47,8 +49,9 @@ export const AuthStore = signalStore(
         });
       },
 
-      loginSuccess: (accessToken: string) => {
-        patchState(store, {isLoading: false, accessToken});
+      loginSuccess: async (response: AuthResponseDto) => {
+        patchState(store, {isLoading: false, accessToken: response.accessToken});
+        await tokenStorageService.setRefreshToken(response.refreshToken);
       },
 
       loginFailure: (error: HttpErrorResponse) => {
@@ -58,8 +61,9 @@ export const AuthStore = signalStore(
         });
       },
 
-      refreshSuccess: (accessToken: string) => {
-        patchState(store, {isLoading: false, accessToken});
+      refreshSuccess: async (response: AuthResponseDto) => {
+        patchState(store, {isLoading: false, accessToken: response.accessToken});
+        await tokenStorageService.setRefreshToken(response.refreshToken);
       },
 
       refreshFailure: (error: HttpErrorResponse) => {
@@ -69,8 +73,9 @@ export const AuthStore = signalStore(
         });
       },
 
-      logoutAndRedirect: () => {
+      logoutAndRedirect: async () => {
         patchState(store, {isLoading: false, accessToken: null});
+        await tokenStorageService.clearTokens();
         authService.logoutAndRedirect();
       },
     })
@@ -82,7 +87,7 @@ export const AuthStore = signalStore(
         tap(() => patchState(store, {isLoading: true, error: null})),
         switchMap(({registerDto}) =>
           authService.registerNewUser(registerDto).pipe(
-            tap((response) => store.registrationSuccess(response.accessToken)),
+            tap((response) => store.registrationSuccess(response)),
             catchError((err) => {
               store.registrationFailure(err);
               return EMPTY;
@@ -97,7 +102,7 @@ export const AuthStore = signalStore(
         tap(() => patchState(store, {isLoading: true, error: null})),
         switchMap(({loginDto}) =>
           authService.loginUser(loginDto).pipe(
-            tap((response) => store.loginSuccess(response.accessToken)),
+            tap((response) => store.loginSuccess(response)),
             catchError((err) => {
               store.loginFailure(err);
               return EMPTY;
@@ -114,7 +119,7 @@ export const AuthStore = signalStore(
         ),
         switchMap(() =>
           authService.refreshAccessToken().pipe(
-            tap((response) => store.refreshSuccess(response.accessToken)),
+            tap((response) => store.refreshSuccess(response)),
             catchError((err) => {
               store.refreshFailure(err);
               store.logoutAndRedirect();
