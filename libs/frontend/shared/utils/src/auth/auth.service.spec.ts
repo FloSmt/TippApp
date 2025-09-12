@@ -3,20 +3,59 @@ import {TestBed} from '@angular/core/testing';
 import {Router} from "@angular/router";
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient} from "@angular/common/http";
-import {LoginDto, RegisterDto} from "@tippapp/shared/data-access";
+import {AuthResponseDto, LoginDto, RegisterDto} from "@tippapp/shared/data-access";
+import {NotificationService, NotificationType} from "../notifications/notification.service";
 import {AuthService} from './auth.service';
 import {ENVIRONMENT} from "../environments/environment.token";
+import {TokenStorageService} from "./token-storage.service";
+import {ErrorManagementService} from "../error-management/error-management.service";
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpTesting: HttpTestingController;
 
-  const mockRouter = {
+  const routerMock = {
     navigate: jest.fn()
   }
 
   const environmentMock = {
     apiUrl: 'testUrl'
+  }
+
+  const tokenStorageServiceMock = {
+    getRefreshToken: jest.fn()
+  }
+
+  const notificationServiceMock = {
+    showTypeMessage: jest.fn()
+  }
+
+  const errorManagementServiceMock = {
+    getMessageForErrorCode: jest.fn().mockReturnValue('Error Message')
+  }
+
+  const mocks = {
+    get apiAuthResponse(): AuthResponseDto {
+      return {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    },
+
+    get registerDto(): RegisterDto {
+      return {
+        username: 'testuser',
+        password: 'testpassword',
+        email: 'test@example.com'
+      }
+    },
+
+    get loginDto(): LoginDto {
+      return {
+        email: 'testuser@email.com',
+        password: 'testpassword'
+      }
+    }
   }
 
   beforeEach(() => {
@@ -26,11 +65,23 @@ describe('AuthService', () => {
         provideHttpClientTesting(),
         {
           provide: Router,
-          useValue: mockRouter
+          useValue: routerMock
         },
         {
           provide: ENVIRONMENT,
           useValue: environmentMock
+        },
+        {
+          provide: TokenStorageService,
+          useValue: tokenStorageServiceMock
+        },
+        {
+          provide: NotificationService,
+          useValue: notificationServiceMock
+        },
+        {
+          provide: ErrorManagementService,
+          useValue: errorManagementServiceMock
         }
       ]
     });
@@ -47,60 +98,58 @@ describe('AuthService', () => {
   });
 
   it('should send a POST-Request for Registration', () => {
-    const mockRegisterDto: RegisterDto = {
-      username: 'testuser',
-      password: 'testpassword',
-      email: 'test@example.com'
-    };
-    const mockResponse = {accessToken: '123'};
-
-    service.registerNewUser(mockRegisterDto).subscribe(response => {
-      expect(response).toEqual(mockResponse);
+    service.registerNewUser(mocks.registerDto).subscribe(response => {
+      expect(response).toEqual(mocks.apiAuthResponse);
     });
 
     const req = httpTesting.expectOne(`${service.BACKEND_URL}auth/register`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(mockRegisterDto);
-    expect(req.request.withCredentials).toBe(true);
+    expect(req.request.body).toEqual(mocks.registerDto);
 
-    req.flush(mockResponse);
+    req.flush(mocks.apiAuthResponse);
   });
 
   it('should send a POST-Request for login', () => {
-    const mockLoginDto: LoginDto = {
-      email: 'testuser@email.com',
-      password: 'testpassword'
-    };
-    const mockResponse = {accessToken: '123'};
-
-    service.loginUser(mockLoginDto).subscribe(response => {
-      expect(response).toEqual(mockResponse);
+    service.loginUser(mocks.loginDto).subscribe(response => {
+      expect(response).toEqual(mocks.apiAuthResponse);
     });
 
     const req = httpTesting.expectOne(`${service.BACKEND_URL}auth/login`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(mockLoginDto);
-    expect(req.request.withCredentials).toBe(true);
+    expect(req.request.body).toEqual(mocks.loginDto);
 
-    req.flush(mockResponse);
+    req.flush(mocks.apiAuthResponse);
   });
 
   it('should send a POST-Request for refreshing the Access-Token', () => {
-    const mockResponse = {accessToken: 'refreshed-token'};
+    tokenStorageServiceMock.getRefreshToken.mockResolvedValue('refreshToken');
 
     service.refreshAccessToken().subscribe(response => {
-      expect(response).toEqual(mockResponse);
+      expect(response).toEqual(mocks.apiAuthResponse);
     });
 
     const req = httpTesting.expectOne(`${service.BACKEND_URL}auth/refresh`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBe(true);
 
-    req.flush(mockResponse);
+    req.flush(mocks.apiAuthResponse);
+  });
+
+  it('should throw an Error on refreshing the Access-Token if no RefreshToken exists', (done) => {
+    tokenStorageServiceMock.getRefreshToken.mockResolvedValue(null);
+
+    service.refreshAccessToken().subscribe({
+      error: () => {
+        expect(notificationServiceMock.showTypeMessage).toHaveBeenCalledWith(expect.anything(), NotificationType.ERROR);
+        expect(errorManagementServiceMock.getMessageForErrorCode).toHaveBeenCalledWith('AUTH.INVALID_REFRESH_TOKEN');
+        done();
+      }
+    })
+
+    httpTesting.expectNone(`${service.BACKEND_URL}auth/refresh`);
   });
 
   it('should navigate to login-page', () => {
     service.logoutAndRedirect();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['auth/login']);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['auth/login']);
   });
 });

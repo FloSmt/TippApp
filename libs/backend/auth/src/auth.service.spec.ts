@@ -184,31 +184,40 @@ describe('AuthService', () => {
     });
 
     describe('refreshTokens', () => {
-      it('should throw an UnauthorizedException if refreshToken is not equal', async () => {
-        userService.findByRefreshToken.mockResolvedValueOnce(null);
-        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
+      it('should throw an UnauthorizedException if user was not found', async () => {
+        userService.findById.mockResolvedValueOnce(null);
+        await expect(service.refreshTokens('invalidToken', 1)).rejects.toThrow(
           new HttpException('Error', 404)
         );
         expect(errorManagerService.createError).toHaveBeenCalledWith(
           ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
           401
         );
-        expect(userService.findByRefreshToken).toHaveBeenCalledWith(
-          'invalidToken'
+        expect(userService.findById).toHaveBeenCalledWith(1);
+      });
+
+      it('should throw an UnauthorizedException if refresh tokens are not the same', async () => {
+        userService.findById.mockResolvedValueOnce({...mocks.userData, refreshToken: 'different'});
+        await expect(service.refreshTokens('refreshToken', 1)).rejects.toThrow(
+          new HttpException('Error', 404)
         );
+        expect(errorManagerService.createError).toHaveBeenCalledWith(
+          ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
+          401
+        );
+        expect(userService.findById).toHaveBeenCalledWith(1);
       });
 
       it('should generate new Tokens', async () => {
-        userService.findByRefreshToken.mockResolvedValueOnce(mocks.userData);
+        userService.findById.mockResolvedValueOnce(mocks.userData);
 
-        await expect(
-          service.refreshTokens(mocks.userData.refreshToken)
-        ).resolves.toEqual({
+        const result = await service.refreshTokens(mocks.userData.refreshToken, 1);
+        expect(result).toEqual({
           accessToken: 'newAccessToken',
           refreshToken: 'newRefreshToken',
         });
 
-        expect(service.generateTokens).toHaveBeenCalled();
+        expect(service.generateTokens).toHaveBeenCalledWith({email: mocks.userData.email, id: mocks.userData.id});
         expect(userService.updateRefreshToken).toHaveBeenCalledWith(
           mocks.userData.id,
           'newRefreshToken'
@@ -221,8 +230,8 @@ describe('AuthService', () => {
   describe('generateTokens', () => {
     it('should generate access and refresh tokens', () => {
       jwtServiceMock.sign.mockReturnValueOnce('accessToken').mockReturnValueOnce('refreshToken');
-      const userId = 1;
-      const tokens = service.generateTokens(userId);
+      const payload = {email: 'testEmail', id: 1};
+      const tokens = service.generateTokens(payload);
 
       expect(jwtServiceMock.sign).toHaveBeenCalledTimes(2);
 

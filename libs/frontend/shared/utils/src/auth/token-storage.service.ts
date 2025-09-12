@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Platform} from "@ionic/angular";
 import {Preferences} from "@capacitor/preferences";
 
@@ -6,8 +6,7 @@ import {Preferences} from "@capacitor/preferences";
   providedIn: 'root'
 })
 export class TokenStorageService {
-  constructor(private platform: Platform) {
-  }
+  private readonly platform = inject(Platform);
 
   async setRefreshToken(token: string): Promise<void> {
     if (this.platform.is('hybrid')) {
@@ -19,11 +18,9 @@ export class TokenStorageService {
 
   async getRefreshToken(): Promise<string | null> {
     if (this.platform.is('hybrid')) {
-      console.log('Getting refresh token from Preferences');
       const {value} = await Preferences.get({key: 'refreshToken'});
       return value;
     } else {
-      console.log('Getting refresh token from localStorage');
       return localStorage.getItem('refreshToken');
     }
   }

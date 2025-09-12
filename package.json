@@ -19,7 +19,7 @@
     "test:mobile-app:unit": "nx run-many --target=test --projects=libs/frontend/**/* --code-coverage",
     "test:mobile-app:e2e:ui": "set NODE_ENV=test && nx run mobile-app-e2e:e2e --ui",
     "test:mobile-app:e2e": "set NODE_ENV=test && nx run mobile-app-e2e:e2e",
-    "test:all:unit": "nx run-many --target=test --code-coverage"
+    "test:all:unit": "nx run-many --target=test --code-coverage --verbose"
   },
   "private": true,
   "dependencies": {

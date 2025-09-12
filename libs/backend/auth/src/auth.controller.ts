@@ -1,4 +1,4 @@
-import {Body, Controller, HttpCode, HttpStatus, Post,} from '@nestjs/common';
+import {Body, Controller, HttpCode, HttpStatus, Post, Request,} from '@nestjs/common';
 import {ApiErrorDto, AuthResponseDto, ErrorCodes, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
 import {ApiOkResponse, ApiOperation, ApiResponse} from '@nestjs/swagger';
 import {AuthService} from './auth.service';
@@ -66,9 +66,11 @@ export class AuthController {
     example: ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
   })
   async refresh(
-    @Body() body: { refreshToken: string }
+    @Body() body: { refreshToken: string },
+    @Request() req: any
   ) {
-    return await this.authService.refreshTokens(body.refreshToken);
+    const userId = req.user?.id;
+    return await this.authService.refreshTokens(body.refreshToken, userId);
 
 
   }

@@ -4,7 +4,7 @@ import {ConfigService} from '@nestjs/config';
 import {Test, TestingModule} from '@nestjs/testing';
 import {UserService} from '@tippapp/backend/user';
 import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
-import {Request, Response} from "express";
+import {Response} from "express";
 import {AuthService} from './auth.service';
 import {AuthController} from './auth.controller';
 
@@ -22,11 +22,12 @@ describe('AuthController', () => {
     get authResponse(): AuthResponseDto {
       return {
         accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
       };
     },
 
     get loginData(): LoginDto {
-      return { email: 'test@email.de', password: 'password' };
+      return {email: 'test@email.de', password: 'password'};
     },
 
     get registerData(): RegisterDto {
@@ -65,47 +66,24 @@ describe('AuthController', () => {
     authService = module.get(AuthService);
   });
 
-  it('should return auth-response and set Cookie on login', async () => {
-    jest.spyOn(authController, 'setRefreshTokenCookie');
-
+  it('should return auth-response on login', async () => {
     authService.login.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
-    const result = await authController.login(mocks.loginData, responseMock);
+    const result = await authController.login(mocks.loginData);
 
     expect(result).toEqual(mocks.authResponse);
-    expect(authController.setRefreshTokenCookie).toHaveBeenCalledWith(responseMock, 'refreshToken');
   });
 
-  it('should return auth-response and set Cookie on register', async () => {
-    jest.spyOn(authController, 'setRefreshTokenCookie');
-
+  it('should return auth-response on register', async () => {
     authService.register.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
-    const result = await authController.register(mocks.registerData, responseMock);
+    const result = await authController.register(mocks.registerData);
 
     expect(result).toEqual(mocks.authResponse);
-    expect(authController.setRefreshTokenCookie).toHaveBeenCalledWith(responseMock, 'refreshToken');
   });
 
-  it('should return auth-response and set Cookie on Token refresh', async () => {
-    const requestMock = {
-      headers: jest.fn(),
-      cookies: {refreshToken: 'oldRefreshToken'}
-    } as unknown as Request;
-
-    jest.spyOn(authController, 'setRefreshTokenCookie');
-
+  it('should return auth-response on Token refresh', async () => {
     authService.refreshTokens.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
-    const result = await authController.refresh(requestMock, responseMock);
+    const result = await authController.refresh({refreshToken: 'oldRefreshToken'}, 1);
 
     expect(result).toEqual(mocks.authResponse);
-    expect(authController.setRefreshTokenCookie).toHaveBeenCalledWith(responseMock, 'refreshToken');
-  });
-
-  it('should set a Cookie with refreshToken', () => {
-    authController.setRefreshTokenCookie(responseMock, 'refreshToken');
-    expect(responseMock.cookie).toHaveBeenCalledWith('refreshToken', 'refreshToken', expect.objectContaining({
-      httpOnly: true,
-      secure: false, // Set to true in production
-      sameSite: 'lax',
-    }));
   });
 });

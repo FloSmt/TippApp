@@ -10,7 +10,7 @@ describe('authGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
     TestBed.runInInjectionContext(() => authGuard(...guardParameters));
 
-  const mockAuthStore = {
+  const authStoreMock = {
     isAuthenticated: signal(false),
     isLoading: signal(false),
     refreshAccessToken: jest.fn(),
@@ -25,7 +25,7 @@ describe('authGuard', () => {
       providers: [
         {
           provide: AuthStore,
-          useValue: mockAuthStore
+          useValue: authStoreMock
         }
       ]
     });
@@ -40,45 +40,45 @@ describe('authGuard', () => {
   });
 
   it('should return true if the user is Authenticated', () => {
-    mockAuthStore.isAuthenticated.set(true);
+    authStoreMock.isAuthenticated.set(true);
     const result = executeGuard(dummyRoute, dummyState);
 
     expect(result).toBe(true);
-    expect(mockAuthStore.refreshAccessToken).not.toHaveBeenCalled();
-    expect(mockAuthStore.logoutAndRedirect).not.toHaveBeenCalled();
+    expect(authStoreMock.refreshAccessToken).not.toHaveBeenCalled();
+    expect(authStoreMock.logoutAndRedirect).not.toHaveBeenCalled();
   });
 
   it('should return true if refreshToken was successful', async () => {
-    mockAuthStore.isAuthenticated.set(false);
-    mockAuthStore.isLoading.set(false);
+    authStoreMock.isAuthenticated.set(false);
+    authStoreMock.isLoading.set(false);
 
     const result$ = executeGuard(dummyRoute, dummyState);
-    expect(mockAuthStore.refreshAccessToken).toHaveBeenCalled();
+    expect(authStoreMock.refreshAccessToken).toHaveBeenCalled();
 
-    mockAuthStore.isLoading.set(true);
-    mockAuthStore.isAuthenticated.set(true);
-    mockAuthStore.isLoading.set(false);
+    authStoreMock.isLoading.set(true);
+    authStoreMock.isAuthenticated.set(true);
+    authStoreMock.isLoading.set(false);
 
     const finalResult = await lastValueFrom(result$ as any);
 
     expect(finalResult).toBe(true);
-    expect(mockAuthStore.logoutAndRedirect).not.toHaveBeenCalled();
+    expect(authStoreMock.logoutAndRedirect).not.toHaveBeenCalled();
   });
 
   it('should return false and logout the user if refreshToken failed', async () => {
-    mockAuthStore.isAuthenticated.set(false);
-    mockAuthStore.isLoading.set(false);
+    authStoreMock.isAuthenticated.set(false);
+    authStoreMock.isLoading.set(false);
 
     const result$ = executeGuard(dummyRoute, dummyState);
-    expect(mockAuthStore.refreshAccessToken).toHaveBeenCalled();
+    expect(authStoreMock.refreshAccessToken).toHaveBeenCalled();
 
-    mockAuthStore.isLoading.set(true);
-    mockAuthStore.isAuthenticated.set(false);
-    mockAuthStore.isLoading.set(false);
+    authStoreMock.isLoading.set(true);
+    authStoreMock.isAuthenticated.set(false);
+    authStoreMock.isLoading.set(false);
 
     const finalResult = await lastValueFrom(result$ as any);
 
     expect(finalResult).toBe(false);
-    expect(mockAuthStore.logoutAndRedirect).toHaveBeenCalled();
+    expect(authStoreMock.logoutAndRedirect).toHaveBeenCalled();
   });
 });

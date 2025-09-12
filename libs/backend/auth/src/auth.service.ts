@@ -1,10 +1,10 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '@tippapp/backend/user';
-import { ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
-import { ConfigService } from '@nestjs/config';
+import {HttpStatus, Injectable} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
+import {UserService} from '@tippapp/backend/user';
+import {ErrorCodes, LoginDto, RegisterDto} from '@tippapp/shared/data-access';
+import {ConfigService} from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import {ErrorManagerService} from '@tippapp/backend/error-handling';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,8 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly configService: ConfigService,
     private errorManager: ErrorManagerService
-  ) {}
+  ) {
+  }
 
   async login(
     loginDto: LoginDto
@@ -38,7 +39,7 @@ export class AuthService {
       );
     }
 
-    const newTokens = this.generateTokens({ id: user.id, email: user.email });
+    const newTokens = this.generateTokens({id: user.id, email: user.email});
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
@@ -64,7 +65,7 @@ export class AuthService {
       ...registerDto,
       password: passwordHash,
     });
-    const newTokens = this.generateTokens({ id: user.id, email: user.email });
+    const newTokens = this.generateTokens({id: user.id, email: user.email});
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
@@ -74,11 +75,12 @@ export class AuthService {
   }
 
   async refreshTokens(
-    refreshToken: string
+    refreshToken: string,
+    userId: number
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.userService.findByRefreshToken(refreshToken);
+    const user = await this.userService.findById(userId);
 
-    if (!user || !refreshToken) {
+    if (!user || !refreshToken || user.refreshToken !== refreshToken) {
       throw this.errorManager.createError(
         ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
         HttpStatus.UNAUTHORIZED
@@ -86,7 +88,7 @@ export class AuthService {
     }
 
     const newTokens = this.generateTokens({
-      username: user.username,
+      email: user.email,
       id: user.id,
     });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
@@ -97,7 +99,7 @@ export class AuthService {
     };
   }
 
-  generateTokens(payload: any): { accessToken: string; refreshToken: string } {
+  generateTokens(payload: { email: string, id: number }): { accessToken: string; refreshToken: string } {
     const newAccessToken = this.jwtService.sign(payload, {
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
     });

@@ -1,58 +1,85 @@
-import { TestBed } from '@angular/core/testing';
-import {
-  ApiValidationErrorMessage,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
-import { delay, of, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorManagementService } from '../../error-management/error-management.service';
-import { AuthService } from '../index';
-import { AuthStore } from './auth.store';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ApiValidationErrorMessage, AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
+import {delay, of, throwError} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorManagementService} from '../../error-management/error-management.service';
+import {AuthService, TokenStorageService} from '../index';
+import {AuthStore} from './auth.store';
 
 describe('AuthStore', () => {
   let store: InstanceType<typeof AuthStore>;
-  let authService: AuthService;
 
-  const mockErrorManagementService = {
-    getValidationError: jest.fn(),
-  };
-
-  const mockAuthService = {
+  const authServiceMock = {
     registerNewUser: jest.fn(),
     loginUser: jest.fn(),
     refreshAccessToken: jest.fn(),
     logoutAndRedirect: jest.fn(),
   };
 
+  const errorManagementServiceMock = {
+    getValidationError: jest.fn(),
+  };
+
+  const tokenStorageServiceMock = {
+    setRefreshToken: jest.fn(),
+    getRefreshToken: jest.fn(),
+    clearTokens: jest.fn(),
+  };
+
   const mocks = {
-    get mockValidationErrorContent(): ApiValidationErrorMessage[] {
+    get authResponse(): AuthResponseDto {
+      return {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    },
+
+    get validationErrorContent(): ApiValidationErrorMessage[] {
       return [
         {
           property: 'email',
-          constraints: { isEmail: 'Email must be valid' },
+          constraints: {isEmail: 'Email must be valid'},
         },
       ];
     },
+
+    get registerDto(): RegisterDto {
+      return {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      }
+    },
+
+    get loginDto(): LoginDto {
+      return {
+        email: 'test@example.com',
+        password: 'password123',
+      }
+    }
   };
+
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         AuthStore,
         {
-          provide: AuthService,
-          useValue: mockAuthService,
+          provide: ErrorManagementService,
+          useValue: errorManagementServiceMock,
         },
         {
-          provide: ErrorManagementService,
-          useValue: mockErrorManagementService,
+          provide: TokenStorageService,
+          useValue: tokenStorageServiceMock,
         },
+        {
+          provide: AuthService,
+          useValue: authServiceMock
+        }
       ],
     });
 
     store = TestBed.inject(AuthStore);
-    authService = TestBed.inject(AuthService);
   });
 
   afterEach(() => {
@@ -69,198 +96,173 @@ describe('AuthStore', () => {
 
   describe('Computed properties', () => {
     it('should set isAuthenticated to true if accessToken is set', () => {
-      store.loginSuccess('mock-token');
+      store.loginSuccess(mocks.authResponse);
       expect(store.isAuthenticated()).toBe(true);
     });
 
     it('should set hasError to true if an Error is set', () => {
-      mockErrorManagementService.getValidationError.mockReturnValue(
-        mocks.mockValidationErrorContent
+      errorManagementServiceMock.getValidationError.mockReturnValue(
+        mocks.validationErrorContent
       );
-      store.loginFailure(new HttpErrorResponse({ error: 'test-error' }));
+      store.loginFailure(new HttpErrorResponse({error: 'test-error'}));
       expect(store.hasError()).toBe(true);
-      expect(store.error()).toStrictEqual(mocks.mockValidationErrorContent);
+      expect(store.error()).toStrictEqual(mocks.validationErrorContent);
     });
   });
 
   describe('Synchronous methods', () => {
-    it('should patch State for registrationSuccess correctly', () => {
+    it('should patch State for registrationSuccess correctly and save refreshToken', () => {
       const newToken = 'new-token-1';
-      store.registrationSuccess(newToken);
+      store.registrationSuccess({...mocks.authResponse, accessToken: newToken});
       expect(store.isLoading()).toBe(false);
       expect(store.accessToken()).toBe(newToken);
       expect(store.error()).toBeNull();
+      expect(tokenStorageServiceMock.setRefreshToken).toHaveBeenCalledWith(mocks.authResponse.refreshToken);
     });
 
     it('should patch State for registrationFailure correctly', () => {
-      const mockError = new HttpErrorResponse({ error: 'test-error' });
+      const mockError = new HttpErrorResponse({error: 'test-error'});
 
       store.registrationFailure(mockError);
       expect(store.isLoading()).toBe(false);
       expect(store.accessToken()).toBeNull();
       expect(
-        mockErrorManagementService.getValidationError
+        errorManagementServiceMock.getValidationError
       ).toHaveBeenCalledWith(mockError);
     });
 
-    it('should patch State for logoutAndRedirect correctly and call logoutAndRedirect in AuthService', () => {
+    it('should patch State for logoutAndRedirect correctly and call logoutAndRedirect in AuthService and clear RefreshToken', async () => {
       const loggedInToken = 'logged-in-token';
-      store.loginSuccess(loggedInToken);
+      await store.loginSuccess({...mocks.authResponse, accessToken: loggedInToken});
       expect(store.accessToken()).toBe(loggedInToken);
 
-      store.logoutAndRedirect();
+      await store.logoutAndRedirect();
       expect(store.isLoading()).toBe(false);
       expect(store.accessToken()).toBeNull();
       expect(store.error()).toBeNull();
-      expect(mockAuthService.logoutAndRedirect).toHaveBeenCalledTimes(1);
+      expect(authServiceMock.logoutAndRedirect).toHaveBeenCalledTimes(1);
+      expect(tokenStorageServiceMock.clearTokens).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('rxMethod', () => {
+    let apiAuthResponse: AuthResponseDto;
+
+    beforeEach(() => {
+      apiAuthResponse = {accessToken: 'api-access-token', refreshToken: 'api-refresh-token'};
+    });
+
     describe('registerNewUser', () => {
       it('should patch state on success correctly', (done) => {
-        const registerDto: RegisterDto = {
-          username: 'testuser',
-          email: 'test@example.com',
-          password: 'password123',
-        };
-        const apiResponse = { accessToken: 'api-access-token' };
 
-        jest
-          .spyOn(authService, 'registerNewUser')
-          .mockReturnValue(of(apiResponse).pipe(delay(1)));
+        authServiceMock.registerNewUser.mockReturnValue(of(apiAuthResponse).pipe(delay(1)));
 
-        store.registerNewUser({ registerDto });
+        store.registerNewUser({registerDto: mocks.registerDto});
 
         expect(store.isLoading()).toBe(true);
-        expect(authService.registerNewUser).toHaveBeenCalledWith(registerDto);
+        expect(authServiceMock.registerNewUser).toHaveBeenCalledWith(mocks.registerDto);
 
         setTimeout(() => {
           expect(store.isLoading()).toBe(false);
-          expect(store.accessToken()).toBe(apiResponse.accessToken);
+          expect(store.accessToken()).toBe(apiAuthResponse.accessToken);
           done();
         }, 5);
       });
 
       it('should patch state on error correctly', () => {
-        const registerDto: RegisterDto = {
-          username: 'testuser',
-          email: 'test@example.com',
-          password: 'password123',
-        };
         const mockError = new HttpErrorResponse({
-          error: mocks.mockValidationErrorContent,
+          error: mocks.validationErrorContent,
         });
 
-        mockErrorManagementService.getValidationError.mockReturnValue(
-          mocks.mockValidationErrorContent
+        errorManagementServiceMock.getValidationError.mockReturnValue(
+          mocks.validationErrorContent
         );
 
-        jest
-          .spyOn(authService, 'registerNewUser')
-          .mockReturnValue(throwError(() => mockError));
+        authServiceMock.registerNewUser.mockReturnValue(throwError(() => mockError));
 
-        store.registerNewUser({ registerDto });
+        store.registerNewUser({registerDto: mocks.registerDto});
 
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
         expect(
-          mockErrorManagementService.getValidationError
+          errorManagementServiceMock.getValidationError
         ).toHaveBeenCalledWith(mockError);
-        expect(store.error()).toStrictEqual(mocks.mockValidationErrorContent);
+        expect(store.error()).toStrictEqual(mocks.validationErrorContent);
       });
     });
 
     describe('loginUser', () => {
       it('should patch state on success correctly', (done) => {
-        const loginDto: LoginDto = {
-          email: 'test@example.com',
-          password: 'password123',
-        };
-        const apiResponse = { accessToken: 'api-access-token' };
+        authServiceMock.loginUser.mockReturnValue(of(apiAuthResponse).pipe(delay(1)));
 
-        jest
-          .spyOn(authService, 'loginUser')
-          .mockReturnValue(of(apiResponse).pipe(delay(1)));
-
-        store.loginUser({ loginDto });
+        store.loginUser({loginDto: mocks.loginDto});
 
         expect(store.isLoading()).toBe(true);
-        expect(authService.loginUser).toHaveBeenCalledWith(loginDto);
+        expect(authServiceMock.loginUser).toHaveBeenCalledWith(mocks.loginDto);
 
         setTimeout(() => {
           expect(store.isLoading()).toBe(false);
-          expect(store.accessToken()).toBe(apiResponse.accessToken);
+          expect(store.accessToken()).toBe(apiAuthResponse.accessToken);
           done();
         }, 5);
       });
 
       it('should patch state on error correctly', () => {
-        const loginDto: LoginDto = {
-          email: 'test@example.com',
-          password: 'password123',
-        };
         const mockError = new HttpErrorResponse({
-          error: mocks.mockValidationErrorContent,
+          error: mocks.validationErrorContent,
         });
 
-        mockErrorManagementService.getValidationError.mockReturnValue(
-          mocks.mockValidationErrorContent
+        errorManagementServiceMock.getValidationError.mockReturnValue(
+          mocks.validationErrorContent
         );
 
-        jest
-          .spyOn(authService, 'loginUser')
-          .mockReturnValue(throwError(() => mockError));
+        authServiceMock.loginUser.mockReturnValue(throwError(() => mockError));
 
-        store.loginUser({ loginDto });
+        store.loginUser({loginDto: mocks.loginDto});
 
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
         expect(
-          mockErrorManagementService.getValidationError
+          errorManagementServiceMock.getValidationError
         ).toHaveBeenCalledWith(mockError);
-        expect(store.error()).toStrictEqual(mocks.mockValidationErrorContent);
+        expect(store.error()).toStrictEqual(mocks.validationErrorContent);
       });
     });
 
     describe('refreshAccessToken', () => {
       it('should patch state on success correctly', (done) => {
-        const apiResponse = { accessToken: 'refreshed-token' };
-        jest
-          .spyOn(authService, 'refreshAccessToken')
-          .mockReturnValue(of(apiResponse).pipe(delay(1)));
+        authServiceMock.refreshAccessToken.mockReturnValue(of(apiAuthResponse).pipe(delay(1)));
 
         store.refreshAccessToken();
 
         expect(store.isLoading()).toBe(true);
-        expect(authService.refreshAccessToken).toHaveBeenCalledTimes(1);
+        expect(authServiceMock.refreshAccessToken).toHaveBeenCalledTimes(1);
 
         setTimeout(() => {
           expect(store.isLoading()).toBe(false);
-          expect(store.accessToken()).toBe(apiResponse.accessToken);
+          expect(store.accessToken()).toBe(apiAuthResponse.accessToken);
           done();
         }, 5);
       });
 
-      it('should patch state on error correctly', () => {
-        const mockError = new HttpErrorResponse({ error: 'test-error' });
+      it('should patch state on error correctly', fakeAsync(() => {
+        const mockError = new HttpErrorResponse({error: 'test-error'});
+        errorManagementServiceMock.getValidationError.mockReturnValue(null);
 
-        mockErrorManagementService.getValidationError.mockReturnValue(null);
-
-        jest
-          .spyOn(authService, 'refreshAccessToken')
-          .mockReturnValue(throwError(() => mockError));
+        authServiceMock.refreshAccessToken.mockReturnValue(throwError(() => mockError));
 
         store.refreshAccessToken();
 
+        tick()
         expect(store.isLoading()).toBe(false);
         expect(store.accessToken()).toBeNull();
         expect(
-          mockErrorManagementService.getValidationError
+          errorManagementServiceMock.getValidationError
         ).toHaveBeenCalledWith(mockError);
         expect(store.error()).toBe(null);
-        expect(mockAuthService.logoutAndRedirect).toHaveBeenCalledTimes(1);
-      });
+        expect(tokenStorageServiceMock.clearTokens).toHaveBeenCalledTimes(1);
+        expect(authServiceMock.logoutAndRedirect).toHaveBeenCalledTimes(1);
+      }));
     });
   });
 });
