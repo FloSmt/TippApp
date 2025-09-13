@@ -1,6 +1,5 @@
 import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
-import supertest from 'supertest';
 import * as bcrypt from 'bcrypt';
 import {DataSource, Repository} from 'typeorm';
 import {LoginDto, RegisterDto, User} from '@tippapp/shared/data-access';
@@ -57,7 +56,6 @@ describe('AuthController (e2e)', () => {
         foundUser.password
       );
       expect(correctPassword).toBeTruthy();
-      checkCookieResponse(response, foundUser.refreshToken);
     });
 
     it('should throw Error 409 if email already exists', async () => {
@@ -110,7 +108,6 @@ describe('AuthController (e2e)', () => {
       const newRefreshToken = userAfterLogin.refreshToken;
 
       expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
-      checkCookieResponse(response, newRefreshToken);
     });
 
     it('should throw Error 404 if user was not found', async () => {
@@ -168,7 +165,6 @@ describe('AuthController (e2e)', () => {
 
       const newRefreshToken = userAfterRefresh.refreshToken;
       expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
-      checkCookieResponse(response, newRefreshToken);
     });
 
     it('should throw Error 401 if invalid refreshToken was send', async () => {
@@ -210,15 +206,8 @@ describe('AuthController (e2e)', () => {
     expect(token.split('.').length).toBe(3);
   }
 
-  function checkCookieResponse(response: supertest.Response, newRefreshToken: string) {
-    const newSetCookieHeader = response.headers['set-cookie'];
-    expect(newSetCookieHeader).toBeDefined();
-    const cookieRefreshTokenPath = newSetCookieHeader[0].split(';').find(part => part.trim().startsWith('refreshToken='));
-    expect(cookieRefreshTokenPath).toBe('refreshToken=' + newRefreshToken);
-  }
-
   function expectAuthResponse(response: any) {
-    expect(response.body).toHaveProperty('accessToken');
+    expect(Object.keys(response.body).sort()).toEqual(['accessToken', 'refreshToken'].sort());
 
     // Verify Access Token
     const accessToken = response.body.accessToken;

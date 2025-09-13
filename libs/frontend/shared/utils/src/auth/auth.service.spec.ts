@@ -1,4 +1,4 @@
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {Router} from "@angular/router";
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
@@ -19,7 +19,7 @@ describe('AuthService', () => {
   }
 
   const environmentMock = {
-    apiUrl: 'testUrl'
+    apiUrl: 'testUrl/'
   }
 
   const tokenStorageServiceMock = {
@@ -121,18 +121,20 @@ describe('AuthService', () => {
     req.flush(mocks.apiAuthResponse);
   });
 
-  it('should send a POST-Request for refreshing the Access-Token', () => {
+  it('should send a POST-Request for refreshing the Access-Token', fakeAsync(() => {
     tokenStorageServiceMock.getRefreshToken.mockResolvedValue('refreshToken');
 
     service.refreshAccessToken().subscribe(response => {
+      console.log('RESPONSE', response);
       expect(response).toEqual(mocks.apiAuthResponse);
     });
 
+    tick()
     const req = httpTesting.expectOne(`${service.BACKEND_URL}auth/refresh`);
     expect(req.request.method).toBe('POST');
 
     req.flush(mocks.apiAuthResponse);
-  });
+  }));
 
   it('should throw an Error on refreshing the Access-Token if no RefreshToken exists', (done) => {
     tokenStorageServiceMock.getRefreshToken.mockResolvedValue(null);

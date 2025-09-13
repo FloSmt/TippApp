@@ -82,7 +82,7 @@ describe('AuthController', () => {
 
   it('should return auth-response on Token refresh', async () => {
     authService.refreshTokens.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
-    const result = await authController.refresh({refreshToken: 'oldRefreshToken'}, 1);
+    const result = await authController.refresh({refreshToken: 'oldRefreshToken'});
 
     expect(result).toEqual(mocks.authResponse);
   });
