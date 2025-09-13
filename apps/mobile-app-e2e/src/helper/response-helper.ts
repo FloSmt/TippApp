@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import {Page} from '@playwright/test';
 
 export interface ResponseObject {
   status: number;
@@ -34,7 +34,7 @@ export async function mockRegisterUserResponse(
 ) {
   await mockResponse(page, 'api/auth/register', {
     status: status || 200,
-    body: body || { accessToken: 'mock-accessToken' },
+    body: body || {accessToken: 'mock-accessToken', refreshToken: 'mock-refreshToken'},
   });
 }
 
@@ -45,7 +45,7 @@ export async function mockLoginUserResponse(
 ) {
   await mockResponse(page, 'api/auth/login', {
     status: status || 200,
-    body: body || { accessToken: 'mock-accessToken' },
+    body: body || {accessToken: 'mock-accessToken', refreshToken: 'mock-refreshToken'},
   });
 }
 
@@ -56,7 +56,7 @@ export async function mockRefreshUserResponse(
 ) {
   await mockResponse(page, 'api/auth/refresh', {
     status: status || 200,
-    body: body || { accessToken: 'mock-accessToken' },
+    body: body || {accessToken: 'mock-accessToken', refreshToken: 'mock-refreshToken'},
   });
 }
 
@@ -68,9 +68,9 @@ export async function mockTipgroupListResponse(
   await mockResponse(page, 'api/user/tipgroups', {
     status: status || 200,
     body: body || [
-      { id: 1, name: 'Testgroup1' },
-      { id: 2, name: 'Testgroup2' },
-      { id: 3, name: 'Testgroup3' },
+      {id: 1, name: 'Testgroup1'},
+      {id: 2, name: 'Testgroup2'},
+      {id: 3, name: 'Testgroup3'},
     ],
   });
 }

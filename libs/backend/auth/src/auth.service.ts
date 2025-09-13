@@ -6,6 +6,11 @@ import {ConfigService} from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import {ErrorManagerService} from '@tippapp/backend/error-handling';
 
+export interface JwtPayload {
+  email: string;
+  id: number;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -75,10 +80,18 @@ export class AuthService {
   }
 
   async refreshTokens(
-    refreshToken: string,
-    userId: number
+    refreshToken: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.userService.findById(userId);
+    const decodedToken: { email: string, id: number } | null = this.verifyToken(refreshToken);
+
+    if (!decodedToken || typeof decodedToken === 'string' || !('id' in decodedToken)) {
+      throw this.errorManager.createError(
+        ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    const user = await this.userService.findById(decodedToken.id);
 
     if (!user || !refreshToken || user.refreshToken !== refreshToken) {
       throw this.errorManager.createError(
@@ -99,7 +112,7 @@ export class AuthService {
     };
   }
 
-  generateTokens(payload: { email: string, id: number }): { accessToken: string; refreshToken: string } {
+  generateTokens(payload: JwtPayload): { accessToken: string; refreshToken: string } {
     const newAccessToken = this.jwtService.sign(payload, {
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
     });
@@ -111,6 +124,18 @@ export class AuthService {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     };
+  }
+
+  verifyToken(token: string): JwtPayload | null {
+    try {
+      return this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+    } catch (error) {
+      console.log('Token verification failed:', error);
+      return null;
+    }
+
   }
 
   async comparePasswords(

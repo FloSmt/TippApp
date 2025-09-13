@@ -39,7 +39,7 @@ export class TipgroupListPage {
       x: this.page.viewportSize().width / 2,
       y: this.page.viewportSize().height / 2
     }
-    await this.page.locator('ion-content').hover();
+    await this.page.locator('ion-content:visible').hover();
     await this.page.mouse.down();
     await this.page.mouse.move(centerPoint.x, centerPoint.y + 200, {steps: 20});
     await this.page.mouse.up();

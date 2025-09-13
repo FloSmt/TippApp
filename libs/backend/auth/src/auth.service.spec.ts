@@ -14,7 +14,8 @@ describe('AuthService', () => {
   let errorManagerService: DeepMocked<ErrorManagerService>;
 
   const jwtServiceMock = {
-    sign: jest.fn()
+    sign: jest.fn(),
+    verify: jest.fn(),
   }
 
   const mocks = {
@@ -84,7 +85,7 @@ describe('AuthService', () => {
       .mockReturnValue(new HttpException('Error', 404));
   });
 
-  describe('', () => {
+  describe('endpoint functionality', () => {
     beforeEach(() => {
       jest.spyOn(service, 'generateTokens').mockReturnValue({
         accessToken: 'newAccessToken',
@@ -184,40 +185,70 @@ describe('AuthService', () => {
     });
 
     describe('refreshTokens', () => {
+      let verifyTokenSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        verifyTokenSpy = jest.spyOn(service, 'verifyToken');
+      });
+
+      it('should throw an UnauthorizedException if token is could not verified', async () => {
+        verifyTokenSpy.mockReturnValue(null);
+
+        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
+          new HttpException('Error', 404)
+        );
+
+        expect(errorManagerService.createError).toHaveBeenCalledWith(
+          ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
+          401
+        );
+        expect(userService.findById).not.toHaveBeenCalled();
+        expect(verifyTokenSpy).toHaveBeenCalledWith('invalidToken');
+      });
+
       it('should throw an UnauthorizedException if user was not found', async () => {
+        verifyTokenSpy.mockReturnValue({id: 22, email: 'mock@email.de'});
         userService.findById.mockResolvedValueOnce(null);
-        await expect(service.refreshTokens('invalidToken', 1)).rejects.toThrow(
+
+        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
           new HttpException('Error', 404)
         );
         expect(errorManagerService.createError).toHaveBeenCalledWith(
           ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
           401
         );
-        expect(userService.findById).toHaveBeenCalledWith(1);
+
+        expect(userService.findById).toHaveBeenCalledWith(22);
       });
 
       it('should throw an UnauthorizedException if refresh tokens are not the same', async () => {
+        verifyTokenSpy.mockReturnValue({id: 22, email: 'mock@email.de'});
         userService.findById.mockResolvedValueOnce({...mocks.userData, refreshToken: 'different'});
-        await expect(service.refreshTokens('refreshToken', 1)).rejects.toThrow(
+
+        await expect(service.refreshTokens('refreshToken')).rejects.toThrow(
           new HttpException('Error', 404)
         );
         expect(errorManagerService.createError).toHaveBeenCalledWith(
           ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
           401
         );
-        expect(userService.findById).toHaveBeenCalledWith(1);
+
+        expect(userService.findById).toHaveBeenCalledWith(22);
       });
 
       it('should generate new Tokens', async () => {
+        verifyTokenSpy.mockReturnValue({id: 22, email: 'mock@email.de'});
         userService.findById.mockResolvedValueOnce(mocks.userData);
 
-        const result = await service.refreshTokens(mocks.userData.refreshToken, 1);
+        const result = await service.refreshTokens(mocks.userData.refreshToken);
+
         expect(result).toEqual({
           accessToken: 'newAccessToken',
           refreshToken: 'newRefreshToken',
         });
 
         expect(service.generateTokens).toHaveBeenCalledWith({email: mocks.userData.email, id: mocks.userData.id});
+        expect(verifyTokenSpy).toHaveBeenCalledWith(mocks.userData.refreshToken);
         expect(userService.updateRefreshToken).toHaveBeenCalledWith(
           mocks.userData.id,
           'newRefreshToken'
@@ -239,6 +270,33 @@ describe('AuthService', () => {
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       });
+    });
+  })
+
+  describe('verifyToken', () => {
+    it('should return Payload if token is correct', () => {
+      const payload = {email: 'testEmail', id: 1};
+      jwtServiceMock.verify.mockReturnValue(payload);
+
+      const tokens = service.verifyToken('token');
+
+      expect(jwtServiceMock.verify).toHaveBeenCalledTimes(1);
+      expect(jwtServiceMock.verify).toHaveBeenCalledWith('token', {secret: expect.anything()});
+
+      expect(tokens).toEqual(payload);
+    });
+
+    it('should return null if token is not correct', () => {
+      jwtServiceMock.verify.mockImplementation(() => {
+        throw new Error('Invalid token');
+      })
+
+      const tokens = service.verifyToken('token');
+
+      expect(jwtServiceMock.verify).toHaveBeenCalledTimes(1);
+      expect(jwtServiceMock.verify).toHaveBeenCalledWith('token', {secret: expect.anything()});
+
+      expect(tokens).toEqual(null);
     });
   })
 
