@@ -4,7 +4,13 @@ import { UserService } from '@tippapp/backend/user';
 import { ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
+
+export interface JwtPayload {
+  email: string;
+  id: number;
+}
 
 @Injectable()
 export class AuthService {
@@ -76,9 +82,23 @@ export class AuthService {
   async refreshTokens(
     refreshToken: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.userService.findByRefreshToken(refreshToken);
+    const decodedToken: { email: string; id: number } | null =
+      this.verifyToken(refreshToken);
 
-    if (!user || !refreshToken) {
+    if (
+      !decodedToken ||
+      typeof decodedToken === 'string' ||
+      !('id' in decodedToken)
+    ) {
+      throw this.errorManager.createError(
+        ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    const user = await this.userService.findById(decodedToken.id);
+
+    if (!user || !refreshToken || user.refreshToken !== refreshToken) {
       throw this.errorManager.createError(
         ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
         HttpStatus.UNAUTHORIZED
@@ -86,7 +106,7 @@ export class AuthService {
     }
 
     const newTokens = this.generateTokens({
-      username: user.username,
+      email: user.email,
       id: user.id,
     });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
@@ -97,18 +117,38 @@ export class AuthService {
     };
   }
 
-  generateTokens(payload: any): { accessToken: string; refreshToken: string } {
-    const newAccessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
-    });
-    const newRefreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-    });
+  generateTokens(payload: JwtPayload): {
+    accessToken: string;
+    refreshToken: string;
+  } {
+    const newAccessToken = this.jwtService.sign(
+      { ...payload, refreshId: uuidv4() },
+      {
+        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+      }
+    );
+    const newRefreshToken = this.jwtService.sign(
+      { ...payload, refreshId: uuidv4() },
+      {
+        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+      }
+    );
 
     return {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     };
+  }
+
+  verifyToken(token: string): JwtPayload | null {
+    try {
+      return this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+    } catch (error) {
+      console.log('Token verification failed:', error);
+      return null;
+    }
   }
 
   async comparePasswords(

@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { HttpErrorResponse } from '@angular/common/http';
-import { GlobalErrorHandlerService } from './global-error-handler.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {GlobalErrorHandlerService} from './global-error-handler.service';
 
 describe('GlobalErrorHandlerService', () => {
   let service: GlobalErrorHandlerService;
@@ -29,7 +29,7 @@ describe('GlobalErrorHandlerService', () => {
 
   it('should send errors to the console', () => {
     jest.spyOn(console, 'error');
-    const error = new HttpErrorResponse({ error: 'test-error', status: 500 });
+    const error = new HttpErrorResponse({error: 'test-error', status: 500});
 
     service.handleError(error);
 

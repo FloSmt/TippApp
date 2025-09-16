@@ -55,16 +55,6 @@ describe('UserService', () => {
     expect(result).toEqual(user);
   });
 
-  it('should return a user by refreshToken', async () => {
-    const user = {id: 1, email: 'test@example.com'} as User;
-    userRepository.findOneBy.mockResolvedValue(user);
-
-    const result = await service.findByRefreshToken('refreshToken');
-
-    expect(userRepository.findOneBy).toHaveBeenCalledWith({refreshToken: 'refreshToken'});
-    expect(result).toEqual(user);
-  });
-
   it('should return a user by email', async () => {
     const user = {id: 1, email: 'test@example.com'} as User;
     userRepository.findOneBy.mockResolvedValue(user);

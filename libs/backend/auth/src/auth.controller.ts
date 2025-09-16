@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import {
   ApiErrorDto,
   AuthResponseDto,
@@ -14,7 +6,6 @@ import {
   LoginDto,
   RegisterDto,
 } from '@tippapp/shared/data-access';
-import { Request, Response } from 'express';
 import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './guards/jwt-auth.guard';
@@ -43,14 +34,8 @@ export class AuthController {
     summary: 'returns accessToken, refreshToken and userId for User login',
   })
   @ApiResponse({ status: 200, type: AuthResponseDto })
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response
-  ) {
-    const newTokens = await this.authService.login(loginDto);
-    this.setRefreshTokenCookie(response, newTokens.refreshToken);
-
-    return { accessToken: newTokens.accessToken };
+  async login(@Body() loginDto: LoginDto) {
+    return await this.authService.login(loginDto);
   }
 
   @Public()
@@ -64,14 +49,8 @@ export class AuthController {
     type: ApiErrorDto,
     example: ErrorCodes.Auth.EMAIL_ALREADY_EXISTS,
   })
-  async register(
-    @Body() registerDto: RegisterDto,
-    @Res({ passthrough: true }) response: Response
-  ) {
-    const newTokens = await this.authService.register(registerDto);
-    this.setRefreshTokenCookie(response, newTokens.refreshToken);
-
-    return { accessToken: newTokens.accessToken };
+  async register(@Body() registerDto: RegisterDto) {
+    return await this.authService.register(registerDto);
   }
 
   @Public()
@@ -87,26 +66,7 @@ export class AuthController {
     type: ApiErrorDto,
     example: ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
   })
-  async refresh(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response
-  ) {
-    const refreshToken = request.cookies['refreshToken'];
-
-    const newTokens = await this.authService.refreshTokens(refreshToken);
-
-    this.setRefreshTokenCookie(response, newTokens.refreshToken);
-
-    return { accessToken: newTokens.accessToken };
-  }
-
-  setRefreshTokenCookie(response: Response, refreshToken: string): void {
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 Tage
-      path: '/',
-    });
+  async refresh(@Body() body: { refreshToken: string }) {
+    return await this.authService.refreshTokens(body.refreshToken);
   }
 }

@@ -1,10 +1,13 @@
-import {INestApplication} from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import supertest from 'supertest';
 import * as bcrypt from 'bcrypt';
-import {DataSource, Repository} from 'typeorm';
-import {LoginDto, RegisterDto, User} from '@tippapp/shared/data-access';
-import {API_ROUTES, setupE2ETestEnvironment, UserFactory,} from '@tippapp/backend/test-helper';
+import { DataSource, Repository } from 'typeorm';
+import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
+import {
+  API_ROUTES,
+  setupE2ETestEnvironment,
+  UserFactory,
+} from '@tippapp/backend/test-helper';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -19,7 +22,7 @@ describe('AuthController (e2e)', () => {
         {
           username: 'test',
           email: 'test@email.de',
-          password: '1234',
+          password: '123456',
         },
       ];
     },
@@ -46,7 +49,9 @@ describe('AuthController (e2e)', () => {
       expectAuthResponse(response);
 
       // Check Database entries
-      const foundUser = await userRepository.findOne({where: {email: registerDto.email}});
+      const foundUser = await userRepository.findOne({
+        where: { email: registerDto.email },
+      });
       expect(foundUser).toBeDefined();
       expect(foundUser.username).toBe(registerDto.username);
       expect(foundUser.email).toBe(registerDto.email);
@@ -57,7 +62,6 @@ describe('AuthController (e2e)', () => {
         foundUser.password
       );
       expect(correctPassword).toBeTruthy();
-      checkCookieResponse(response, foundUser.refreshToken);
     });
 
     it('should throw Error 409 if email already exists', async () => {
@@ -87,10 +91,7 @@ describe('AuthController (e2e)', () => {
 
     beforeEach(async () => {
       // Create User in Database
-      await userFactory.createUserInDatabase(registerDto);
-      registeredUser = await userRepository.findOne({
-        where: {email: registerDto.email},
-      });
+      registeredUser = await userFactory.createUserInDatabase(registerDto);
     });
 
     it('should response AuthResponse and generates new refreshToken', async () => {
@@ -99,24 +100,29 @@ describe('AuthController (e2e)', () => {
       // Login with same credentials
       const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.LOGIN)
-        .send({email: registerDto.email, password: registerDto.password} as LoginDto);
+        .send({
+          email: registerDto.email,
+          password: registerDto.password,
+        } as LoginDto);
 
       expect(response.status).toBe(200);
       expectAuthResponse(response);
 
-      const userAfterLogin = await userRepository.findOne({
-        where: {email: registerDto.email},
+      const updatedUser = await userRepository.findOne({
+        where: { email: registerDto.email },
       });
-      const newRefreshToken = userAfterLogin.refreshToken;
 
-      expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
-      checkCookieResponse(response, newRefreshToken);
+      expect(oldRefreshToken).not.toEqual(updatedUser.refreshToken);
+      expect(updatedUser.refreshToken).toEqual(response.body.refreshToken);
     });
 
     it('should throw Error 404 if user was not found', async () => {
       const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.LOGIN)
-        .send({email: 'wrongEmail@email.de', password: registerDto.password} as LoginDto);
+        .send({
+          email: 'wrongEmail@email.de',
+          password: registerDto.password,
+        } as LoginDto);
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('message');
@@ -129,7 +135,10 @@ describe('AuthController (e2e)', () => {
       // Login with wrong password
       const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.LOGIN)
-        .send({email: registerDto.email, password: 'wrongPassword'} as LoginDto);
+        .send({
+          email: registerDto.email,
+          password: 'wrongPassword',
+        } as LoginDto);
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
@@ -145,10 +154,7 @@ describe('AuthController (e2e)', () => {
 
     beforeEach(async () => {
       // Create User in Database
-      await userFactory.createUserInDatabase(registerDto);
-      registeredUser = await userRepository.findOne({
-        where: {email: registerDto.email},
-      });
+      registeredUser = await userFactory.createUserInDatabase(registerDto);
     });
 
     it('should response AuthResponse and generates new refreshToken', async () => {
@@ -157,25 +163,24 @@ describe('AuthController (e2e)', () => {
       // Refresh with refreshToken
       const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.REFRESH)
-        .set('Cookie', 'refreshToken=' + oldRefreshToken);
+        .send({ refreshToken: oldRefreshToken });
 
       expect(response.status).toBe(200);
       expectAuthResponse(response);
 
-      const userAfterRefresh = await userRepository.findOne({
-        where: {email: registerDto.email},
+      const updatedUser = await userRepository.findOne({
+        where: { email: registerDto.email },
       });
 
-      const newRefreshToken = userAfterRefresh.refreshToken;
-      expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
-      checkCookieResponse(response, newRefreshToken);
+      expect(oldRefreshToken).not.toEqual(updatedUser.refreshToken);
+      expect(updatedUser.refreshToken).toEqual(response.body.refreshToken);
     });
 
     it('should throw Error 401 if invalid refreshToken was send', async () => {
       // Refresh with wrong refreshToken
       const response = await request(app.getHttpServer())
         .post(API_ROUTES.AUTH.REFRESH)
-        .set('Cookie', 'refreshToken=wrongToken');
+        .send({ refreshToken: 'wrongRefreshToken' });
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
@@ -186,8 +191,9 @@ describe('AuthController (e2e)', () => {
 
     it('should throw Error 401 if no refreshToken was send', async () => {
       // Refresh with wrong refreshToken
-      const response = await request(app.getHttpServer())
-        .post(API_ROUTES.AUTH.REFRESH)
+      const response = await request(app.getHttpServer()).post(
+        API_ROUTES.AUTH.REFRESH
+      );
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
@@ -210,15 +216,10 @@ describe('AuthController (e2e)', () => {
     expect(token.split('.').length).toBe(3);
   }
 
-  function checkCookieResponse(response: supertest.Response, newRefreshToken: string) {
-    const newSetCookieHeader = response.headers['set-cookie'];
-    expect(newSetCookieHeader).toBeDefined();
-    const cookieRefreshTokenPath = newSetCookieHeader[0].split(';').find(part => part.trim().startsWith('refreshToken='));
-    expect(cookieRefreshTokenPath).toBe('refreshToken=' + newRefreshToken);
-  }
-
   function expectAuthResponse(response: any) {
-    expect(response.body).toHaveProperty('accessToken');
+    expect(Object.keys(response.body).sort()).toEqual(
+      ['accessToken', 'refreshToken'].sort()
+    );
 
     // Verify Access Token
     const accessToken = response.body.accessToken;
