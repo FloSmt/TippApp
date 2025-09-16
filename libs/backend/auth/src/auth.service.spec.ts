@@ -1,12 +1,17 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {JwtService} from '@nestjs/jwt';
-import {createMock, DeepMocked} from '@golevelup/ts-jest';
-import {ConfigService} from '@nestjs/config';
-import {HttpException} from '@nestjs/common';
-import {ErrorCodes, LoginDto, RegisterDto, User,} from '@tippapp/shared/data-access';
-import {UserService} from '@tippapp/backend/user';
-import {ErrorManagerService} from '@tippapp/backend/error-handling';
-import {AuthService} from './auth.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
+import { HttpException } from '@nestjs/common';
+import {
+  ErrorCodes,
+  LoginDto,
+  RegisterDto,
+  User,
+} from '@tippapp/shared/data-access';
+import { UserService } from '@tippapp/backend/user';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -16,7 +21,7 @@ describe('AuthService', () => {
   const jwtServiceMock = {
     sign: jest.fn(),
     verify: jest.fn(),
-  }
+  };
 
   const mocks = {
     get loginData(): LoginDto[] {
@@ -83,6 +88,10 @@ describe('AuthService', () => {
     jest
       .spyOn(errorManagerService, 'createError')
       .mockReturnValue(new HttpException('Error', 404));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('endpoint functionality', () => {
@@ -207,7 +216,7 @@ describe('AuthService', () => {
       });
 
       it('should throw an UnauthorizedException if user was not found', async () => {
-        verifyTokenSpy.mockReturnValue({id: 22, email: 'mock@email.de'});
+        verifyTokenSpy.mockReturnValue({ id: 22, email: 'mock@email.de' });
         userService.findById.mockResolvedValueOnce(null);
 
         await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
@@ -222,8 +231,11 @@ describe('AuthService', () => {
       });
 
       it('should throw an UnauthorizedException if refresh tokens are not the same', async () => {
-        verifyTokenSpy.mockReturnValue({id: 22, email: 'mock@email.de'});
-        userService.findById.mockResolvedValueOnce({...mocks.userData, refreshToken: 'different'});
+        verifyTokenSpy.mockReturnValue({ id: 22, email: 'mock@email.de' });
+        userService.findById.mockResolvedValueOnce({
+          ...mocks.userData,
+          refreshToken: 'different',
+        });
 
         await expect(service.refreshTokens('refreshToken')).rejects.toThrow(
           new HttpException('Error', 404)
@@ -237,7 +249,7 @@ describe('AuthService', () => {
       });
 
       it('should generate new Tokens', async () => {
-        verifyTokenSpy.mockReturnValue({id: 22, email: 'mock@email.de'});
+        verifyTokenSpy.mockReturnValue({ id: 22, email: 'mock@email.de' });
         userService.findById.mockResolvedValueOnce(mocks.userData);
 
         const result = await service.refreshTokens(mocks.userData.refreshToken);
@@ -247,8 +259,13 @@ describe('AuthService', () => {
           refreshToken: 'newRefreshToken',
         });
 
-        expect(service.generateTokens).toHaveBeenCalledWith({email: mocks.userData.email, id: mocks.userData.id});
-        expect(verifyTokenSpy).toHaveBeenCalledWith(mocks.userData.refreshToken);
+        expect(service.generateTokens).toHaveBeenCalledWith({
+          email: mocks.userData.email,
+          id: mocks.userData.id,
+        });
+        expect(verifyTokenSpy).toHaveBeenCalledWith(
+          mocks.userData.refreshToken
+        );
         expect(userService.updateRefreshToken).toHaveBeenCalledWith(
           mocks.userData.id,
           'newRefreshToken'
@@ -257,11 +274,12 @@ describe('AuthService', () => {
     });
   });
 
-
   describe('generateTokens', () => {
     it('should generate access and refresh tokens', () => {
-      jwtServiceMock.sign.mockReturnValueOnce('accessToken').mockReturnValueOnce('refreshToken');
-      const payload = {email: 'testEmail', id: 1};
+      jwtServiceMock.sign
+        .mockReturnValueOnce('accessToken')
+        .mockReturnValueOnce('refreshToken');
+      const payload = { email: 'testEmail', id: 1 };
       const tokens = service.generateTokens(payload);
 
       expect(jwtServiceMock.sign).toHaveBeenCalledTimes(2);
@@ -271,17 +289,19 @@ describe('AuthService', () => {
         refreshToken: 'refreshToken',
       });
     });
-  })
+  });
 
   describe('verifyToken', () => {
     it('should return Payload if token is correct', () => {
-      const payload = {email: 'testEmail', id: 1};
+      const payload = { email: 'testEmail', id: 1 };
       jwtServiceMock.verify.mockReturnValue(payload);
 
       const tokens = service.verifyToken('token');
 
       expect(jwtServiceMock.verify).toHaveBeenCalledTimes(1);
-      expect(jwtServiceMock.verify).toHaveBeenCalledWith('token', {secret: expect.anything()});
+      expect(jwtServiceMock.verify).toHaveBeenCalledWith('token', {
+        secret: expect.anything(),
+      });
 
       expect(tokens).toEqual(payload);
     });
@@ -289,16 +309,18 @@ describe('AuthService', () => {
     it('should return null if token is not correct', () => {
       jwtServiceMock.verify.mockImplementation(() => {
         throw new Error('Invalid token');
-      })
+      });
 
       const tokens = service.verifyToken('token');
 
       expect(jwtServiceMock.verify).toHaveBeenCalledTimes(1);
-      expect(jwtServiceMock.verify).toHaveBeenCalledWith('token', {secret: expect.anything()});
+      expect(jwtServiceMock.verify).toHaveBeenCalledWith('token', {
+        secret: expect.anything(),
+      });
 
       expect(tokens).toEqual(null);
     });
-  })
+  });
 
   describe('comparePasswords', () => {
     it('should return true if passwords match', async () => {
@@ -316,5 +338,5 @@ describe('AuthService', () => {
       const result = await service.comparePasswords(password, hashedPassword);
       expect(result).toBe(false);
     });
-  })
+  });
 });
