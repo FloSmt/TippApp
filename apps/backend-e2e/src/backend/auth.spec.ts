@@ -22,7 +22,7 @@ describe('AuthController (e2e)', () => {
         {
           username: 'test',
           email: 'test@email.de',
-          password: '1234',
+          password: '123456',
         },
       ];
     },
@@ -91,10 +91,7 @@ describe('AuthController (e2e)', () => {
 
     beforeEach(async () => {
       // Create User in Database
-      await userFactory.createUserInDatabase(registerDto);
-      registeredUser = await userRepository.findOne({
-        where: { email: registerDto.email },
-      });
+      registeredUser = await userFactory.createUserInDatabase(registerDto);
     });
 
     it('should response AuthResponse and generates new refreshToken', async () => {
@@ -111,12 +108,12 @@ describe('AuthController (e2e)', () => {
       expect(response.status).toBe(200);
       expectAuthResponse(response);
 
-      const userAfterLogin = await userRepository.findOne({
+      const updatedUser = await userRepository.findOne({
         where: { email: registerDto.email },
       });
-      const newRefreshToken = userAfterLogin.refreshToken;
 
-      expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
+      expect(oldRefreshToken).not.toEqual(updatedUser.refreshToken);
+      expect(updatedUser.refreshToken).toEqual(response.body.refreshToken);
     });
 
     it('should throw Error 404 if user was not found', async () => {
@@ -157,10 +154,7 @@ describe('AuthController (e2e)', () => {
 
     beforeEach(async () => {
       // Create User in Database
-      await userFactory.createUserInDatabase(registerDto);
-      registeredUser = await userRepository.findOne({
-        where: { email: registerDto.email },
-      });
+      registeredUser = await userFactory.createUserInDatabase(registerDto);
     });
 
     it('should response AuthResponse and generates new refreshToken', async () => {
@@ -174,12 +168,12 @@ describe('AuthController (e2e)', () => {
       expect(response.status).toBe(200);
       expectAuthResponse(response);
 
-      const userAfterRefresh = await userRepository.findOne({
+      const updatedUser = await userRepository.findOne({
         where: { email: registerDto.email },
       });
 
-      const newRefreshToken = userAfterRefresh.refreshToken;
-      expect(newRefreshToken !== oldRefreshToken).toBeTruthy();
+      expect(oldRefreshToken).not.toEqual(updatedUser.refreshToken);
+      expect(updatedUser.refreshToken).toEqual(response.body.refreshToken);
     });
 
     it('should throw Error 401 if invalid refreshToken was send', async () => {

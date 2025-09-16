@@ -1,10 +1,11 @@
-import {HttpStatus, Injectable} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
-import {UserService} from '@tippapp/backend/user';
-import {ErrorCodes, LoginDto, RegisterDto} from '@tippapp/shared/data-access';
-import {ConfigService} from '@nestjs/config';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from '@tippapp/backend/user';
+import { ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import {ErrorManagerService} from '@tippapp/backend/error-handling';
+import { v4 as uuidv4 } from 'uuid';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
 
 export interface JwtPayload {
   email: string;
@@ -18,8 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly configService: ConfigService,
     private errorManager: ErrorManagerService
-  ) {
-  }
+  ) {}
 
   async login(
     loginDto: LoginDto
@@ -44,7 +44,7 @@ export class AuthService {
       );
     }
 
-    const newTokens = this.generateTokens({id: user.id, email: user.email});
+    const newTokens = this.generateTokens({ id: user.id, email: user.email });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
@@ -70,7 +70,7 @@ export class AuthService {
       ...registerDto,
       password: passwordHash,
     });
-    const newTokens = this.generateTokens({id: user.id, email: user.email});
+    const newTokens = this.generateTokens({ id: user.id, email: user.email });
     await this.userService.updateRefreshToken(user.id, newTokens.refreshToken);
 
     return {
@@ -82,9 +82,14 @@ export class AuthService {
   async refreshTokens(
     refreshToken: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const decodedToken: { email: string, id: number } | null = this.verifyToken(refreshToken);
+    const decodedToken: { email: string; id: number } | null =
+      this.verifyToken(refreshToken);
 
-    if (!decodedToken || typeof decodedToken === 'string' || !('id' in decodedToken)) {
+    if (
+      !decodedToken ||
+      typeof decodedToken === 'string' ||
+      !('id' in decodedToken)
+    ) {
       throw this.errorManager.createError(
         ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
         HttpStatus.UNAUTHORIZED
@@ -112,13 +117,22 @@ export class AuthService {
     };
   }
 
-  generateTokens(payload: JwtPayload): { accessToken: string; refreshToken: string } {
-    const newAccessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
-    });
-    const newRefreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-    });
+  generateTokens(payload: JwtPayload): {
+    accessToken: string;
+    refreshToken: string;
+  } {
+    const newAccessToken = this.jwtService.sign(
+      { ...payload, refreshId: uuidv4() },
+      {
+        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+      }
+    );
+    const newRefreshToken = this.jwtService.sign(
+      { ...payload, refreshId: uuidv4() },
+      {
+        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+      }
+    );
 
     return {
       accessToken: newAccessToken,
@@ -135,7 +149,6 @@ export class AuthService {
       console.log('Token verification failed:', error);
       return null;
     }
-
   }
 
   async comparePasswords(
