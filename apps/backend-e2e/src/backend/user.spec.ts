@@ -19,13 +19,13 @@ describe('UserController (e2e)', () => {
       return [
         {
           name: 'Tipgroup1',
-          passwordHash: 'password',
+          password: 'password',
           leagueShortcut: 'bl1',
           currentSeason: 2024,
         },
         {
           name: 'Tipgroup2',
-          passwordHash: 'password',
+          password: 'password',
           leagueShortcut: 'bl1',
           currentSeason: 2024,
         },

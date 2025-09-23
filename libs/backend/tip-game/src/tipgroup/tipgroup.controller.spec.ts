@@ -1,8 +1,12 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {createMock, DeepMocked} from '@golevelup/ts-jest';
-import {CreateTipgroupDto, Tipgroup, TipgroupEntryResponseDto,} from '@tippapp/shared/data-access';
-import {TipgroupService} from './tipgroup.service';
-import {TipgroupController} from './tipgroup.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+  CreateTipgroupDto,
+  Tipgroup,
+  TipgroupEntryResponseDto,
+} from '@tippapp/shared/data-access';
+import { TipgroupService } from './tipgroup.service';
+import { TipgroupController } from './tipgroup.controller';
 
 describe('TipgroupController', () => {
   let controller: TipgroupController;
@@ -30,7 +34,7 @@ describe('TipgroupController', () => {
     get createTipgroupDtoMock(): CreateTipgroupDto {
       return {
         name: 'Tipgroup1',
-        passwordHash: '123',
+        password: '123',
         leagueShortcut: 'bl1',
         currentSeason: 2024,
       };
@@ -59,7 +63,7 @@ describe('TipgroupController', () => {
 
   it('should return tipgroup-response', async () => {
     tipgroupService.createTipgroup.mockResolvedValueOnce(mocks.tipgroupMock);
-    const req = {user: {id: 1}};
+    const req = { user: { id: 1 } };
 
     const result = await controller.create(mocks.createTipgroupDtoMock, req);
 

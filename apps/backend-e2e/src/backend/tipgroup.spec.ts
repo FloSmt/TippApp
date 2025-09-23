@@ -39,7 +39,7 @@ describe('TipgroupController (e2e)', () => {
       return [
         {
           name: 'Tipgroup1',
-          passwordHash: 'password',
+          password: 'password',
           leagueShortcut: 'bl1',
           currentSeason: 2024,
         },
@@ -101,7 +101,7 @@ describe('TipgroupController (e2e)', () => {
       expect(tipgroups.length).toBe(1);
       expect(tipgroups[0].name).toEqual(mocks.createTipgroupData[0].name);
       expect(tipgroups[0].passwordHash).toEqual(
-        mocks.createTipgroupData[0].passwordHash
+        mocks.createTipgroupData[0].password
       );
 
       // Check if TipSeason was created

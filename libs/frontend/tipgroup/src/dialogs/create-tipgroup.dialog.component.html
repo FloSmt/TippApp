@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar class="dialog-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" class="close-button">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Tippgruppe erstellen</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" [disabled]="disableCreateButton()" (click)="createTipgroup()">
+        <ion-label>
+          @if (isLoading()) {
+            <ion-spinner name="dots"></ion-spinner>
+          } @else {
+            Erstellen
+          }
+        </ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="createForm">
+    <ion-input fill="outline"
+               formControlName="name"
+               label-placement="floating"
+               label="Name der Tippgruppe"
+               type="text">
+    </ion-input>
+    <div class="information-box">
+      <p>Der Name der Tippgruppe sollte einzigartig sein, damit diese von anderen Nutzern gefunden werden kann.</p>
+    </div>
+
+    <ion-select label="Wettbewerb" formControlName="selectedLeague" label-placement="floating" fill="outline"
+                interface="popover" value="no_selection">
+      <ion-select-option value="no_selection">Keine Vorauswahl</ion-select-option>
+      <ion-select-option value="apples3">Apples</ion-select-option>
+      <ion-select-option value="apples4">Apples</ion-select-option>
+      <ion-select-option value="apples5">Apples</ion-select-option>
+      <ion-select-option value="apples6">Apples</ion-select-option>
+      <ion-select-option value="apples7">Apples</ion-select-option>
+      <ion-select-option value="apples8">Apples</ion-select-option>
+      <ion-select-option value="apples9">Apples</ion-select-option>
+      <ion-select-option value="oranges">Oranges</ion-select-option>
+      <ion-select-option value="bananas">Bananas</ion-select-option>
+      <ion-select-option value="bananas2">Bananas</ion-select-option>
+      <ion-select-option value="bananas3">Bananas</ion-select-option>
+      <ion-select-option value="bananas4">Bananas</ion-select-option>
+      <ion-select-option value="bananas5">Bananas</ion-select-option>
+      <ion-select-option value="bananas6">Bananas</ion-select-option>
+      <ion-select-option value="bananas7">Bananas</ion-select-option>
+    </ion-select>
+    <div class="information-box">
+      <p>Hier kannst du auswählen, welche Spieltage, welches Wettbewerbs bereits standardmäßig erstellt werden sollen.
+        In den Einstellungen können diese später weiter angepasst werden.</p>
+    </div>
+
+    <ion-input fill="outline"
+               formControlName="password"
+               label-placement="floating"
+               label="Password"
+               type="password">
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+    <div class="information-box">
+      <p>Hier kannst du ein Password festlegen, welches von anderen Nutzern benutzt werden kann, um deiner Tippgruppe
+        beizutreten.</p>
+    </div>
+    <ion-input fill="outline"
+               formControlName="passwordConfirm"
+               label-placement="floating"
+               label="Password wiederholen"
+               type="password">
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+  </form>
+</ion-content>

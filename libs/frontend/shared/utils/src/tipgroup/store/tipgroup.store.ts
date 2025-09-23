@@ -1,9 +1,18 @@
-import {computed, inject} from '@angular/core';
-import {patchState, signalStore, withComputed, withMethods, withState,} from '@ngrx/signals';
-import {TipgroupEntryResponseDto} from '@tippapp/shared/data-access';
-import {rxMethod} from '@ngrx/signals/rxjs-interop';
-import {catchError, EMPTY, pipe, switchMap, tap} from 'rxjs';
-import {TipgroupService} from '../tipgroup.service';
+import { computed, inject } from '@angular/core';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import {
+  CreateTipgroupDto,
+  TipgroupEntryResponseDto,
+} from '@tippapp/shared/data-access';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
+import { TipgroupService } from '../tipgroup.service';
 
 export enum LoadingState {
   LOADING = 'LOADING',
@@ -23,7 +32,7 @@ const initialState: TipgroupState = {
 };
 
 export const TipgroupStore = signalStore(
-  {providedIn: 'root'},
+  { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => ({
     hasTipgroups: computed(
@@ -52,12 +61,26 @@ export const TipgroupStore = signalStore(
         loadingState: LoadingState.ERROR,
       });
     },
+
+    createTipgroupSuccess: (newTipgroup: TipgroupEntryResponseDto) => {
+      const currentTipgroups = store.availableTipgroups() || [];
+      patchState(store, {
+        loadingState: LoadingState.LOADED,
+        availableTipgroups: [...currentTipgroups, newTipgroup],
+      });
+    },
+
+    createTipgroupFailure: () => {
+      patchState(store, {
+        loadingState: LoadingState.ERROR,
+      });
+    },
   })),
 
   withMethods((store, tipgroupService = inject(TipgroupService)) => ({
     loadAvailableTipgroups: rxMethod<{ reload: boolean }>(
       pipe(
-        tap(({reload}) =>
+        tap(({ reload }) =>
           patchState(store, {
             loadingState: reload ? LoadingState.LOADING : LoadingState.INITIAL,
           })
@@ -73,6 +96,22 @@ export const TipgroupStore = signalStore(
             })
           );
         })
+      )
+    ),
+    createTipgroup: rxMethod<{ createTipgroupDto: CreateTipgroupDto }>(
+      pipe(
+        tap(() => patchState(store, { loadingState: LoadingState.LOADING })),
+        switchMap(({ createTipgroupDto }) =>
+          tipgroupService.createTipgroup(createTipgroupDto).pipe(
+            tap((tipgroupResponse: TipgroupEntryResponseDto) => {
+              store.createTipgroupSuccess(tipgroupResponse);
+            }),
+            catchError(() => {
+              store.createTipgroupFailure();
+              return EMPTY;
+            })
+          )
+        )
       )
     ),
   }))

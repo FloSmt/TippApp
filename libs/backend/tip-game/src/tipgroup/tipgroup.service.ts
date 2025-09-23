@@ -46,7 +46,7 @@ export class TipgroupService {
     if (matchDays && matches) {
       const newTipgroup = this.createNewTipgroupEntity(
         createTipgroupDto.name,
-        createTipgroupDto.passwordHash
+        createTipgroupDto.password
       );
 
       // Add User as Admin to Tipgroup

@@ -35,13 +35,13 @@ describe('TipgroupService', () => {
           name: 'Tipgroup1',
           leagueShortcut: 'l1',
           currentSeason: 2022,
-          passwordHash: '212',
+          password: '212',
         },
         {
           name: 'Tipgroup1',
           leagueShortcut: 'leagueNotExists',
           currentSeason: 2022,
-          passwordHash: '212',
+          password: '212',
         },
       ] as CreateTipgroupDto[];
     },
@@ -127,7 +127,7 @@ describe('TipgroupService', () => {
       const mockTipgroupInstance = new Tipgroup();
       mockTipgroupInstance.name = mocks.createTipgroupDtoMocks[0].name;
       mockTipgroupInstance.passwordHash =
-        mocks.createTipgroupDtoMocks[0].passwordHash;
+        mocks.createTipgroupDtoMocks[0].password;
       mockTipgroupInstance.users = [];
       mockTipgroupInstance.seasons = [];
 
@@ -176,14 +176,14 @@ describe('TipgroupService', () => {
 
       expect(tipgroupRepository.create).toHaveBeenCalledWith({
         name: mocks.createTipgroupDtoMocks[0].name,
-        passwordHash: mocks.createTipgroupDtoMocks[0].passwordHash,
+        passwordHash: mocks.createTipgroupDtoMocks[0].password,
       });
 
       expect(tipgroupRepository.save).toHaveBeenCalledTimes(1);
       expect(result).toEqual(
         expect.objectContaining({
           name: mocks.createTipgroupDtoMocks[0].name,
-          passwordHash: mocks.createTipgroupDtoMocks[0].passwordHash,
+          passwordHash: mocks.createTipgroupDtoMocks[0].password,
           users: expect.arrayContaining([
             expect.objectContaining({
               isAdmin: true,

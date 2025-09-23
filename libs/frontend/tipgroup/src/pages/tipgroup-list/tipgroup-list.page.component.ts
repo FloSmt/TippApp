@@ -12,6 +12,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonToolbar,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -25,6 +26,7 @@ import { LoadingState, TipgroupStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
+import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dialog.component';
 
 @Component({
   selector: 'lib-tipgroup-list',
@@ -49,6 +51,7 @@ import { filter, pairwise, take } from 'rxjs';
 export class TipgroupListPageComponent implements OnInit {
   readonly router = inject(Router);
   readonly tipgroupStore = inject(TipgroupStore);
+  readonly modalController = inject(ModalController);
 
   isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoading);
   availableTipgroups = this.tipgroupStore.availableTipgroups;
@@ -78,5 +81,13 @@ export class TipgroupListPageComponent implements OnInit {
       .subscribe(() => {
         event.target.complete();
       });
+  }
+
+  async openCreateTipgroupDialog() {
+    const modal = await this.modalController.create({
+      component: CreateTipgroupDialogComponent,
+    });
+
+    await modal.present();
   }
 }
