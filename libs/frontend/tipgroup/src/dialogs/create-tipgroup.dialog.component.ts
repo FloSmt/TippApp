@@ -17,7 +17,7 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { close, informationCircleOutline } from 'ionicons/icons';
+import { close, closeCircle, informationCircleOutline } from 'ionicons/icons';
 import {
   FormControl,
   FormGroup,
@@ -27,6 +27,7 @@ import {
 } from '@angular/forms';
 import { TipgroupStore } from '@tippapp/frontend/utils';
 import { CreateTipgroupDto } from '@tippapp/shared/data-access';
+import { ErrorCardTemplateComponent } from '../../../shared/components/src/template-cards/error-card/error-card.template.component';
 
 @Component({
   selector: 'lib-create-tipgroup.dialog',
@@ -47,6 +48,7 @@ import { CreateTipgroupDto } from '@tippapp/shared/data-access';
     ReactiveFormsModule,
     IonLabel,
     IonSpinner,
+    ErrorCardTemplateComponent,
   ],
   templateUrl: './create-tipgroup.dialog.component.html',
   styleUrl: './create-tipgroup.dialog.component.scss',
@@ -56,10 +58,14 @@ export class CreateTipgroupDialogComponent {
   readonly tipgroupStore = inject(TipgroupStore);
 
   constructor() {
-    addIcons({ close, informationCircleOutline });
+    addIcons({ close, closeCircle, informationCircleOutline });
+
+    this.tipgroupStore.loadAvailableLeagues();
   }
 
   isLoading = this.tipgroupStore.isLoading;
+  availableLeagues = this.tipgroupStore.availableLeagues;
+  hasAvailableLeaguesError = this.tipgroupStore.hasAvailableLeaguesError;
 
   createForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -69,7 +75,11 @@ export class CreateTipgroupDialogComponent {
   });
 
   disableCreateButton() {
-    return !this.createForm.valid || this.isLoading();
+    return (
+      !this.createForm.valid ||
+      this.isLoading() ||
+      this.hasAvailableLeaguesError()
+    );
   }
 
   cancel() {
@@ -80,14 +90,32 @@ export class CreateTipgroupDialogComponent {
   async createTipgroup() {
     if (this.createForm.valid) {
       const formValue = this.createForm.value;
+      const league = this.getSelectedLeague();
+
+      if (!league) {
+        this.createForm.setErrors(new Error('Please select a valid league.'));
+        return;
+      }
+
       const createTipgroupDto: CreateTipgroupDto = {
-        name: formValue.name!,
-        leagueShortcut: formValue.selectedLeague!,
-        password: formValue.password!,
-        currentSeason: 2025,
+        name: formValue.name ? formValue.name : '',
+        leagueShortcut: league.shortcut,
+        password: formValue.password ? formValue.password : '',
+        currentSeason: league.season,
       };
+
       this.tipgroupStore.createTipgroup({ createTipgroupDto });
-      // await this.modalController.dismiss(formValue, 'create');
     }
+  }
+
+  getSelectedLeague(): { shortcut: string; season: number } | null {
+    const leagueId = Number(this.createForm.value.selectedLeague);
+
+    const league = this.availableLeagues
+      .data()
+      ?.find((league) => league.leagueId === leagueId);
+    return league
+      ? { shortcut: league.leagueShortcut, season: league.leagueSeason }
+      : null;
   }
 }

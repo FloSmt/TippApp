@@ -13,7 +13,10 @@
       <ng-container *ngTemplateOutlet="skweletonTemplate"></ng-container>
     }
     @if (hasError() || availableTipgroups() === null && !isLoading()) {
-      <ng-container *ngTemplateOutlet="errorTemplate"></ng-container>
+      <lib-error-card
+        title="Fehler"
+        message="Beim laden der Tippgruppen ist ein Fehler aufgetreten. Versuche es erneut.">
+      </lib-error-card>
     } @else if (availableTipgroups() && availableTipgroups()!.length === 0) {
       <ng-container *ngTemplateOutlet="emptyListTemplate"></ng-container>
     } @else {

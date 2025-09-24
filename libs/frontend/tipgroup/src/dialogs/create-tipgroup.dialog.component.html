@@ -20,58 +20,62 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <form [formGroup]="createForm">
-    <ion-input fill="outline"
-               formControlName="name"
-               label-placement="floating"
-               label="Name der Tippgruppe"
-               type="text">
-    </ion-input>
-    <div class="information-box">
-      <p>Der Name der Tippgruppe sollte einzigartig sein, damit diese von anderen Nutzern gefunden werden kann.</p>
+  @if (isLoading() || availableLeagues.isLoading()) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
     </div>
+  } @else if (hasAvailableLeaguesError()) {
+    <lib-error-card
+      title="Fehler"
+      message="Beim laden der Wettbewerbe ist ein Fehler aufgetreten. Versuche es später erneut!">
+    </lib-error-card>
+  } @else {
+    <form [formGroup]="createForm">
+      <ion-input fill="outline"
+                 formControlName="name"
+                 label-placement="floating"
+                 label="Name der Tippgruppe"
+                 type="text">
+      </ion-input>
+      <div class="information-box">
+        <p>Der Name der Tippgruppe sollte einzigartig sein, damit diese von anderen Nutzern gefunden werden kann.</p>
+      </div>
 
-    <ion-select label="Wettbewerb" formControlName="selectedLeague" label-placement="floating" fill="outline"
-                interface="popover" value="no_selection">
-      <ion-select-option value="no_selection">Keine Vorauswahl</ion-select-option>
-      <ion-select-option value="apples3">Apples</ion-select-option>
-      <ion-select-option value="apples4">Apples</ion-select-option>
-      <ion-select-option value="apples5">Apples</ion-select-option>
-      <ion-select-option value="apples6">Apples</ion-select-option>
-      <ion-select-option value="apples7">Apples</ion-select-option>
-      <ion-select-option value="apples8">Apples</ion-select-option>
-      <ion-select-option value="apples9">Apples</ion-select-option>
-      <ion-select-option value="oranges">Oranges</ion-select-option>
-      <ion-select-option value="bananas">Bananas</ion-select-option>
-      <ion-select-option value="bananas2">Bananas</ion-select-option>
-      <ion-select-option value="bananas3">Bananas</ion-select-option>
-      <ion-select-option value="bananas4">Bananas</ion-select-option>
-      <ion-select-option value="bananas5">Bananas</ion-select-option>
-      <ion-select-option value="bananas6">Bananas</ion-select-option>
-      <ion-select-option value="bananas7">Bananas</ion-select-option>
-    </ion-select>
-    <div class="information-box">
-      <p>Hier kannst du auswählen, welche Spieltage, welches Wettbewerbs bereits standardmäßig erstellt werden sollen.
-        In den Einstellungen können diese später weiter angepasst werden.</p>
-    </div>
+      <ion-select label="Wettbewerb" formControlName="selectedLeague" label-placement="floating"
+                  fill="outline"
+                  interface="popover">
+        @for (league of availableLeagues.data(); track league.leagueId) {
+          <ion-select-option [value]="league.leagueId">
+            {{ league.leagueName }} ({{ league.leagueSeason }})
+          </ion-select-option>
+        }
+      </ion-select>
+      <div class="information-box">
+        @if (hasAvailableLeaguesError()) {
+          <p class="select-error"> Beim laden der Wettbewerbe ist ein Fehler aufgetreten. Versuche es später erneut!</p>
+        }
+        <p>Hier kannst du auswählen, welche Spieltage, welches Wettbewerbs bereits standardmäßig erstellt werden sollen.
+          In den Einstellungen können diese später weiter angepasst werden.</p>
+      </div>
 
-    <ion-input fill="outline"
-               formControlName="password"
-               label-placement="floating"
-               label="Password"
-               type="password">
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
-    <div class="information-box">
-      <p>Hier kannst du ein Password festlegen, welches von anderen Nutzern benutzt werden kann, um deiner Tippgruppe
-        beizutreten.</p>
-    </div>
-    <ion-input fill="outline"
-               formControlName="passwordConfirm"
-               label-placement="floating"
-               label="Password wiederholen"
-               type="password">
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
-  </form>
+      <ion-input fill="outline"
+                 formControlName="password"
+                 label-placement="floating"
+                 label="Password"
+                 type="password">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+      <div class="information-box">
+        <p>Hier kannst du ein Password festlegen, welches von anderen Nutzern benutzt werden kann, um deiner Tippgruppe
+          beizutreten.</p>
+      </div>
+      <ion-input fill="outline"
+                 formControlName="passwordConfirm"
+                 label-placement="floating"
+                 label="Password wiederholen"
+                 type="password">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+    </form>
+  }
 </ion-content>

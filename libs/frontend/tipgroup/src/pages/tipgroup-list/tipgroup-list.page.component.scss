@@ -61,7 +61,7 @@ ion-item {
   }
 }
 
-.no-tipgroups-card, .error-card {
+.no-tipgroups-card {
   text-align: center;
   padding: 2rem;
 
@@ -88,11 +88,5 @@ ion-item {
 .no-tipgroups-card {
   ion-icon {
     color: var(--ion-color-primary);
-  }
-}
-
-.error-card {
-  ion-icon {
-    color: var(--ion-color-danger);
   }
 }

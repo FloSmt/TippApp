@@ -27,6 +27,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
 import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dialog.component';
+import { ErrorCardTemplateComponent } from '../../../../shared/components/src/template-cards/error-card/error-card.template.component';
 
 @Component({
   selector: 'lib-tipgroup-list',
@@ -44,6 +45,7 @@ import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dia
     IonHeader,
     IonToolbar,
     NgTemplateOutlet,
+    ErrorCardTemplateComponent,
   ],
   templateUrl: './tipgroup-list.page.component.html',
   styleUrl: './tipgroup-list.page.component.scss',

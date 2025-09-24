@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  AvailableLeagueResponseDto,
   CreateTipgroupDto,
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
@@ -22,11 +23,17 @@ export class TipgroupService {
     );
   }
 
+  getAvailableLeagues(): Observable<AvailableLeagueResponseDto[]> {
+    return this.httpClient.get<AvailableLeagueResponseDto[]>(
+      this.BACKEND_URL + 'tipgroups/getAvailableLeagues'
+    );
+  }
+
   createTipgroup(
     createTipgroupDto: CreateTipgroupDto
   ): Observable<TipgroupEntryResponseDto> {
     return this.httpClient.post<TipgroupEntryResponseDto>(
-      this.BACKEND_URL + 'tipgroup/create',
+      this.BACKEND_URL + 'tipgroups/create',
       createTipgroupDto
     );
   }

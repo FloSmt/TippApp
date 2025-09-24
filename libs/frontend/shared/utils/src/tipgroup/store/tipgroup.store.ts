@@ -7,11 +7,13 @@ import {
   withState,
 } from '@ngrx/signals';
 import {
+  AvailableLeagueResponseDto,
   CreateTipgroupDto,
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TipgroupService } from '../tipgroup.service';
 
 export enum LoadingState {
@@ -23,11 +25,21 @@ export enum LoadingState {
 
 type TipgroupState = {
   loadingState: LoadingState;
+  availableLeagues: {
+    data: AvailableLeagueResponseDto[] | null;
+    error: HttpErrorResponse | null;
+    isLoading: boolean;
+  };
   availableTipgroups: TipgroupEntryResponseDto[] | null;
 };
 
 const initialState: TipgroupState = {
   loadingState: LoadingState.INITIAL,
+  availableLeagues: {
+    data: null,
+    error: null,
+    isLoading: false,
+  },
   availableTipgroups: null,
 };
 
@@ -38,6 +50,7 @@ export const TipgroupStore = signalStore(
     hasTipgroups: computed(
       () => store.availableTipgroups() && store.availableTipgroups()!.length > 0
     ),
+    hasAvailableLeaguesError: computed(() => !!store.availableLeagues.error()),
     hasError: computed(() => store.loadingState() === LoadingState.ERROR),
     isLoading: computed(
       () =>
@@ -59,6 +72,28 @@ export const TipgroupStore = signalStore(
     loadAvailableGroupsFailure: () => {
       patchState(store, {
         loadingState: LoadingState.ERROR,
+      });
+    },
+
+    loadAvailableLeaguesSuccess: (
+      availableLeagues: AvailableLeagueResponseDto[]
+    ) => {
+      patchState(store, {
+        availableLeagues: {
+          ...store.availableLeagues(),
+          data: availableLeagues,
+          isLoading: false,
+        },
+      });
+    },
+
+    loadAvailableLeaguesFailure: (error: HttpErrorResponse) => {
+      patchState(store, {
+        availableLeagues: {
+          ...store.availableLeagues(),
+          error,
+          isLoading: false,
+        },
       });
     },
 
@@ -98,6 +133,27 @@ export const TipgroupStore = signalStore(
         })
       )
     ),
+    loadAvailableLeagues: rxMethod<void>(
+      pipe(
+        tap(() =>
+          patchState(store, {
+            availableLeagues: { ...store.availableLeagues(), isLoading: true },
+          })
+        ),
+        switchMap(() =>
+          tipgroupService.getAvailableLeagues().pipe(
+            tap((response: AvailableLeagueResponseDto[]) => {
+              store.loadAvailableLeaguesSuccess(response);
+            }),
+            catchError((error: HttpErrorResponse) => {
+              store.loadAvailableLeaguesFailure(error);
+              return EMPTY;
+            })
+          )
+        )
+      )
+    ),
+
     createTipgroup: rxMethod<{ createTipgroupDto: CreateTipgroupDto }>(
       pipe(
         tap(() => patchState(store, { loadingState: LoadingState.LOADING })),
