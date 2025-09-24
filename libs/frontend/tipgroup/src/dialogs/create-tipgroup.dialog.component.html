@@ -36,39 +36,28 @@
                  label-placement="floating"
                  label="Name der Tippgruppe"
                  type="text">
+        <ion-icon name="text-outline" slot="start"></ion-icon>
       </ion-input>
-      <div class="information-box">
-        <p>Der Name der Tippgruppe sollte einzigartig sein, damit diese von anderen Nutzern gefunden werden kann.</p>
-      </div>
 
       <ion-select label="Wettbewerb" formControlName="selectedLeague" label-placement="floating"
                   fill="outline"
                   interface="popover">
+        <ion-icon name="trophy" slot="start"></ion-icon>
         @for (league of availableLeagues.data(); track league.leagueId) {
           <ion-select-option [value]="league.leagueId">
             {{ league.leagueName }} ({{ league.leagueSeason }})
           </ion-select-option>
         }
       </ion-select>
-      <div class="information-box">
-        @if (hasAvailableLeaguesError()) {
-          <p class="select-error"> Beim laden der Wettbewerbe ist ein Fehler aufgetreten. Versuche es später erneut!</p>
-        }
-        <p>Hier kannst du auswählen, welche Spieltage, welches Wettbewerbs bereits standardmäßig erstellt werden sollen.
-          In den Einstellungen können diese später weiter angepasst werden.</p>
-      </div>
 
       <ion-input fill="outline"
                  formControlName="password"
                  label-placement="floating"
                  label="Password"
                  type="password">
+        <ion-icon name="shield-checkmark" slot="start"></ion-icon>
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
-      <div class="information-box">
-        <p>Hier kannst du ein Password festlegen, welches von anderen Nutzern benutzt werden kann, um deiner Tippgruppe
-          beizutreten.</p>
-      </div>
       <ion-input fill="outline"
                  formControlName="passwordConfirm"
                  label-placement="floating"
@@ -77,5 +66,41 @@
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
     </form>
+
+    <div class="info-cards">
+      <div class="info-card">
+        <div>
+          <ion-icon name="text-outline"></ion-icon>
+        </div>
+        <div>
+          <h3>Name der Tippgruppe</h3>
+          <p>Mit diesem Namen können andere Spieler deine Tippgruppe finden und ihr beitreten. Der Name sollte aus
+            diesem
+            Grund einzigartig sein</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div>
+          <ion-icon name="trophy"></ion-icon>
+        </div>
+        <div>
+          <h3>Wettbewerb</h3>
+          <p>Der Wettbewerb bestimmt, welche Spiele automatisch in deine Tippgruppe übernommen werden. Die Spieltage
+            können
+            später individuell angepasst und mit Spielen aus anderen Wettbewerben erweitert werden.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div>
+          <ion-icon name="shield-checkmark"></ion-icon>
+        </div>
+        <div>
+          <h3>Password</h3>
+          <p>Mit diesem Password können andere Spieler deiner Tippgruppe beitreten. Du kannst es später in den
+            Einstellungen
+            ändern.</p>
+        </div>
+      </div>
+    </div>
   }
 </ion-content>

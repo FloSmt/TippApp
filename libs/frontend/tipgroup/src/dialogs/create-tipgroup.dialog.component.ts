@@ -17,7 +17,14 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { close, closeCircle, informationCircleOutline } from 'ionicons/icons';
+import {
+  close,
+  closeCircle,
+  informationCircleOutline,
+  shieldCheckmark,
+  textOutline,
+  trophy,
+} from 'ionicons/icons';
 import {
   FormControl,
   FormGroup,
@@ -58,7 +65,14 @@ export class CreateTipgroupDialogComponent {
   readonly tipgroupStore = inject(TipgroupStore);
 
   constructor() {
-    addIcons({ close, closeCircle, informationCircleOutline });
+    addIcons({
+      close,
+      closeCircle,
+      informationCircleOutline,
+      textOutline,
+      shieldCheckmark,
+      trophy,
+    });
 
     this.tipgroupStore.loadAvailableLeagues();
   }
