@@ -32,9 +32,15 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TipgroupStore } from '@tippapp/frontend/utils';
-import { CreateTipgroupDto } from '@tippapp/shared/data-access';
-import { ErrorCardTemplateComponent } from '../../../shared/components/src/template-cards/error-card/error-card.template.component';
+import {
+  TipgroupStore,
+  TransformLeagueNamePipe,
+} from '@tippapp/frontend/utils';
+import {
+  AvailableLeagueResponseDto,
+  CreateTipgroupDto,
+} from '@tippapp/shared/data-access';
+import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-create-tipgroup.dialog',
@@ -56,6 +62,7 @@ import { ErrorCardTemplateComponent } from '../../../shared/components/src/templ
     IonLabel,
     IonSpinner,
     ErrorCardTemplateComponent,
+    TransformLeagueNamePipe,
   ],
   templateUrl: './create-tipgroup.dialog.component.html',
   styleUrl: './create-tipgroup.dialog.component.scss',
@@ -78,7 +85,7 @@ export class CreateTipgroupDialogComponent {
   }
 
   isLoading = this.tipgroupStore.isLoading;
-  availableLeagues = this.tipgroupStore.availableLeagues;
+  availableLeagues = this.tipgroupStore.availableLeaguesState;
   hasAvailableLeaguesError = this.tipgroupStore.hasAvailableLeaguesError;
 
   createForm = new FormGroup({
@@ -132,4 +139,36 @@ export class CreateTipgroupDialogComponent {
       ? { shortcut: league.leagueShortcut, season: league.leagueSeason }
       : null;
   }
+
+  getLeagueSeasonGroups(): LeagueSeasonGroup[] {
+    const leagues =
+      this.availableLeagues
+        .data()!
+        .filter(
+          (league) =>
+            Number(league.leagueSeason) >= new Date().getFullYear() - 1
+        ) || [];
+    const seasonGroups: { [key: number]: AvailableLeagueResponseDto[] } = {};
+
+    leagues.forEach((league) => {
+      if (!seasonGroups[league.leagueSeason]) {
+        seasonGroups[league.leagueSeason] = [];
+      }
+      seasonGroups[league.leagueSeason].push(league);
+    });
+
+    return Object.keys(seasonGroups)
+      .map((season) => ({
+        season: Number(season),
+        leagues: seasonGroups[Number(season)].sort((a, b) =>
+          a.leagueName.localeCompare(b.leagueName)
+        ),
+      }))
+      .sort((a, b) => b.season - a.season); // Sort seasons in descending order
+  }
+}
+
+export interface LeagueSeasonGroup {
+  season: number;
+  leagues: AvailableLeagueResponseDto[];
 }

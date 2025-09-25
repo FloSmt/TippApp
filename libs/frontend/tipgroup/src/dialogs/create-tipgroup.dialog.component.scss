@@ -8,6 +8,11 @@ ion-input, ion-select {
   }
 }
 
+.league-season {
+  --background: #fff;
+  font-weight: bolder;
+}
+
 .dialog-toolbar {
   .close-button ion-icon {
     color: var(--ion-text-color-step-50)

@@ -6,10 +6,10 @@ import {
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
 import { TipgroupService } from './tipgroup.service';
-import { TipgroupController } from './tipgroup.controller';
+import { TipgroupsController } from './tipgroups.controller';
 
-describe('TipgroupController', () => {
-  let controller: TipgroupController;
+describe('TipgroupsController', () => {
+  let controller: TipgroupsController;
   let tipgroupService: DeepMocked<TipgroupService>;
 
   const mocks = {
@@ -43,7 +43,7 @@ describe('TipgroupController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [TipgroupController],
+      controllers: [TipgroupsController],
       providers: [
         TipgroupService,
         {
@@ -53,7 +53,7 @@ describe('TipgroupController', () => {
       ],
     }).compile();
 
-    controller = module.get<TipgroupController>(TipgroupController);
+    controller = module.get<TipgroupsController>(TipgroupsController);
     tipgroupService = module.get(TipgroupService);
   });
 

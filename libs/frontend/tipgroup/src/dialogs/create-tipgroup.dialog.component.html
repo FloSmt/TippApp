@@ -43,10 +43,16 @@
                   fill="outline"
                   interface="popover">
         <ion-icon name="trophy" slot="start"></ion-icon>
-        @for (league of availableLeagues.data(); track league.leagueId) {
-          <ion-select-option [value]="league.leagueId">
-            {{ league.leagueName }} ({{ league.leagueSeason }})
-          </ion-select-option>
+        @for (group of getLeagueSeasonGroups(); track group.season) {
+          <div class="season-divider">
+            Saison {{ group.season }}
+          </div>
+
+          @for (league of group.leagues; track league.leagueId) {
+            <ion-select-option [value]="league.leagueId">
+              {{ league.leagueName | transformLeagueName }}
+            </ion-select-option>
+          }
         }
       </ion-select>
 

@@ -6,6 +6,7 @@ import {
 import {
   CreateTipgroupDto,
   GroupResponse,
+  LeagueResponse,
   MatchResponse,
   Tipgroup,
   TipgroupUser,
@@ -26,6 +27,29 @@ export class TipgroupService {
     private apiService: ApiService,
     private userService: UserService
   ) {}
+
+  private fetchedLeagues: LeagueResponse[] | null = null;
+  private dateOfLastFetch: number | null = null;
+  private readonly cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  async getAvailableLeagues(): Promise<LeagueResponse[]> {
+    const now = Date.now();
+    if (
+      this.fetchedLeagues &&
+      this.dateOfLastFetch &&
+      now - this.dateOfLastFetch < this.cacheDuration
+    ) {
+      console.log('Returning cached leagues');
+      return this.fetchedLeagues;
+    }
+
+    console.log('Fetching new leagues from API');
+    const leagues = await this.apiService.getAvailableLeagues();
+    this.fetchedLeagues = leagues;
+    this.dateOfLastFetch = now;
+
+    return leagues;
+  }
 
   async createTipgroup(
     createTipgroupDto: CreateTipgroupDto,
@@ -86,6 +110,7 @@ export class TipgroupService {
   private async validateAndGetAvailableLeagues(
     leagueShortcut: string
   ): Promise<void> {
+    // TODO: Cache available leagues to reduce API calls
     const availableLeagues = (await this.apiService.getAvailableLeagues()).map(
       (league) => league.leagueShortcut
     );

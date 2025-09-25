@@ -25,8 +25,12 @@ export enum LoadingState {
 
 type TipgroupState = {
   loadingState: LoadingState;
-  availableLeagues: {
+  availableLeaguesState: {
     data: AvailableLeagueResponseDto[] | null;
+    error: HttpErrorResponse | null;
+    isLoading: boolean;
+  };
+  createTipgroupState: {
     error: HttpErrorResponse | null;
     isLoading: boolean;
   };
@@ -35,8 +39,12 @@ type TipgroupState = {
 
 const initialState: TipgroupState = {
   loadingState: LoadingState.INITIAL,
-  availableLeagues: {
+  availableLeaguesState: {
     data: null,
+    error: null,
+    isLoading: false,
+  },
+  createTipgroupState: {
     error: null,
     isLoading: false,
   },
@@ -50,7 +58,9 @@ export const TipgroupStore = signalStore(
     hasTipgroups: computed(
       () => store.availableTipgroups() && store.availableTipgroups()!.length > 0
     ),
-    hasAvailableLeaguesError: computed(() => !!store.availableLeagues.error()),
+    hasAvailableLeaguesError: computed(
+      () => !!store.availableLeaguesState.error()
+    ),
     hasError: computed(() => store.loadingState() === LoadingState.ERROR),
     isLoading: computed(
       () =>
@@ -79,8 +89,8 @@ export const TipgroupStore = signalStore(
       availableLeagues: AvailableLeagueResponseDto[]
     ) => {
       patchState(store, {
-        availableLeagues: {
-          ...store.availableLeagues(),
+        availableLeaguesState: {
+          ...store.availableLeaguesState(),
           data: availableLeagues,
           isLoading: false,
         },
@@ -89,8 +99,8 @@ export const TipgroupStore = signalStore(
 
     loadAvailableLeaguesFailure: (error: HttpErrorResponse) => {
       patchState(store, {
-        availableLeagues: {
-          ...store.availableLeagues(),
+        availableLeaguesState: {
+          ...store.availableLeaguesState(),
           error,
           isLoading: false,
         },
@@ -137,7 +147,11 @@ export const TipgroupStore = signalStore(
       pipe(
         tap(() =>
           patchState(store, {
-            availableLeagues: { ...store.availableLeagues(), isLoading: true },
+            availableLeaguesState: {
+              ...store.availableLeaguesState(),
+              isLoading: true,
+              error: null,
+            },
           })
         ),
         switchMap(() =>

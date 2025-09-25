@@ -17,6 +17,16 @@ export class ApiService {
 
   private readonly apiUrl = this.config.get<string>('EXTERNAL_API_BASE_URL');
 
+  private readonly allowedLeagues = [
+    'bl1',
+    'bl2',
+    'pl',
+    'sa',
+    'pd',
+    'fl1',
+    'ded',
+  ];
+
   async getMatchData(
     leagueShortcut: string,
     season: number,
@@ -49,7 +59,8 @@ export class ApiService {
       // Filters only Men/Women football with the targeted Season
       const filteredMatches = response.data.filter(
         (league: any) =>
-          league.sport.sportId === 1 || league.sport.sportId === 79
+          (league.sport.sportId === 1 || league.sport.sportId === 79) &&
+          this.allowedLeagues.includes(league.leagueShortcut.toLowerCase())
       );
       return filteredMatches.map((league: any) => new LeagueResponse(league));
     } catch (error) {

@@ -4,7 +4,7 @@ import { Tipgroup } from '@tippapp/shared/data-access';
 import { ApiModule } from '@tippapp/backend/api';
 import { UserModule } from '@tippapp/backend/user';
 import { TipSeasonModule } from '../tipseason';
-import { TipgroupController } from './tipgroup.controller';
+import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupService } from './tipgroup.service';
 
 @Module({
@@ -14,7 +14,7 @@ import { TipgroupService } from './tipgroup.service';
     ApiModule,
     forwardRef(() => UserModule),
   ],
-  controllers: [TipgroupController],
+  controllers: [TipgroupsController],
   exports: [TipgroupService],
   providers: [TipgroupService],
 })

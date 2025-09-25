@@ -1,3 +1,3 @@
 export * from './tipgroup.service';
-export * from './tipgroup.controller';
+export * from './tipgroups.controller';
 export * from './tipgroup.module';
