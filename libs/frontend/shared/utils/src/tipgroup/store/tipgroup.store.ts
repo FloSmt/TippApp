@@ -24,7 +24,6 @@ export enum LoadingState {
 }
 
 type TipgroupState = {
-  loadingState: LoadingState;
   availableLeaguesState: {
     data: AvailableLeagueResponseDto[] | null;
     error: HttpErrorResponse | null;
@@ -34,11 +33,13 @@ type TipgroupState = {
     error: HttpErrorResponse | null;
     isLoading: boolean;
   };
-  availableTipgroups: TipgroupEntryResponseDto[] | null;
+  availableTipgroupsState: {
+    data: TipgroupEntryResponseDto[] | null;
+    loadingState: LoadingState;
+  };
 };
 
 const initialState: TipgroupState = {
-  loadingState: LoadingState.INITIAL,
   availableLeaguesState: {
     data: null,
     error: null,
@@ -48,7 +49,10 @@ const initialState: TipgroupState = {
     error: null,
     isLoading: false,
   },
-  availableTipgroups: null,
+  availableTipgroupsState: {
+    data: null,
+    loadingState: LoadingState.INITIAL,
+  },
 };
 
 export const TipgroupStore = signalStore(
@@ -56,16 +60,20 @@ export const TipgroupStore = signalStore(
   withState(initialState),
   withComputed((store) => ({
     hasTipgroups: computed(
-      () => store.availableTipgroups() && store.availableTipgroups()!.length > 0
+      () =>
+        store.availableTipgroupsState.data() &&
+        store.availableTipgroupsState.data()!.length > 0
     ),
     hasAvailableLeaguesError: computed(
       () => !!store.availableLeaguesState.error()
     ),
-    hasError: computed(() => store.loadingState() === LoadingState.ERROR),
-    isLoading: computed(
+    hasErrorOnLoadingTipgroups: computed(
+      () => store.availableTipgroupsState.loadingState() === LoadingState.ERROR
+    ),
+    isLoadingTipgroups: computed(
       () =>
-        store.loadingState() === LoadingState.LOADING ||
-        store.loadingState() === LoadingState.INITIAL
+        store.availableTipgroupsState.loadingState() === LoadingState.LOADING ||
+        store.availableTipgroupsState.loadingState() === LoadingState.INITIAL
     ),
   })),
 
@@ -74,14 +82,20 @@ export const TipgroupStore = signalStore(
       availableGroups: TipgroupEntryResponseDto[]
     ) => {
       patchState(store, {
-        loadingState: LoadingState.LOADED,
-        availableTipgroups: availableGroups,
+        availableTipgroupsState: {
+          ...store.availableTipgroupsState(),
+          loadingState: LoadingState.LOADED,
+          data: availableGroups,
+        },
       });
     },
 
     loadAvailableGroupsFailure: () => {
       patchState(store, {
-        loadingState: LoadingState.ERROR,
+        availableTipgroupsState: {
+          ...store.availableTipgroupsState(),
+          loadingState: LoadingState.ERROR,
+        },
       });
     },
 
@@ -108,16 +122,26 @@ export const TipgroupStore = signalStore(
     },
 
     createTipgroupSuccess: (newTipgroup: TipgroupEntryResponseDto) => {
-      const currentTipgroups = store.availableTipgroups() || [];
+      const currentTipgroups = store.availableTipgroupsState.data() || [];
       patchState(store, {
-        loadingState: LoadingState.LOADED,
-        availableTipgroups: [...currentTipgroups, newTipgroup],
+        availableTipgroupsState: {
+          ...store.availableTipgroupsState(),
+          data: [...currentTipgroups, newTipgroup],
+        },
+        createTipgroupState: {
+          ...store.createTipgroupState(),
+          isLoading: false,
+        },
       });
     },
 
-    createTipgroupFailure: () => {
+    createTipgroupFailure: (error: HttpErrorResponse) => {
       patchState(store, {
-        loadingState: LoadingState.ERROR,
+        createTipgroupState: {
+          ...store.createTipgroupState(),
+          isLoading: false,
+          error: error,
+        },
       });
     },
   })),
@@ -127,7 +151,12 @@ export const TipgroupStore = signalStore(
       pipe(
         tap(({ reload }) =>
           patchState(store, {
-            loadingState: reload ? LoadingState.LOADING : LoadingState.INITIAL,
+            availableTipgroupsState: {
+              ...store.availableTipgroupsState(),
+              loadingState: reload
+                ? LoadingState.LOADING
+                : LoadingState.INITIAL,
+            },
           })
         ),
         switchMap(() => {
@@ -170,14 +199,22 @@ export const TipgroupStore = signalStore(
 
     createTipgroup: rxMethod<{ createTipgroupDto: CreateTipgroupDto }>(
       pipe(
-        tap(() => patchState(store, { loadingState: LoadingState.LOADING })),
+        tap(() =>
+          patchState(store, {
+            createTipgroupState: {
+              ...store.createTipgroupState(),
+              isLoading: true,
+              error: null,
+            },
+          })
+        ),
         switchMap(({ createTipgroupDto }) =>
           tipgroupService.createTipgroup(createTipgroupDto).pipe(
             tap((tipgroupResponse: TipgroupEntryResponseDto) => {
               store.createTipgroupSuccess(tipgroupResponse);
             }),
-            catchError(() => {
-              store.createTipgroupFailure();
+            catchError((error: HttpErrorResponse) => {
+              store.createTipgroupFailure(error);
               return EMPTY;
             })
           )

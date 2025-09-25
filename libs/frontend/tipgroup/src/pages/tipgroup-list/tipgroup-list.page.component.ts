@@ -26,8 +26,8 @@ import { LoadingState, TipgroupStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
+import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
 import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dialog.component';
-import { ErrorCardTemplateComponent } from '../../../../shared/components/src/template-cards/error-card/error-card.template.component';
 
 @Component({
   selector: 'lib-tipgroup-list',
@@ -55,12 +55,14 @@ export class TipgroupListPageComponent implements OnInit {
   readonly tipgroupStore = inject(TipgroupStore);
   readonly modalController = inject(ModalController);
 
-  isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoading);
-  availableTipgroups = this.tipgroupStore.availableTipgroups;
-  isLoading = this.tipgroupStore.isLoading;
-  hasError = this.tipgroupStore.hasError;
+  isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoadingTipgroups);
+  availableTipgroups = this.tipgroupStore.availableTipgroupsState.data;
+  isLoading = this.tipgroupStore.isLoadingTipgroups;
+  hasError = this.tipgroupStore.hasErrorOnLoadingTipgroups;
   initialLoading = computed(
-    () => this.tipgroupStore.loadingState() === LoadingState.INITIAL
+    () =>
+      this.tipgroupStore.availableTipgroupsState.loadingState() ===
+      LoadingState.INITIAL
   );
 
   constructor() {
