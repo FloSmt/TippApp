@@ -33,6 +33,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  confirmPasswordValidator,
   TipgroupStore,
   TransformLeagueNamePipe,
 } from '@tippapp/frontend/utils';
@@ -71,6 +72,25 @@ export class CreateTipgroupDialogComponent {
   readonly modalController = inject(ModalController);
   readonly tipgroupStore = inject(TipgroupStore);
 
+  readonly noSelectionValue = 'no_selection';
+  readonly nameMaxLength = 50;
+
+  createForm = new FormGroup({
+    name: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(this.nameMaxLength),
+    ]),
+    selectedLeague: new FormControl(this.noSelectionValue, [
+      Validators.required,
+    ]),
+    password: new FormControl('', Validators.required),
+    passwordConfirm: new FormControl('', [
+      Validators.required,
+      confirmPasswordValidator('password'),
+    ]),
+  });
+
   constructor() {
     addIcons({
       close,
@@ -84,22 +104,16 @@ export class CreateTipgroupDialogComponent {
     this.tipgroupStore.loadAvailableLeagues();
   }
 
-  isLoading = this.tipgroupStore.isLoading;
+  isLoading = this.tipgroupStore.availableLeaguesState.isLoading;
   availableLeagues = this.tipgroupStore.availableLeaguesState;
   hasAvailableLeaguesError = this.tipgroupStore.hasAvailableLeaguesError;
-
-  createForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    selectedLeague: new FormControl('no_selection', Validators.required),
-    password: new FormControl('', Validators.required),
-    passwordConfirm: new FormControl('', Validators.required),
-  });
 
   disableCreateButton() {
     return (
       !this.createForm.valid ||
       this.isLoading() ||
-      this.hasAvailableLeaguesError()
+      this.hasAvailableLeaguesError() ||
+      this.createForm.get('selectedLeague')?.value === this.noSelectionValue
     );
   }
 
@@ -136,7 +150,7 @@ export class CreateTipgroupDialogComponent {
       .data()
       ?.find((league) => league.leagueId === leagueId);
     return league
-      ? { shortcut: league.leagueShortcut, season: league.leagueSeason }
+      ? { shortcut: league.leagueShortcut, season: Number(league.leagueSeason) }
       : null;
   }
 
@@ -165,6 +179,33 @@ export class CreateTipgroupDialogComponent {
         ),
       }))
       .sort((a, b) => b.season - a.season); // Sort seasons in descending order
+  }
+
+  getErrorMessage(controlName: string): string {
+    const control = this.createForm.get(controlName);
+    if (control?.hasError('required')) {
+      return `Dieses Feld ist erforderlich.`;
+    }
+    if (control?.hasError('maxlength')) {
+      return `Name darf maximal ${control.errors?.['maxlength'].requiredLength} Zeichen lang sein.`;
+    }
+    if (control?.hasError('minlength')) {
+      return controlName === 'name'
+        ? `Name muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`
+        : `Passwort muss mindestens ${control.errors?.['minlength'].requiredLength} Zeichen lang sein.`;
+    }
+
+    if (control?.hasError('passwordMismatch')) {
+      return 'Die Passwörter stimmen nicht überein.';
+    }
+
+    if (control?.hasError('backendError')) {
+      // return this.errorManagagementService.getMessageForValidationError(
+      //   control.errors?.['backendError'] as ApiValidationErrorMessage
+      // );
+    }
+
+    return '';
   }
 }
 
