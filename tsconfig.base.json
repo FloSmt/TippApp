@@ -10,32 +10,62 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictPropertyInitialization": false,
     "noPropertyAccessFromIndexSignature": false,
     "baseUrl": ".",
     "paths": {
-      "@tippapp/backend/api": ["libs/backend/api/src/index.ts"],
-      "@tippapp/backend/auth": ["libs/backend/auth/src/index.ts"],
-      "@tippapp/backend/core": ["libs/backend/core/src/index.ts"],
-      "@tippapp/backend/database": ["libs/backend/database/src/index.ts"],
+      "@tippapp/backend/api": [
+        "libs/backend/api/src/index.ts"
+      ],
+      "@tippapp/backend/auth": [
+        "libs/backend/auth/src/index.ts"
+      ],
+      "@tippapp/backend/core": [
+        "libs/backend/core/src/index.ts"
+      ],
+      "@tippapp/backend/database": [
+        "libs/backend/database/src/index.ts"
+      ],
       "@tippapp/backend/error-handling": [
         "libs/backend/error-handling/src/index.ts"
       ],
-      "@tippapp/backend/test-helper": ["libs/backend/test-helper/src/index.ts"],
-      "@tippapp/backend/tip-game": ["libs/backend/tip-game/src/index.ts"],
-      "@tippapp/backend/user": ["libs/backend/user/src/index.ts"],
-      "@tippapp/frontend/auth": ["libs/frontend/auth/src/index.ts"],
-      "@tippapp/frontend/core": ["libs/frontend/core/src/index.ts"],
+      "@tippapp/backend/test-helper": [
+        "libs/backend/test-helper/src/index.ts"
+      ],
+      "@tippapp/backend/tip-game": [
+        "libs/backend/tip-game/src/index.ts"
+      ],
+      "@tippapp/backend/user": [
+        "libs/backend/user/src/index.ts"
+      ],
+      "@tippapp/frontend/auth": [
+        "libs/frontend/auth/src/index.ts"
+      ],
+      "@tippapp/frontend/core": [
+        "libs/frontend/core/src/index.ts"
+      ],
       "@tippapp/frontend/shared-components": [
         "libs/frontend/shared/components/src/index.ts"
       ],
-      "@tippapp/frontend/tipgroup": ["libs/frontend/tipgroup/src/index.ts"],
-      "@tippapp/frontend/utils": ["libs/frontend/shared/utils/src/index.ts"],
-      "@tippapp/shared/data-access": ["libs/shared/data-access/src/index.ts"]
+      "@tippapp/frontend/tipgroup": [
+        "libs/frontend/tipgroup/src/index.ts"
+      ],
+      "@tippapp/frontend/utils": [
+        "libs/frontend/shared/utils/src/index.ts"
+      ],
+      "@tippapp/shared/data-access": [
+        "libs/shared/data-access/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

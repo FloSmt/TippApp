@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonButton,
@@ -102,23 +102,33 @@ export class CreateTipgroupDialogComponent {
     });
 
     this.tipgroupStore.loadAvailableLeagues();
+
+    effect(() => {
+      if (
+        !this.isLoadingCreateTipgroup() &&
+        !this.tipgroupStore.createTipgroupState.error()
+      ) {
+        this.modalController.dismiss(null, 'created');
+      }
+    });
   }
 
-  isLoading = this.tipgroupStore.availableLeaguesState.isLoading;
+  isLoadingAvailableLeagues =
+    this.tipgroupStore.availableLeaguesState.isLoading;
+  isLoadingCreateTipgroup = this.tipgroupStore.createTipgroupState.isLoading;
   availableLeagues = this.tipgroupStore.availableLeaguesState;
   hasAvailableLeaguesError = this.tipgroupStore.hasAvailableLeaguesError;
 
   disableCreateButton() {
     return (
       !this.createForm.valid ||
-      this.isLoading() ||
+      this.isLoadingAvailableLeagues() ||
       this.hasAvailableLeaguesError() ||
       this.createForm.get('selectedLeague')?.value === this.noSelectionValue
     );
   }
 
   cancel() {
-    console.log('Cancel clicked');
     return this.modalController.dismiss(null, 'cancel');
   }
 
@@ -157,8 +167,8 @@ export class CreateTipgroupDialogComponent {
   getLeagueSeasonGroups(): LeagueSeasonGroup[] {
     const leagues =
       this.availableLeagues
-        .data()!
-        .filter(
+        .data()
+        ?.filter(
           (league) =>
             Number(league.leagueSeason) >= new Date().getFullYear() - 1
         ) || [];

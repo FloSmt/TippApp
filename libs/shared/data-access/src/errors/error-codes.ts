@@ -44,4 +44,19 @@ export abstract class ErrorCodes {
       message: 'Dieser Benutzername ist bereits vergeben.',
     },
   };
+
+  public static readonly CreateTipgroup = {
+    TIPGROUP_NAME_TAKEN: {
+      code: 'CREATE_TIPGROUP.TIPGROUP_NAME_TAKEN',
+      message: 'Der Tipgroup-Name ist bereits vergeben.',
+    },
+    LEAGUE_NOT_FOUND: {
+      code: 'CREATE_TIPGROUP.LEAGUE_NOT_FOUND',
+      message: 'Die angegebene Liga wurde nicht gefunden.',
+    },
+    API_DATA_UNAVAILABLE: {
+      code: 'CREATE_TIPGROUP.API_DATA_UNAVAILABLE',
+      message: 'Die Spieldaten konnten nicht von der API abgerufen werden.',
+    },
+  };
 }

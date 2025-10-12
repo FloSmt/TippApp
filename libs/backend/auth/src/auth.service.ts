@@ -140,7 +140,7 @@ export class AuthService {
     };
   }
 
-  verifyToken(token: string): JwtPayload | null {
+  verifyToken(token: string) {
     try {
       return this.jwtService.verify(token, {
         secret: this.configService.get<string>('JWT_SECRET'),

@@ -9,7 +9,7 @@
     <ion-buttons slot="end">
       <ion-button fill="clear" [disabled]="disableCreateButton()" (click)="createTipgroup()">
         <ion-label>
-          @if (isLoading()) {
+          @if (isLoadingAvailableLeagues()) {
             <ion-spinner name="dots"></ion-spinner>
           } @else {
             Erstellen
@@ -20,7 +20,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  @if (isLoading() || availableLeagues.isLoading()) {
+  @if (isLoadingAvailableLeagues() || availableLeagues.isLoading()) {
     <div class="loading-container">
       <ion-spinner></ion-spinner>
     </div>

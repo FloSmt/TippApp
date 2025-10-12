@@ -15,6 +15,10 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TipgroupService } from '../tipgroup.service';
+import {
+  NotificationService,
+  NotificationType,
+} from '../../notifications/notification.service';
 
 export enum LoadingState {
   LOADING = 'LOADING',
@@ -77,7 +81,7 @@ export const TipgroupStore = signalStore(
     ),
   })),
 
-  withMethods((store) => ({
+  withMethods((store, notificationService = inject(NotificationService)) => ({
     loadAvailableGroupsSuccess: (
       availableGroups: TipgroupEntryResponseDto[]
     ) => {
@@ -123,6 +127,13 @@ export const TipgroupStore = signalStore(
 
     createTipgroupSuccess: (newTipgroup: TipgroupEntryResponseDto) => {
       const currentTipgroups = store.availableTipgroupsState.data() || [];
+      notificationService.showTypeMessage(
+        {
+          header: 'Tippgruppe erstellt',
+          message: newTipgroup.name + ' wurde erfolgreich erstellt.',
+        },
+        NotificationType.SUCCESS
+      );
       patchState(store, {
         availableTipgroupsState: {
           ...store.availableTipgroupsState(),

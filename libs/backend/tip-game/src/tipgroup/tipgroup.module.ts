@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tipgroup } from '@tippapp/shared/data-access';
 import { ApiModule } from '@tippapp/backend/api';
 import { UserModule } from '@tippapp/backend/user';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { TipSeasonModule } from '../tipseason';
 import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupService } from './tipgroup.service';
@@ -16,6 +17,6 @@ import { TipgroupService } from './tipgroup.service';
   ],
   controllers: [TipgroupsController],
   exports: [TipgroupService],
-  providers: [TipgroupService],
+  providers: [TipgroupService, ErrorManagerService],
 })
 export class TipgroupModule {}

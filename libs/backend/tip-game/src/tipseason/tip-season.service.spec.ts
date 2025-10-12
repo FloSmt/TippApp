@@ -46,27 +46,4 @@ describe('TipSeasonService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  it('should return a TipSeason Entity with 1 Matchday', () => {
-    const response = service.createNewTipSeason(createTipSeasonDtoMock);
-    expect(response.isClosed).toBe(createTipSeasonDtoMock.isClosed);
-
-    expect(response.matchdays.length).toBe(1);
-    expect(matchdayService.createMatchday).toHaveBeenCalledTimes(1);
-    expect(matchdayService.createMatchday).toHaveBeenCalledWith(
-      createTipSeasonDtoMock.matchdays[0]
-    );
-  });
-
-  it('should save the TipSeason', () => {
-    const tipSeason: TipSeason = service.createNewTipSeason(
-      createTipSeasonDtoMock
-    );
-
-    service.saveTipSeason(tipSeason);
-
-    expect(tipSeasonRepository.save).toHaveBeenCalledTimes(1);
-    expect(tipSeasonRepository.create).toHaveBeenCalledTimes(1);
-    expect(tipSeasonRepository.create).toHaveBeenCalledWith(tipSeason);
-  });
 });

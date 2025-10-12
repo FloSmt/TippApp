@@ -1,32 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateTipSeasonDto, TipSeason } from '@tippapp/shared/data-access';
-import { MatchdayService } from '../matchday';
+import {
+  GroupResponse,
+  Match,
+  Matchday,
+  MatchResponse,
+  TipSeason,
+} from '@tippapp/shared/data-access';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class TipSeasonService {
-  constructor(
-    @InjectRepository(TipSeason)
-    private tipSeasonRepository: Repository<TipSeason>,
-    private MatchdayService: MatchdayService
-  ) {}
-  createNewTipSeason(createTipSeasonDto: CreateTipSeasonDto): TipSeason {
-    const newTipSeason = new TipSeason();
-    newTipSeason.isClosed = createTipSeasonDto.isClosed;
-    newTipSeason.matchdays = [];
-    newTipSeason.api_LeagueSeason = createTipSeasonDto.api_LeagueSeason;
-
-    createTipSeasonDto.matchdays.forEach((matchday) => {
-      const newMatchday = this.MatchdayService.createMatchday(matchday);
-      newTipSeason.matchdays.push(newMatchday);
+  createTipSeason(
+    season: number,
+    matchDays: GroupResponse[],
+    matches: MatchResponse[],
+    entityManager: EntityManager
+  ): TipSeason {
+    return entityManager.create(TipSeason, {
+      api_LeagueSeason: season,
+      isClosed: false,
+      matchdays: matchDays.map((group) =>
+        entityManager.create(Matchday, {
+          name: group.groupName,
+          api_groupId: group.groupId,
+          matches: matches
+            .filter((m) => m.group.groupId === group.groupId)
+            .map((match) =>
+              entityManager.create(Match, {
+                api_matchId: match.matchId,
+              })
+            ),
+        })
+      ),
     });
-
-    return newTipSeason;
-  }
-
-  async saveTipSeason(tipSeason: TipSeason): Promise<TipSeason> {
-    const savedTipSeason = this.tipSeasonRepository.create(tipSeason);
-    return this.tipSeasonRepository.save(savedTipSeason);
   }
 }

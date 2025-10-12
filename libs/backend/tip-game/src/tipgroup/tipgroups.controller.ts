@@ -13,11 +13,15 @@ import {
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiService } from '@tippapp/backend/api';
 import { TipgroupService } from './tipgroup.service';
 
 @Controller('tipgroups')
 export class TipgroupsController {
-  constructor(private readonly tipgroupService: TipgroupService) {}
+  constructor(
+    private readonly tipgroupService: TipgroupService,
+    private readonly apiService: ApiService
+  ) {}
 
   @Post('create')
   @ApiBearerAuth()
@@ -57,7 +61,6 @@ export class TipgroupsController {
       'responses a list of available leagues for creating a new tipgroup',
   })
   async getAvailableLeagues(): Promise<AvailableLeagueResponseDto[]> {
-    console.log('GET /tipgroups/getAvailableLeagues called');
-    return this.tipgroupService.getAvailableLeagues();
+    return this.apiService.getAvailableLeagues();
   }
 }

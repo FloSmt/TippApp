@@ -25,7 +25,7 @@ export class User {
 
   @Column()
   @ApiProperty()
-  password?: string;
+  password: string;
 
   @Column({ nullable: true })
   refreshToken?: string;
