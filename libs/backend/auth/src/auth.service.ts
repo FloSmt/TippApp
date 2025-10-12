@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@tippapp/backend/user';
 import { ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { comparePasswords, hashPassword } from '@tippapp/backend/shared';
 
 export interface JwtPayload {
   email: string;
@@ -15,10 +15,10 @@ export interface JwtPayload {
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private errorManager: ErrorManagerService
+    private readonly errorManager: ErrorManagerService
   ) {}
 
   async login(
@@ -33,7 +33,7 @@ export class AuthService {
       );
     }
 
-    const isPasswordMatch = await this.comparePasswords(
+    const isPasswordMatch = await comparePasswords(
       loginDto.password,
       user.password
     );
@@ -65,7 +65,7 @@ export class AuthService {
         HttpStatus.CONFLICT
       );
     }
-    const passwordHash = await this.hashPassword(registerDto.password);
+    const passwordHash = await hashPassword(registerDto.password);
     const user = await this.userService.create({
       ...registerDto,
       password: passwordHash,
@@ -149,16 +149,5 @@ export class AuthService {
       console.log('Token verification failed:', error);
       return null;
     }
-  }
-
-  async comparePasswords(
-    password: string,
-    hashedPassword: string
-  ): Promise<boolean> {
-    return await bcrypt.compare(password, hashedPassword);
-  }
-
-  async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, 10);
   }
 }

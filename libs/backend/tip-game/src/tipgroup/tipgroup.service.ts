@@ -13,6 +13,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { UserService } from '@tippapp/backend/user';
+import { hashPassword } from '@tippapp/backend/shared';
 import { TipSeasonService } from '../tipseason';
 
 @Injectable()
@@ -85,8 +86,7 @@ export class TipgroupService {
         // create Tipgroup and set relations
         const tipgroup = transactionalEntityManager.create(Tipgroup, {
           name: createTipgroupDto.name,
-          // TODO: hash password
-          passwordHash: createTipgroupDto.password,
+          passwordHash: await hashPassword(createTipgroupDto.password),
           users: [tipgroupUser],
           seasons: [tipSeason],
         });

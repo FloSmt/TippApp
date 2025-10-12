@@ -59,6 +59,9 @@
       "@tippapp/frontend/utils": [
         "libs/frontend/shared/utils/src/index.ts"
       ],
+      "@tippapp/backend/shared": [
+        "libs/backend/shared/src/index.ts"
+      ],
       "@tippapp/shared/data-access": [
         "libs/shared/data-access/src/index.ts"
       ]
