@@ -22,7 +22,7 @@ export class ApiService {
 
   private fetchedLeagues: LeagueResponse[] | null = null;
   private dateOfLastFetch: number | null = null;
-  private readonly cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  private cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
   private readonly allowedLeagues = [
     'bl1',
@@ -78,7 +78,7 @@ export class ApiService {
     return leagues;
   }
 
-  private async getAvailableLeaguesFromApi(): Promise<LeagueResponse[]> {
+  protected async getAvailableLeaguesFromApi(): Promise<LeagueResponse[]> {
     try {
       const url = `${this.apiUrl}/getavailableleagues/`;
       const response = await firstValueFrom(this.httpService.get(url));
