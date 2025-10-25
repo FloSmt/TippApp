@@ -1,1 +1,1 @@
-export * from './helper/hash-password.helper';
+export * from './helper/hash.service';

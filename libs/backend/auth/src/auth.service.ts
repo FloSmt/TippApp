@@ -5,7 +5,7 @@ import { ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
-import { comparePasswords, hashPassword } from '@tippapp/backend/shared';
+import { HashService } from '@tippapp/backend/shared';
 
 export interface JwtPayload {
   email: string;
@@ -18,6 +18,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly hashService: HashService,
     private readonly errorManager: ErrorManagerService
   ) {}
 
@@ -33,7 +34,7 @@ export class AuthService {
       );
     }
 
-    const isPasswordMatch = await comparePasswords(
+    const isPasswordMatch = await this.hashService.comparePasswords(
       loginDto.password,
       user.password
     );
@@ -65,7 +66,9 @@ export class AuthService {
         HttpStatus.CONFLICT
       );
     }
-    const passwordHash = await hashPassword(registerDto.password);
+    const passwordHash = await this.hashService.hashPassword(
+      registerDto.password
+    );
     const user = await this.userService.create({
       ...registerDto,
       password: passwordHash,

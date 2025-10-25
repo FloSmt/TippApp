@@ -11,12 +11,14 @@ import {
 } from '@tippapp/shared/data-access';
 import { UserService } from '@tippapp/backend/user';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { HashService } from '@tippapp/backend/shared';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let userService: DeepMocked<UserService>;
   let errorManagerService: DeepMocked<ErrorManagerService>;
+  let hashService: DeepMocked<HashService>;
 
   const jwtServiceMock = {
     sign: jest.fn(),
@@ -78,12 +80,17 @@ describe('AuthService', () => {
           provide: ErrorManagerService,
           useValue: createMock<ErrorManagerService>(),
         },
+        {
+          provide: HashService,
+          useValue: createMock<HashService>(),
+        },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     userService = module.get(UserService);
     errorManagerService = module.get(ErrorManagerService);
+    hashService = module.get(HashService);
 
     jest
       .spyOn(errorManagerService, 'createError')
@@ -120,7 +127,9 @@ describe('AuthService', () => {
       });
 
       it('should throw an UnauthorizedException if the passwords dont match', async () => {
-        jest.spyOn(service, 'comparePasswords').mockResolvedValueOnce(false);
+        jest
+          .spyOn(hashService, 'comparePasswords')
+          .mockResolvedValueOnce(false);
 
         const result = service.login(mocks.loginData[0]);
 
@@ -137,7 +146,7 @@ describe('AuthService', () => {
 
       it('should return refreshToken and accessToken', async () => {
         userService.findByEmail.mockResolvedValueOnce(mocks.userData);
-        jest.spyOn(service, 'comparePasswords').mockResolvedValueOnce(true);
+        jest.spyOn(hashService, 'comparePasswords').mockResolvedValueOnce(true);
 
         await expect(service.login(mocks.loginData[1])).resolves.toEqual({
           accessToken: 'newAccessToken',
@@ -170,7 +179,7 @@ describe('AuthService', () => {
 
       it('should create a new User with hashed Password', async () => {
         jest
-          .spyOn(service, 'hashPassword')
+          .spyOn(hashService, 'hashPassword')
           .mockResolvedValueOnce('hashedPassword');
         userService.findByEmail.mockResolvedValueOnce(null);
         userService.create.mockResolvedValueOnce(mocks.userData);
@@ -319,24 +328,6 @@ describe('AuthService', () => {
       });
 
       expect(tokens).toEqual(null);
-    });
-  });
-
-  describe('comparePasswords', () => {
-    it('should return true if passwords match', async () => {
-      const password = 'password123';
-      const hashedPassword = await service.hashPassword(password);
-
-      const result = await service.comparePasswords(password, hashedPassword);
-      expect(result).toBe(true);
-    });
-
-    it('should return false if passwords do not match', async () => {
-      const password = 'password123';
-      const hashedPassword = await service.hashPassword('differentPassword');
-
-      const result = await service.comparePasswords(password, hashedPassword);
-      expect(result).toBe(false);
     });
   });
 });
