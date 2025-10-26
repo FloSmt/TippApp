@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { LeagueResponse } from '../../apiResponses';
 
-export class AvailableLeagueResponseDto {
+export class AvailableLeagueResponseDto implements Partial<LeagueResponse> {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({

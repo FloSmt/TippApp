@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import {
+  AvailableLeagueResponseDto,
   ErrorCodes,
   GroupResponse,
   LeagueResponse,
@@ -20,7 +21,7 @@ export class ApiService {
 
   private readonly apiUrl = this.config.get<string>('EXTERNAL_API_BASE_URL');
 
-  private fetchedLeagues: LeagueResponse[] | null = null;
+  private fetchedLeagues: AvailableLeagueResponseDto[] | null = null;
   private dateOfLastFetch: number | null = null;
   private cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
@@ -59,7 +60,7 @@ export class ApiService {
     }
   }
 
-  async getAvailableLeagues(): Promise<LeagueResponse[]> {
+  async getAvailableLeagues(): Promise<AvailableLeagueResponseDto[]> {
     const now = Date.now();
     if (
       this.fetchedLeagues &&

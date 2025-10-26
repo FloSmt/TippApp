@@ -114,7 +114,7 @@ export class TipgroupService {
     }
   }
 
-  private async validateTipgroupName(
+  protected async validateTipgroupName(
     name: string,
     entityManager: EntityManager
   ): Promise<void> {
