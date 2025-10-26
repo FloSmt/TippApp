@@ -82,7 +82,7 @@ export const TipgroupStore = signalStore(
   })),
 
   withMethods((store, notificationService = inject(NotificationService)) => ({
-    loadAvailableGroupsSuccess: (
+    loadAvailableTipgroupsSuccess: (
       availableGroups: TipgroupEntryResponseDto[]
     ) => {
       patchState(store, {
@@ -94,7 +94,7 @@ export const TipgroupStore = signalStore(
       });
     },
 
-    loadAvailableGroupsFailure: () => {
+    loadAvailableTipgroupsFailure: () => {
       patchState(store, {
         availableTipgroupsState: {
           ...store.availableTipgroupsState(),
@@ -173,10 +173,10 @@ export const TipgroupStore = signalStore(
         switchMap(() => {
           return tipgroupService.getAvailableTipgroups().pipe(
             tap((response: TipgroupEntryResponseDto[]) =>
-              store.loadAvailableGroupsSuccess(response)
+              store.loadAvailableTipgroupsSuccess(response)
             ),
             catchError(() => {
-              store.loadAvailableGroupsFailure();
+              store.loadAvailableTipgroupsFailure();
               return EMPTY;
             })
           );
