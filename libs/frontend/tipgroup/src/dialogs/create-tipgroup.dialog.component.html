@@ -7,7 +7,8 @@
     </ion-buttons>
     <ion-title>Tippgruppe erstellen</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" [disabled]="disableCreateButton()" (click)="createTipgroup()">
+      <ion-button fill="clear" [disabled]="disableCreateButton()" (click)="createTipgroup()"
+                  data-testid="create-tipgroup-submit-button">
         <ion-label>
           @if (isLoadingAvailableLeagues()) {
             <ion-spinner name="dots"></ion-spinner>
@@ -21,7 +22,7 @@
 </ion-header>
 <ion-content class="ion-padding">
   @if (isLoadingAvailableLeagues() || availableLeagues.isLoading()) {
-    <div class="loading-container">
+    <div class="loading-container" data-testid="spinner">
       <ion-spinner></ion-spinner>
     </div>
   } @else if (hasAvailableLeaguesError()) {
@@ -37,12 +38,14 @@
                  label-placement="floating"
                  label="Name der Tippgruppe"
                  type="text"
+                 data-testid="tipgroup-name-input"
                  [errorText]="getErrorMessage('name')">
         <ion-icon name="text-outline" slot="start"></ion-icon>
       </ion-input>
 
       <ion-select label="Wettbewerb" formControlName="selectedLeague" label-placement="floating"
                   fill="outline"
+                  data-testid="tipgroup-league-select"
                   interface="popover">
         <ion-icon name="trophy" slot="start"></ion-icon>
         @for (group of getLeagueSeasonGroups(); track group.season) {
@@ -51,7 +54,7 @@
           </div>
 
           @for (league of group.leagues; track league.leagueId) {
-            <ion-select-option [value]="league.leagueId">
+            <ion-select-option [value]="league.leagueId" data-testid="league-option">
               {{ league.leagueName | transformLeagueName }}
             </ion-select-option>
           }
@@ -63,6 +66,7 @@
                  label-placement="floating"
                  label="Password"
                  type="password"
+                 data-testid="password-input"
                  [errorText]="getErrorMessage('password')">
         <ion-icon name="shield-checkmark" slot="start"></ion-icon>
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
@@ -72,6 +76,7 @@
                  label-placement="floating"
                  label="Password wiederholen"
                  type="password"
+                 data-testid="password-confirm-input"
                  [errorText]="getErrorMessage('passwordConfirm')">
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>

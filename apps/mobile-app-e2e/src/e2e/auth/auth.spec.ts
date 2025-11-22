@@ -1,19 +1,22 @@
-import {expect} from '@playwright/test';
-import {test} from './fixtures/auth.fixture';
+import { expect } from '@playwright/test';
+import { test } from '../../fixtures/auth.fixture';
 import {
   mockLoginUserResponse,
   mockRefreshUserResponse,
   mockRegisterUserResponse,
   mockTipgroupListResponse,
-} from './helper/response-helper';
-import {waitForErrorNotification, waitForSuccessNotification,} from './helper/notification-helper';
-import {setLoginContent} from "./helper/login-helper";
+} from '../../helper/response-helper';
+import {
+  waitForErrorNotification,
+  waitForSuccessNotification,
+} from '../../helper/notification-helper';
+import { setLoginContent } from '../../helper/login-helper';
 
 test.describe('Authentication', () => {
   test.describe('Login Page', () => {
     test('login button should initially be disabled and show error-messages if input is invalid', async ({
-                                                                                                           loginPage,
-                                                                                                         }) => {
+      loginPage,
+    }) => {
       await loginPage.passwordInputContainer.isVisible();
       await expect(loginPage.loginButton).toHaveAttribute('disabled');
 
@@ -30,8 +33,8 @@ test.describe('Authentication', () => {
     });
 
     test('login button should be enabled and redirect to home page on successful login', async ({
-                                                                                                  loginPage,
-                                                                                                }) => {
+      loginPage,
+    }) => {
       // Fill inputs with valid data
       await loginPage.fillInputs('testEmail@email.de', '123456');
       await loginPage.emailInputContainer.click();
@@ -49,16 +52,16 @@ test.describe('Authentication', () => {
     });
 
     test('should switch to registration page when register-button is clicked', async ({
-                                                                                        loginPage,
-                                                                                      }) => {
+      loginPage,
+    }) => {
       await loginPage.switchToRegisterButton.click();
       await expect(loginPage.page).toHaveURL('/auth/register');
     });
 
     test('should show error message below input-field if Backend throw Validation-Error', async ({
-                                                                                                   loginPage,
-                                                                                                   page,
-                                                                                                 }) => {
+      loginPage,
+      page,
+    }) => {
       await mockLoginUserResponse(page, 422, {
         status: 422,
         message: 'Validation failed.',
@@ -92,8 +95,8 @@ test.describe('Authentication', () => {
 
   test.describe('Register Page', () => {
     test('register button should initially be disabled and show error-messages if input is invalid', async ({
-                                                                                                              registerPage,
-                                                                                                            }) => {
+      registerPage,
+    }) => {
       await registerPage.registerButton.isVisible();
       await expect(registerPage.registerButton).toHaveAttribute('disabled');
 
@@ -116,8 +119,8 @@ test.describe('Authentication', () => {
     });
 
     test('register button should be enabled and redirect to home page on successful registration', async ({
-                                                                                                            registerPage,
-                                                                                                          }) => {
+      registerPage,
+    }) => {
       // mock Tipgroups after Registration was successfully
       await mockTipgroupListResponse(registerPage.page);
 
@@ -156,9 +159,9 @@ test.describe('Authentication', () => {
     });
 
     test('should show an error-notification if register failed', async ({
-                                                                          registerPage,
-                                                                          page,
-                                                                        }) => {
+      registerPage,
+      page,
+    }) => {
       await mockRegisterUserResponse(page, 500, {});
 
       // Fill inputs with valid data
@@ -176,16 +179,16 @@ test.describe('Authentication', () => {
     });
 
     test('should switch to login page when login-button is clicked', async ({
-                                                                              registerPage,
-                                                                            }) => {
+      registerPage,
+    }) => {
       await registerPage.switchToLoginButton.click();
       await expect(registerPage.page).toHaveURL('/auth/login');
     });
 
     test('should show error message below input-field if Backend throw Validation-Error', async ({
-                                                                                                   registerPage,
-                                                                                                   page,
-                                                                                                 }) => {
+      registerPage,
+      page,
+    }) => {
       await mockRegisterUserResponse(page, 422, {
         status: 422,
         message: 'Validation failed.',
@@ -236,8 +239,8 @@ test.describe('Authentication', () => {
 
   test.describe('Refresh-Flow', () => {
     test('should redirect to login page when refresh token is invalid', async ({
-                                                                                 page,
-                                                                               }) => {
+      page,
+    }) => {
       // Mock the response for an invalid refresh token
       await mockRefreshUserResponse(page, 401, {
         message: 'Refresh token is invalid',
@@ -251,9 +254,9 @@ test.describe('Authentication', () => {
 
   test.describe('Error Toast-Notifications', () => {
     test('should show toast with correct message if backend returns specific error-codes', async ({
-                                                                                                    loginPage,
-                                                                                                    page,
-                                                                                                  }) => {
+      loginPage,
+      page,
+    }) => {
       await mockLoginUserResponse(page, 401, {
         status: 401,
         message: 'dummyMessage',
@@ -268,9 +271,9 @@ test.describe('Authentication', () => {
     });
 
     test('should show toast with correct message if backend returns a unexpected Backend-Error', async ({
-                                                                                                          loginPage,
-                                                                                                          page,
-                                                                                                        }) => {
+      loginPage,
+      page,
+    }) => {
       await mockLoginUserResponse(page, 401, {
         status: 401,
         message: 'dummyMessage',
@@ -284,9 +287,11 @@ test.describe('Authentication', () => {
     });
   });
 
-  test('should redirect to home page if already logged in and try to access login or register page', async ({page}) => {
+  test('should redirect to home page if already logged in and try to access login or register page', async ({
+    page,
+  }) => {
     await setLoginContent(page);
-    await mockRefreshUserResponse(page)
+    await mockRefreshUserResponse(page);
 
     await page.goto('/auth/login');
     await page.waitForURL('/');
@@ -295,5 +300,5 @@ test.describe('Authentication', () => {
     await page.goto('/auth/register');
     await page.waitForURL('/');
     await expect(page).not.toHaveURL('/auth/register');
-  })
+  });
 });

@@ -12,7 +12,12 @@ import {
   CreateTipgroupDto,
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { ApiService } from '@tippapp/backend/api';
 import { TipgroupService } from './tipgroup.service';
 
@@ -26,7 +31,7 @@ export class TipgroupsController {
   @Post('create')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     type: TipgroupEntryResponseDto,
   })
   @ApiOperation({

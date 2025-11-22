@@ -1,4 +1,5 @@
-import {Page} from '@playwright/test';
+import { Page } from '@playwright/test';
+import { availableLeaguesMockResponse } from './responses';
 
 export interface ResponseObject {
   status: number;
@@ -34,7 +35,10 @@ export async function mockRegisterUserResponse(
 ) {
   await mockResponse(page, 'api/auth/register', {
     status: status || 200,
-    body: body || {accessToken: 'mock-accessToken', refreshToken: 'mock-refreshToken'},
+    body: body || {
+      accessToken: 'mock-accessToken',
+      refreshToken: 'mock-refreshToken',
+    },
   });
 }
 
@@ -45,7 +49,10 @@ export async function mockLoginUserResponse(
 ) {
   await mockResponse(page, 'api/auth/login', {
     status: status || 200,
-    body: body || {accessToken: 'mock-accessToken', refreshToken: 'mock-refreshToken'},
+    body: body || {
+      accessToken: 'mock-accessToken',
+      refreshToken: 'mock-refreshToken',
+    },
   });
 }
 
@@ -56,21 +63,46 @@ export async function mockRefreshUserResponse(
 ) {
   await mockResponse(page, 'api/auth/refresh', {
     status: status || 200,
-    body: body || {accessToken: 'mock-accessToken', refreshToken: 'mock-refreshToken'},
+    body: body || {
+      accessToken: 'mock-accessToken',
+      refreshToken: 'mock-refreshToken',
+    },
+  });
+}
+
+export async function mockAvailableLeaguesResponse(
+  page: Page,
+  status?: number,
+  body?: unknown
+) {
+  await mockResponse(page, 'api/tipgroups/getAvailableLeagues', {
+    status: status || 200,
+    body: body || availableLeaguesMockResponse,
   });
 }
 
 export async function mockTipgroupListResponse(
   page: Page,
-  status?: number,
-  body?: unknown
+  body?: unknown,
+  status?: number
 ) {
   await mockResponse(page, 'api/user/tipgroups', {
     status: status || 200,
     body: body || [
-      {id: 1, name: 'Testgroup1'},
-      {id: 2, name: 'Testgroup2'},
-      {id: 3, name: 'Testgroup3'},
+      { id: 1, name: 'Testgroup1' },
+      { id: 2, name: 'Testgroup2' },
+      { id: 3, name: 'Testgroup3' },
     ],
+  });
+}
+
+export async function mockCreateTipgroupResponse(
+  page: Page,
+  body?: unknown,
+  status?: number
+) {
+  await mockResponse(page, 'api/tipgroups/create', {
+    status: status || 201,
+    body: body || { id: 1, name: 'NewTipgroup' },
   });
 }

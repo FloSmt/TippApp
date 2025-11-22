@@ -1,4 +1,4 @@
-import {Locator, Page} from "@playwright/test";
+import { Locator, Page } from '@playwright/test';
 
 export class TipgroupListPage {
   readonly page: Page;
@@ -15,7 +15,7 @@ export class TipgroupListPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.createTipgroupButton = this.page.getByTestId('create-tipgroup-button')
+    this.createTipgroupButton = this.page.getByTestId('create-tipgroup-button');
     this.joinTipgroupButton = this.page.getByTestId('join-tipgroup-button');
     this.errorCard = this.page.getByTestId('error-card');
     this.skeletonCard = this.page.getByTestId('skeleton-card');
@@ -27,7 +27,11 @@ export class TipgroupListPage {
 
   async goto() {
     await this.page.goto('');
-    await this.page.waitForURL('')
+    await this.page.waitForURL('');
+  }
+
+  openCreateTipgroupDialog() {
+    return this.createTipgroupButton.click();
   }
 
   getRefreshSpinner() {
@@ -37,11 +41,13 @@ export class TipgroupListPage {
   async pullToRefresh() {
     const centerPoint = {
       x: this.page.viewportSize().width / 2,
-      y: this.page.viewportSize().height / 2
-    }
+      y: this.page.viewportSize().height / 2,
+    };
     await this.page.locator('ion-content:visible').hover();
     await this.page.mouse.down();
-    await this.page.mouse.move(centerPoint.x, centerPoint.y + 200, {steps: 20});
+    await this.page.mouse.move(centerPoint.x, centerPoint.y + 200, {
+      steps: 20,
+    });
     await this.page.mouse.up();
   }
 }

@@ -1,6 +1,11 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/tipgroup.fixture';
-import { mockTipgroupListResponse } from './helper/response-helper';
+import { test } from '../../fixtures/tipgroup.fixture';
+import {
+  mockAvailableLeaguesResponse,
+  mockCreateTipgroupResponse,
+  mockTipgroupListResponse,
+} from '../../helper/response-helper';
+import { waitForSuccessNotification } from '../../helper/notification-helper';
 
 test.describe('Tipgroups', () => {
   test.describe('Tipgroup-List Page', () => {
@@ -23,7 +28,7 @@ test.describe('Tipgroups', () => {
       tipgroupListPage,
       page,
     }) => {
-      await mockTipgroupListResponse(page, 500, {});
+      await mockTipgroupListResponse(page, {}, 500);
 
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.errorCard).toBeVisible();
@@ -33,7 +38,7 @@ test.describe('Tipgroups', () => {
       tipgroupListPage,
       page,
     }) => {
-      await mockTipgroupListResponse(page, 200, []);
+      await mockTipgroupListResponse(page, [], 200);
 
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.emptyCard).toBeVisible();
@@ -46,10 +51,14 @@ test.describe('Tipgroups', () => {
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.tipgroupItem).toHaveCount(3);
 
-      await mockTipgroupListResponse(page, 200, [
-        { id: 1, name: 'Testgroup1' },
-        { id: 2, name: 'Testgroup2' },
-      ]);
+      await mockTipgroupListResponse(
+        page,
+        [
+          { id: 1, name: 'Testgroup1' },
+          { id: 2, name: 'Testgroup2' },
+        ],
+        200
+      );
 
       await tipgroupListPage.pullToRefresh();
 
@@ -58,13 +67,48 @@ test.describe('Tipgroups', () => {
       await expect(tipgroupListPage.getRefreshSpinner()).toBeHidden();
       await expect(tipgroupListPage.tipgroupItem).toHaveCount(2);
 
-      await mockTipgroupListResponse(page, 500, []);
+      await mockTipgroupListResponse(page, [], 500);
 
       await tipgroupListPage.pullToRefresh();
       await expect(tipgroupListPage.getRefreshSpinner()).toBeVisible();
       await expect(tipgroupListPage.skeletonCard).toBeHidden();
       await expect(tipgroupListPage.getRefreshSpinner()).toBeHidden();
       await expect(tipgroupListPage.errorCard).toBeVisible();
+    });
+  });
+
+  test.describe('Create Tipgroup', () => {
+    test('should create a new Tipgroup', async ({
+      tipgroupListPage,
+      tipgroupCreateDialog,
+      page,
+    }) => {
+      const newTipgroupName = 'New Testgroup';
+      await mockAvailableLeaguesResponse(page);
+      await mockCreateTipgroupResponse(page, { id: 4, name: newTipgroupName });
+
+      await expect(tipgroupListPage.emptyCard).toBeVisible();
+
+      await tipgroupListPage.openCreateTipgroupDialog();
+      await expect(tipgroupCreateDialog.spinner).toBeVisible();
+      await tipgroupCreateDialog.spinner.waitFor({ state: 'hidden' });
+
+      await tipgroupCreateDialog.fillTipgroupDialog(
+        newTipgroupName,
+        0,
+        'password123'
+      );
+      await tipgroupCreateDialog.submit();
+      await tipgroupListPage.joinTipgroupButton.waitFor({ state: 'visible' });
+
+      await expect(tipgroupListPage.tipgroupItem.last()).toHaveText(
+        newTipgroupName
+      );
+
+      await waitForSuccessNotification(
+        `${newTipgroupName} wurde erfolgreich erstellt.`,
+        page
+      );
     });
   });
 });
