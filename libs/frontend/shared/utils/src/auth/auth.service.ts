@@ -7,7 +7,6 @@ import {
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular/standalone';
 import { ENVIRONMENT } from '../environments/environment.token';
 import { TokenStorageService } from './token-storage.service';
 import {
@@ -26,7 +25,6 @@ export class AuthService {
   private readonly errorManagementService = inject(ErrorManagementService);
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
-  readonly modalController = inject(ModalController);
 
   readonly BACKEND_URL = this.env.apiUrl;
 

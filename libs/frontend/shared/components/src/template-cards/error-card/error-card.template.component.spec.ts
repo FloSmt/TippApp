@@ -12,6 +12,10 @@ describe('ErrorCardTemplateComponent', () => {
 
     fixture = TestBed.createComponent(ErrorCardTemplateComponent);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('title', 'Error Title');
+    fixture.componentRef.setInput('message', 'This is an error message.');
+
     fixture.detectChanges();
   });
 
