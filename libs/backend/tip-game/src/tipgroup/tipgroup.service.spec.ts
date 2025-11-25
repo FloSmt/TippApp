@@ -1,18 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-  CreateTipgroupDto,
-  ErrorCodes,
-  Tipgroup,
-  TipgroupUser,
-  TipSeason,
-  User,
-} from '@tippapp/shared/data-access';
-import {
-  ApiService,
-  LeaguesResponseMock,
-  MatchResponseMock,
-} from '@tippapp/backend/api';
+import { CreateTipgroupDto, ErrorCodes, Tipgroup, TipgroupUser, TipSeason, User } from '@tippapp/shared/data-access';
+import { ApiService, LeaguesResponseMock, MatchResponseMock } from '@tippapp/backend/api';
 import { UserService } from '@tippapp/backend/user';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
@@ -130,9 +119,7 @@ describe('TipgroupService', () => {
     hashService = module.get(HashService);
     errorManagerService = module.get(ErrorManagerService);
 
-    jest
-      .spyOn(errorManagerService, 'createError')
-      .mockReturnValue(new HttpException('Error', 404));
+    jest.spyOn(errorManagerService, 'createError').mockReturnValue(new HttpException('Error', 404));
   });
 
   afterEach(() => {
@@ -148,14 +135,9 @@ describe('TipgroupService', () => {
       mockTransactionalEntityManager.findOne.mockResolvedValueOnce({
         name: 'Tipgroup1',
       } as unknown as Tipgroup);
-      const validateTipgroupNameSpy = jest.spyOn(
-        service as any,
-        'validateTipgroupName'
-      );
+      const validateTipgroupNameSpy = jest.spyOn(service as any, 'validateTipgroupName');
 
-      await expect(
-        service.createTipgroup(mocks.createTipgroupDtoMocks[0], 1)
-      ).rejects.toThrow();
+      await expect(service.createTipgroup(mocks.createTipgroupDtoMocks[0], 1)).rejects.toThrow();
 
       expect(validateTipgroupNameSpy).toHaveBeenCalledWith(
         mocks.createTipgroupDtoMocks[0].name,
@@ -163,16 +145,14 @@ describe('TipgroupService', () => {
       );
       expect(errorManagerService.createError).toHaveBeenCalledWith(
         ErrorCodes.CreateTipgroup.TIPGROUP_NAME_TAKEN,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.CONFLICT
       );
     });
 
     it('should throw an error if user not found', async () => {
       userService.findById.mockResolvedValueOnce(null);
 
-      await expect(
-        service.createTipgroup(mocks.createTipgroupDtoMocks[0], 1)
-      ).rejects.toThrow();
+      await expect(service.createTipgroup(mocks.createTipgroupDtoMocks[0], 1)).rejects.toThrow();
       expect(errorManagerService.createError).toHaveBeenCalledWith(
         ErrorCodes.User.USER_NOT_FOUND,
         HttpStatus.NOT_FOUND
@@ -183,9 +163,7 @@ describe('TipgroupService', () => {
       userService.findById.mockResolvedValue(mocks.userMock);
       apiService.getAvailableLeagues.mockResolvedValue(LeaguesResponseMock);
 
-      await expect(
-        service.createTipgroup(mocks.createTipgroupDtoMocks[1], 1)
-      ).rejects.toThrow();
+      await expect(service.createTipgroup(mocks.createTipgroupDtoMocks[1], 1)).rejects.toThrow();
       expect(errorManagerService.createError).toHaveBeenCalledWith(
         ErrorCodes.CreateTipgroup.LEAGUE_NOT_FOUND,
         HttpStatus.NOT_FOUND
@@ -198,14 +176,8 @@ describe('TipgroupService', () => {
       apiService.getMatchData.mockResolvedValue(MatchResponseMock);
       hashService.hashPassword.mockResolvedValue('hashedPassword');
       tipSeasonService.createTipSeason.mockReturnValue(mocks.tipSeasonMock);
-      const validateTipgroupNameSpy = jest.spyOn(
-        service as any,
-        'validateTipgroupName'
-      );
-      const validateAndGetAvailableLeaguesSpy = jest.spyOn(
-        service as any,
-        'validateAndGetAvailableLeagues'
-      );
+      const validateTipgroupNameSpy = jest.spyOn(service as any, 'validateTipgroupName');
+      const validateAndGetAvailableLeaguesSpy = jest.spyOn(service as any, 'validateAndGetAvailableLeagues');
 
       const expectedTipgroup = {
         name: 'Tipgroup1',
@@ -216,30 +188,18 @@ describe('TipgroupService', () => {
 
       mockTransactionalEntityManager.save.mockResolvedValue(expectedTipgroup);
 
-      const result = await service.createTipgroup(
-        mocks.createTipgroupDtoMocks[0],
-        mocks.userMock.id
-      );
+      const result = await service.createTipgroup(mocks.createTipgroupDtoMocks[0], mocks.userMock.id);
 
-      expect(mockTipgroupRepository.manager.transaction).toHaveBeenCalledTimes(
-        1
-      );
+      expect(mockTipgroupRepository.manager.transaction).toHaveBeenCalledTimes(1);
       expect(validateTipgroupNameSpy).toHaveBeenCalledWith(
         mocks.createTipgroupDtoMocks[0].name,
         mockTransactionalEntityManager
       );
-      expect(validateAndGetAvailableLeaguesSpy).toHaveBeenCalledWith(
-        mocks.createTipgroupDtoMocks[0].leagueShortcut
-      );
-      expect(userService.findById).toHaveBeenCalledWith(
-        mocks.userMock.id,
-        mockTransactionalEntityManager
-      );
+      expect(validateAndGetAvailableLeaguesSpy).toHaveBeenCalledWith(mocks.createTipgroupDtoMocks[0].leagueShortcut);
+      expect(userService.findById).toHaveBeenCalledWith(mocks.userMock.id, mockTransactionalEntityManager);
       expect(apiService.getAvailableGroups).toHaveBeenCalledWith('l1', 2022);
       expect(apiService.getMatchData).toHaveBeenCalledWith('l1', 2022);
-      expect(hashService.hashPassword).toHaveBeenCalledWith(
-        mocks.createTipgroupDtoMocks[0].password
-      );
+      expect(hashService.hashPassword).toHaveBeenCalledWith(mocks.createTipgroupDtoMocks[0].password);
 
       expect(mockTransactionalEntityManager.create).toHaveBeenCalledWith(
         TipgroupUser,

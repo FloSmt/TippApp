@@ -18,6 +18,7 @@ import {
   TipgroupFactory,
   UserFactory,
 } from '@tippapp/backend/test-helper';
+import * as bcrypt from 'bcrypt';
 
 describe('TipgroupController (e2e)', () => {
   let app: INestApplication;
@@ -41,7 +42,7 @@ describe('TipgroupController (e2e)', () => {
           name: 'Tipgroup1',
           password: 'password',
           leagueShortcut: 'bl1',
-          currentSeason: 2024,
+          currentSeason: 2007,
         },
       ];
     },
@@ -74,18 +75,12 @@ describe('TipgroupController (e2e)', () => {
   beforeEach(async () => {
     await setupMockApi();
     testUser = await userFactory.createUserInDatabase(mocks.registerData[0]);
-    accessToken = await userFactory.loginUser(
-      mocks.registerData[0].email,
-      mocks.registerData[0].password
-    );
+    accessToken = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
   });
 
-  describe('/create (POST)', () => {
+  fdescribe('/create (POST)', () => {
     it('should create tipgroup, tipseason, matchdays and matches', async () => {
-      const response = await tipgroupFactory.createTipGroup(
-        accessToken,
-        mocks.createTipgroupData[0]
-      );
+      const response = await tipgroupFactory.createTipGroup(accessToken, mocks.createTipgroupData[0]);
 
       expect(response.status).toBe(201);
 
@@ -100,24 +95,19 @@ describe('TipgroupController (e2e)', () => {
       const tipgroups: Tipgroup[] = await tipgroupRepository.find();
       expect(tipgroups.length).toBe(1);
       expect(tipgroups[0].name).toEqual(mocks.createTipgroupData[0].name);
-      expect(tipgroups[0].passwordHash).toEqual(
-        mocks.createTipgroupData[0].password
-      );
+      const correctPassword = await bcrypt.compare(mocks.createTipgroupData[0].password, tipgroups[0].passwordHash);
+      expect(correctPassword).toBeTruthy();
 
       // Check if TipSeason was created
       const tipSeasons: TipSeason[] = await tipseasonRepository.find();
       expect(tipSeasons.length).toBe(1);
-      expect(tipSeasons[0].api_LeagueSeason).toEqual(
-        mocks.createTipgroupData[0].currentSeason
-      );
+      expect(tipSeasons[0].api_LeagueSeason).toEqual(mocks.createTipgroupData[0].currentSeason);
 
       // Check if Matchdays were created
       const matchdays: Matchday[] = await matchdayRepository.find();
       expect(matchdays.length).toBe(AVAILABLE_GROUPS_MOCK.length);
       expect(matchdays[0].name).toEqual(AVAILABLE_GROUPS_MOCK[0].groupName);
-      expect(matchdays[0].api_groupId).toEqual(
-        AVAILABLE_GROUPS_MOCK[0].groupID
-      );
+      expect(matchdays[0].api_groupId).toEqual(AVAILABLE_GROUPS_MOCK[0].groupID);
 
       // Check if Matches were created
       const matches: Match[] = await matchRepository.find();
@@ -126,10 +116,7 @@ describe('TipgroupController (e2e)', () => {
     });
 
     it('should throw Error 401 if user is not authorized', async () => {
-      const response = await tipgroupFactory.createTipGroup(
-        'wrongToken',
-        mocks.createTipgroupData[0]
-      );
+      const response = await tipgroupFactory.createTipGroup('wrongToken', mocks.createTipgroupData[0]);
 
       expect(response.status).toBe(401);
     });

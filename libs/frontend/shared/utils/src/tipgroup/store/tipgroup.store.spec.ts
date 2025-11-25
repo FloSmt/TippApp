@@ -1,22 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  AvailableLeagueResponseDto,
-  CreateTipgroupDto,
-  TipgroupEntryResponseDto,
-} from '@tippapp/shared/data-access';
+import { AvailableLeagueResponseDto, CreateTipgroupDto, TipgroupEntryResponseDto } from '@tippapp/shared/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import { delay, of, throwError } from 'rxjs';
-import {
-  NotificationService,
-  NotificationType,
-} from '../../notifications/notification.service';
+import { NotificationService, NotificationType } from '../../notifications/notification.service';
 import { TipgroupService } from '../tipgroup.service';
 import { ErrorManagementService } from '../../error-management/error-management.service';
 import { LoadingState, TipgroupStore } from './tipgroup.store';
 
 describe('TipgroupStore', () => {
   let store: InstanceType<typeof TipgroupStore>;
-  let tipgroupService: TipgroupService;
 
   const errorManagementServiceMock = {
     handleApiError: jest.fn(),
@@ -92,11 +84,11 @@ describe('TipgroupStore', () => {
     });
 
     store = TestBed.inject(TipgroupStore);
-    tipgroupService = TestBed.inject(TipgroupService);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('should start with initialState', () => {
@@ -119,9 +111,7 @@ describe('TipgroupStore', () => {
     it('hasTipgroups should return true if tipgroups are available', () => {
       store.loadAvailableTipgroupsSuccess(mocks.availableTipgroupsMock);
       expect(store.hasTipgroups()).toBe(true);
-      expect(store.availableTipgroupsState.data()).toStrictEqual(
-        mocks.availableTipgroupsMock
-      );
+      expect(store.availableTipgroupsState.data()).toStrictEqual(mocks.availableTipgroupsMock);
     });
 
     it('hasAvailableLeaguesError should return true if loading available Leagues failed', () => {
@@ -134,9 +124,7 @@ describe('TipgroupStore', () => {
     it('hasErrorOnLoadingTipgroups should return true if loading available Tipgroups failed', () => {
       store.loadAvailableTipgroupsFailure();
       expect(store.hasErrorOnLoadingTipgroups()).toBe(true);
-      expect(store.availableTipgroupsState.loadingState()).toBe(
-        LoadingState.ERROR
-      );
+      expect(store.availableTipgroupsState.loadingState()).toBe(LoadingState.ERROR);
     });
 
     it('isLoadingTipgroups should return true if loadingState is initial or loading', () => {
@@ -192,15 +180,11 @@ describe('TipgroupStore', () => {
       expect(notificationServiceMock.showTypeMessage).toHaveBeenCalledWith(
         {
           header: 'Tippgruppe erstellt',
-          message:
-            mocks.tipgroupEntryResponseDtoMock.name +
-            ' wurde erfolgreich erstellt.',
+          message: mocks.tipgroupEntryResponseDtoMock.name + ' wurde erfolgreich erstellt.',
         },
         NotificationType.SUCCESS
       );
-      expect(store.availableTipgroupsState.data()).toContainEqual(
-        mocks.tipgroupEntryResponseDtoMock
-      );
+      expect(store.availableTipgroupsState.data()).toContainEqual(mocks.tipgroupEntryResponseDtoMock);
       expect(store.createTipgroupState()).toEqual({
         error: null,
         isLoading: false,
@@ -220,130 +204,98 @@ describe('TipgroupStore', () => {
 
   describe('rxMethod', () => {
     describe('loadAvailableTipgroups', () => {
-      it('should patch state on success correctly', (done) => {
-        jest
-          .spyOn(tipgroupService, 'getAvailableTipgroups')
-          .mockReturnValue(of(mocks.availableTipgroupsMock).pipe(delay(1)));
+      it('should patch state on success correctly', () => {
+        jest.useFakeTimers();
+        tipgroupServiceMock.getAvailableTipgroups.mockReturnValue(of(mocks.availableTipgroupsMock).pipe(delay(10)));
 
         store.loadAvailableTipgroups({ reload: false });
 
-        expect(store.availableTipgroupsState.loadingState()).toBe(
-          LoadingState.INITIAL
-        );
-        expect(tipgroupServiceMock.getAvailableTipgroups).toHaveBeenCalledTimes(
-          1
-        );
+        // Direkt nach dem Aufruf sollte loadingState INITIAL sein
+        expect(store.availableTipgroupsState.loadingState()).toBe(LoadingState.INITIAL);
 
-        setTimeout(() => {
-          expect(store.availableTipgroupsState.loadingState()).toEqual(
-            LoadingState.LOADED
-          );
-          expect(store.availableTipgroupsState.data()).toEqual(
-            mocks.availableTipgroupsMock
-          );
-          done();
-        }, 5);
+        // Timer vorspulen, damit das Observable "fertig" ist
+        jest.advanceTimersByTime(20);
+
+        // Jetzt sollte der State auf LOADED stehen
+        expect(store.availableTipgroupsState.loadingState()).toBe(LoadingState.LOADED);
+        expect(store.availableTipgroupsState.data()).toEqual(mocks.availableTipgroupsMock);
+
+        jest.useRealTimers();
       });
 
       it('should patch state on error correctly', () => {
         const mockError = new HttpErrorResponse({ error: 'test-error' });
 
-        jest
-          .spyOn(tipgroupService, 'getAvailableTipgroups')
-          .mockReturnValue(throwError(() => mockError));
+        tipgroupServiceMock.getAvailableTipgroups.mockReturnValue(throwError(() => mockError));
 
         store.loadAvailableTipgroups({ reload: true });
 
         expect(store.availableTipgroupsState.data()).toBeNull();
-        expect(tipgroupServiceMock.getAvailableTipgroups).toHaveBeenCalledTimes(
-          1
-        );
-        expect(store.availableTipgroupsState.loadingState()).toEqual(
-          LoadingState.ERROR
-        );
+        expect(tipgroupServiceMock.getAvailableTipgroups).toHaveBeenCalledTimes(1);
+        expect(store.availableTipgroupsState.loadingState()).toEqual(LoadingState.ERROR);
       });
     });
 
     describe('loadAvailableLeagues', () => {
-      it('should patch state on success correctly', (done) => {
-        jest
-          .spyOn(tipgroupService, 'getAvailableLeagues')
-          .mockReturnValue(of(mocks.availableLeaguesMock).pipe(delay(1)));
+      it('should patch state on success correctly', () => {
+        jest.useFakeTimers();
+        tipgroupServiceMock.getAvailableLeagues.mockReturnValue(of(mocks.availableLeaguesMock).pipe(delay(10)));
 
         store.loadAvailableLeagues();
 
         expect(store.availableLeaguesState.isLoading()).toBeTruthy();
-        expect(tipgroupServiceMock.getAvailableLeagues).toHaveBeenCalledTimes(
-          1
-        );
+        expect(tipgroupServiceMock.getAvailableLeagues).toHaveBeenCalledTimes(1);
 
-        setTimeout(() => {
-          expect(store.availableLeaguesState.isLoading()).toBeFalsy();
-          expect(store.availableLeaguesState.data()).toEqual(
-            mocks.availableLeaguesMock
-          );
-          done();
-        }, 5);
+        jest.advanceTimersByTime(20);
+
+        expect(store.availableLeaguesState.isLoading()).toBeFalsy();
+        expect(store.availableLeaguesState.data()).toEqual(mocks.availableLeaguesMock);
+        jest.useRealTimers();
       });
 
       it('should patch state on error correctly', () => {
         const mockError = new HttpErrorResponse({ error: 'test-error' });
 
-        jest
-          .spyOn(tipgroupService, 'getAvailableLeagues')
-          .mockReturnValue(throwError(() => mockError));
+        tipgroupServiceMock.getAvailableLeagues.mockReturnValue(throwError(() => mockError));
 
         store.loadAvailableLeagues();
 
         expect(store.availableLeaguesState.data()).toBeNull();
-        expect(tipgroupServiceMock.getAvailableLeagues).toHaveBeenCalledTimes(
-          1
-        );
+        expect(tipgroupServiceMock.getAvailableLeagues).toHaveBeenCalledTimes(1);
         expect(store.availableLeaguesState.isLoading()).toBeFalsy();
       });
     });
 
     describe('createTipgroup', () => {
-      it('should patch state on success correctly', (done) => {
-        jest
-          .spyOn(tipgroupService, 'createTipgroup')
-          .mockReturnValue(
-            of(mocks.tipgroupEntryResponseDtoMock).pipe(delay(1))
-          );
+      it('should patch state on success correctly', () => {
+        jest.useFakeTimers();
+        tipgroupServiceMock.createTipgroup.mockReturnValue(of(mocks.tipgroupEntryResponseDtoMock).pipe(delay(10)));
 
         store.createTipgroup({
           createTipgroupDto: mocks.createTipgroupDtoMock,
         });
 
         expect(store.createTipgroupState.isLoading()).toBeTruthy();
-        expect(tipgroupServiceMock.createTipgroup).toHaveBeenCalledWith(
-          mocks.createTipgroupDtoMock
-        );
+        expect(tipgroupServiceMock.createTipgroup).toHaveBeenCalledWith(mocks.createTipgroupDtoMock);
 
-        setTimeout(() => {
-          expect(store.createTipgroupState.isLoading()).toBeFalsy();
-          expect(store.availableTipgroupsState.data()).toContainEqual(
-            mocks.tipgroupEntryResponseDtoMock
-          );
-          done();
-        }, 5);
+        jest.advanceTimersByTime(20);
+
+        expect(store.createTipgroupState.isLoading()).toBeFalsy();
+        expect(store.availableTipgroupsState.data()).toContainEqual(mocks.tipgroupEntryResponseDtoMock);
+        jest.useRealTimers();
       });
 
       it('should patch state on error correctly', () => {
         const mockError = new HttpErrorResponse({ error: 'test-error' });
 
-        jest
-          .spyOn(tipgroupService, 'createTipgroup')
-          .mockReturnValue(throwError(() => mockError));
+        tipgroupServiceMock.createTipgroup.mockReturnValue(throwError(() => mockError));
 
         store.createTipgroup({
           createTipgroupDto: mocks.createTipgroupDtoMock,
         });
 
         expect(store.createTipgroupState.isLoading()).toBeFalsy();
-        expect(tipgroupServiceMock.createTipgroup).toHaveBeenCalledWith(
-          mocks.createTipgroupDtoMock
-        );
+        expect(tipgroupServiceMock.createTipgroup).toHaveBeenCalledWith(mocks.createTipgroupDtoMock);
       });
     });
   });

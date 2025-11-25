@@ -1,6 +1,6 @@
 export const API_ROUTES = {
   TIPGROUP: {
-    CREATE: '/tipgroup/create',
+    CREATE: '/tipgroups/create',
     //GET_BY_ID: (id: string) => `/tipgroup/${id}`,
   },
   AUTH: {
@@ -10,5 +10,5 @@ export const API_ROUTES = {
   },
   USER: {
     TIPGROUPS: '/user/tipgroups',
-  }
+  },
 };

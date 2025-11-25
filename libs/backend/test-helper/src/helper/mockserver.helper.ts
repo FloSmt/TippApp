@@ -1,9 +1,5 @@
 import { mockServerClient } from 'mockserver-client';
-import {
-  AVAILABLE_GROUPS_MOCK,
-  AVAILABLE_LEAGUES_MOCK,
-  MATCHDATA_MOCK,
-} from '../api-mocks';
+import { AVAILABLE_GROUPS_MOCK, AVAILABLE_LEAGUES_MOCK, MATCHDATA_MOCK } from '../api-mocks';
 
 export interface MockApiOptions {
   matchDataResponse?: any;
@@ -28,10 +24,8 @@ export const setupMockApi = async (
 ) => {
   const optionsWithDefaults: MockApiOptions = {
     matchDataResponse: options.matchDataResponse || MATCHDATA_MOCK,
-    availableGroupsResponse:
-      options.availableGroupsResponse || AVAILABLE_GROUPS_MOCK,
-    availableLeaguesResponse:
-      options.availableLeaguesResponse || AVAILABLE_LEAGUES_MOCK,
+    availableGroupsResponse: options.availableGroupsResponse || AVAILABLE_GROUPS_MOCK,
+    availableLeaguesResponse: options.availableLeaguesResponse || AVAILABLE_LEAGUES_MOCK,
     errorCode: options.errorCode || 200,
   };
   const client = mockServerClient('localhost', 1080);
