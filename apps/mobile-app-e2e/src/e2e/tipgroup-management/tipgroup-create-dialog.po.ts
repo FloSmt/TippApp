@@ -8,6 +8,7 @@ export class TipgroupCreateDialog {
   readonly passwordInput: Locator;
   readonly passwordConfirmInput: Locator;
   readonly createButton: Locator;
+  readonly errorCard: Locator;
   readonly spinner: Locator;
 
   constructor(page: Page) {
@@ -17,6 +18,7 @@ export class TipgroupCreateDialog {
     this.passwordInput = this.page.getByTestId('password-input');
     this.passwordConfirmInput = this.page.getByTestId('password-confirm-input');
     this.createButton = this.page.getByTestId('create-tipgroup-submit-button');
+    this.errorCard = this.page.getByTestId('error-card');
     this.spinner = this.page.getByTestId('spinner');
   }
 
@@ -33,9 +35,7 @@ export class TipgroupCreateDialog {
 
   private async selectLeague(nthRow: number) {
     await this.leagueSelection.click();
-    await this.page
-      .locator('ion-popover ion-list')
-      .waitFor({ state: 'visible' });
+    await this.page.locator('ion-popover ion-list').waitFor({ state: 'visible' });
     await this.page.locator('ion-list ion-item').nth(nthRow).click();
   }
 
@@ -43,5 +43,9 @@ export class TipgroupCreateDialog {
     await this.createButton.isEnabled();
     await this.createButton.click();
     await this.spinner.waitFor({ state: 'hidden' });
+  }
+
+  inputErrorText(inputObject: Locator) {
+    return inputObject.locator('.error-text');
   }
 }

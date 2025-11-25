@@ -1,14 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpEvent,
-  HttpInterceptorFn,
-  HttpRequest,
-} from '@angular/common/http';
-import {
-  ErrorManagementService,
-  NotificationService,
-  NotificationType,
-} from '@tippapp/frontend/utils';
+import { HttpEvent, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { ErrorManagementService, NotificationService, NotificationType } from '@tippapp/frontend/utils';
 import { of, throwError } from 'rxjs';
 import { errorHandlerInterceptor } from './error-handler.interceptor';
 import { InterceptorService } from './interceptor.service';
@@ -57,9 +49,7 @@ describe('errorHandlerInterceptor', () => {
     const next = jest.fn().mockReturnValue(throwError(() => error));
     interceptor(mockRequest, next).subscribe({
       error: (err) => {
-        expect(
-          mockErrorManagementService.getMessageForErrorCode
-        ).toHaveBeenCalledWith('SOME_CODE');
+        expect(mockErrorManagementService.getMessageForErrorCode).toHaveBeenCalledWith('SOME_CODE');
         expect(mockNotificationService.showTypeMessage).toHaveBeenCalledWith(
           { message: 'Error-Message: SOME_CODE' },
           NotificationType.ERROR
@@ -91,8 +81,7 @@ describe('errorHandlerInterceptor', () => {
       error: (err) => {
         expect(mockNotificationService.showTypeMessage).toHaveBeenCalledWith(
           {
-            message:
-              'Unbekannter Fehler ist aufgetreten. Versuche es später erneut.',
+            message: 'Ein unbekannter Fehler ist aufgetreten. Versuche es später erneut.',
           },
           NotificationType.ERROR
         );
@@ -106,16 +95,11 @@ describe('errorHandlerInterceptor', () => {
     const error = { status: 401, error: {}, url: '/api/some-protected-route' };
     const req = new HttpRequest('GET', '/api/some-protected-route');
     const next = jest.fn().mockReturnValue(throwError(() => error));
-    mockInterceptorService.handleTokenRefresh.mockReturnValue(
-      of('token-refreshed')
-    );
+    mockInterceptorService.handleTokenRefresh.mockReturnValue(of('token-refreshed'));
 
     interceptor(req, next).subscribe({
       next: () => {
-        expect(mockInterceptorService.handleTokenRefresh).toHaveBeenCalledWith(
-          next,
-          req
-        );
+        expect(mockInterceptorService.handleTokenRefresh).toHaveBeenCalledWith(next, req);
         done();
       },
     });
@@ -129,9 +113,7 @@ describe('errorHandlerInterceptor', () => {
 
     interceptor(req, next).subscribe({
       error: (err) => {
-        expect(
-          mockInterceptorService.handleTokenRefresh
-        ).not.toHaveBeenCalled();
+        expect(mockInterceptorService.handleTokenRefresh).not.toHaveBeenCalled();
         expect(err).toBe(error);
         done();
       },

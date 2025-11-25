@@ -6,10 +6,7 @@ import {
   mockRegisterUserResponse,
   mockTipgroupListResponse,
 } from '../../helper/response-helper';
-import {
-  waitForErrorNotification,
-  waitForSuccessNotification,
-} from '../../helper/notification-helper';
+import { waitForErrorNotification, waitForSuccessNotification } from '../../helper/notification-helper';
 import { setLoginContent } from '../../helper/login-helper';
 
 test.describe('Authentication', () => {
@@ -23,27 +20,21 @@ test.describe('Authentication', () => {
       // Fill inputs with invalid data
       await loginPage.fillInputs('wrongEmail', '1234');
       await loginPage.emailInputContainer.click();
-      await expect(
-        loginPage.inputErrorText(loginPage.passwordInputContainer)
-      ).toHaveText('Passwort muss mindestens 6 Zeichen lang sein.');
-      await expect(
-        loginPage.inputErrorText(loginPage.emailInputContainer)
-      ).toHaveText('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+      await expect(loginPage.inputErrorText(loginPage.passwordInputContainer)).toHaveText(
+        'Passwort muss mindestens 6 Zeichen lang sein.'
+      );
+      await expect(loginPage.inputErrorText(loginPage.emailInputContainer)).toHaveText(
+        'Bitte geben Sie eine gültige E-Mail-Adresse ein.'
+      );
       await expect(loginPage.loginButton).toHaveAttribute('disabled');
     });
 
-    test('login button should be enabled and redirect to home page on successful login', async ({
-      loginPage,
-    }) => {
+    test('login button should be enabled and redirect to home page on successful login', async ({ loginPage }) => {
       // Fill inputs with valid data
       await loginPage.fillInputs('testEmail@email.de', '123456');
       await loginPage.emailInputContainer.click();
-      await expect(
-        loginPage.inputErrorText(loginPage.emailInputContainer)
-      ).toBeHidden();
-      await expect(
-        loginPage.inputErrorText(loginPage.passwordInputContainer)
-      ).toBeHidden();
+      await expect(loginPage.inputErrorText(loginPage.emailInputContainer)).toBeHidden();
+      await expect(loginPage.inputErrorText(loginPage.passwordInputContainer)).toBeHidden();
       await expect(loginPage.loginButton).not.toHaveAttribute('disabled');
 
       await loginPage.loginButton.click();
@@ -51,9 +42,7 @@ test.describe('Authentication', () => {
       await expect(loginPage.page).not.toHaveURL('/auth/login');
     });
 
-    test('should switch to registration page when register-button is clicked', async ({
-      loginPage,
-    }) => {
+    test('should switch to registration page when register-button is clicked', async ({ loginPage }) => {
       await loginPage.switchToRegisterButton.click();
       await expect(loginPage.page).toHaveURL('/auth/register');
     });
@@ -84,12 +73,8 @@ test.describe('Authentication', () => {
       await loginPage.fillInputs('test@email.de', '123456');
       await loginPage.loginButton.click();
 
-      await expect(
-        loginPage.inputErrorText(loginPage.emailInputContainer)
-      ).toHaveText('Ungültige E-Mail-Adresse.');
-      await expect(
-        loginPage.inputErrorText(loginPage.passwordInputContainer)
-      ).toHaveText('Ungültige Eingabe.');
+      await expect(loginPage.inputErrorText(loginPage.emailInputContainer)).toHaveText('Ungültige E-Mail-Adresse.');
+      await expect(loginPage.inputErrorText(loginPage.passwordInputContainer)).toHaveText('Ungültige Eingabe.');
     });
   });
 
@@ -103,18 +88,18 @@ test.describe('Authentication', () => {
       // Fill inputs with invalid data
       await registerPage.fillInputs('12', 'wrongEmail', '1234', '12345');
       await registerPage.usernameInputContainer.click();
-      await expect(
-        registerPage.inputErrorText(registerPage.usernameInputContainer)
-      ).toHaveText('Nutzername muss mindestens 3 Zeichen lang sein.');
-      await expect(
-        registerPage.inputErrorText(registerPage.emailInputContainer)
-      ).toHaveText('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-      await expect(
-        registerPage.inputErrorText(registerPage.passwordInputContainer)
-      ).toHaveText('Passwort muss mindestens 6 Zeichen lang sein.');
-      await expect(
-        registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)
-      ).toHaveText('Die Passwörter stimmen nicht überein.');
+      await expect(registerPage.inputErrorText(registerPage.usernameInputContainer)).toHaveText(
+        'Nutzername muss mindestens 3 Zeichen lang sein.'
+      );
+      await expect(registerPage.inputErrorText(registerPage.emailInputContainer)).toHaveText(
+        'Bitte geben Sie eine gültige E-Mail-Adresse ein.'
+      );
+      await expect(registerPage.inputErrorText(registerPage.passwordInputContainer)).toHaveText(
+        'Passwort muss mindestens 6 Zeichen lang sein.'
+      );
+      await expect(registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)).toHaveText(
+        'Die Passwörter stimmen nicht überein.'
+      );
       await expect(registerPage.registerButton).toHaveAttribute('disabled');
     });
 
@@ -125,62 +110,38 @@ test.describe('Authentication', () => {
       await mockTipgroupListResponse(registerPage.page);
 
       // Fill inputs with valid data
-      await registerPage.fillInputs(
-        'testUsername',
-        'testEmail@email.de',
-        '123456',
-        '123456'
-      );
+      await registerPage.fillInputs('testUsername', 'testEmail@email.de', '123456', '123456');
       await registerPage.usernameInputContainer.click();
 
-      await expect(
-        registerPage.inputErrorText(registerPage.usernameInputContainer)
-      ).toBeHidden();
-      await expect(
-        registerPage.inputErrorText(registerPage.emailInputContainer)
-      ).toBeHidden();
-      await expect(
-        registerPage.inputErrorText(registerPage.passwordInputContainer)
-      ).toBeHidden();
-      await expect(
-        registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)
-      ).toBeHidden();
+      await expect(registerPage.inputErrorText(registerPage.usernameInputContainer)).toBeHidden();
+      await expect(registerPage.inputErrorText(registerPage.emailInputContainer)).toBeHidden();
+      await expect(registerPage.inputErrorText(registerPage.passwordInputContainer)).toBeHidden();
+      await expect(registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)).toBeHidden();
       await expect(registerPage.registerButton).not.toHaveAttribute('disabled');
 
       await registerPage.registerButton.click();
-      await expect(
-        registerPage.registerButton.locator('ion-spinner')
-      ).toBeVisible();
+      await expect(registerPage.registerButton.locator('ion-spinner')).toBeVisible();
       await expect(registerPage.page).not.toHaveURL('/auth/register');
-      await waitForSuccessNotification(
-        'Dein Account wurde erfolgreich angelegt.',
-        registerPage.page
-      );
+      await waitForSuccessNotification({
+        header: 'Account erstellt',
+        message: 'Dein Account wurde erfolgreich angelegt.',
+        page: registerPage.page,
+      });
     });
 
-    test('should show an error-notification if register failed', async ({
-      registerPage,
-      page,
-    }) => {
-      await mockRegisterUserResponse(page, 500, {});
+    test('should show an error-notification if register failed', async ({ registerPage }) => {
+      await mockRegisterUserResponse(registerPage.page, 500, {});
 
       // Fill inputs with valid data
-      await registerPage.fillInputs(
-        'testUsername',
-        'testEmail@email.de',
-        '123456',
-        '123456'
-      );
+      await registerPage.fillInputs('testUsername', 'testEmail@email.de', '123456', '123456');
       await registerPage.registerButton.click();
-      await waitForErrorNotification(
-        'Unbekannter Fehler ist aufgetreten. Versuche es später erneut.',
-        registerPage.page
-      );
+      await waitForErrorNotification({
+        message: 'Ein unbekannter Fehler ist aufgetreten. Versuche es später erneut.',
+        page: registerPage.page,
+      });
     });
 
-    test('should switch to login page when login-button is clicked', async ({
-      registerPage,
-    }) => {
+    test('should switch to login page when login-button is clicked', async ({ registerPage }) => {
       await registerPage.switchToLoginButton.click();
       await expect(registerPage.page).toHaveURL('/auth/login');
     });
@@ -214,33 +175,20 @@ test.describe('Authentication', () => {
         ],
       });
 
-      await registerPage.fillInputs(
-        'testUser',
-        'test@email.de',
-        '123456',
-        '123456'
-      );
+      await registerPage.fillInputs('testUser', 'test@email.de', '123456', '123456');
       await registerPage.registerButton.click();
 
-      await expect(
-        registerPage.inputErrorText(registerPage.usernameInputContainer)
-      ).toHaveText('Ungültige Eingabe.');
-      await expect(
-        registerPage.inputErrorText(registerPage.emailInputContainer)
-      ).toHaveText('Ungültige E-Mail-Adresse.');
-      await expect(
-        registerPage.inputErrorText(registerPage.passwordInputContainer)
-      ).toHaveText('Ungültige Eingabe.');
-      await expect(
-        registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)
-      ).toBeHidden();
+      await expect(registerPage.inputErrorText(registerPage.usernameInputContainer)).toHaveText('Ungültige Eingabe.');
+      await expect(registerPage.inputErrorText(registerPage.emailInputContainer)).toHaveText(
+        'Ungültige E-Mail-Adresse.'
+      );
+      await expect(registerPage.inputErrorText(registerPage.passwordInputContainer)).toHaveText('Ungültige Eingabe.');
+      await expect(registerPage.inputErrorText(registerPage.confirmPasswordInputContainer)).toBeHidden();
     });
   });
 
   test.describe('Refresh-Flow', () => {
-    test('should redirect to login page when refresh token is invalid', async ({
-      page,
-    }) => {
+    test('should redirect to login page when refresh token is invalid', async ({ page }) => {
       // Mock the response for an invalid refresh token
       await mockRefreshUserResponse(page, 401, {
         message: 'Refresh token is invalid',
@@ -265,9 +213,7 @@ test.describe('Authentication', () => {
 
       await loginPage.fillInputs('test@email.de', '123456');
       await loginPage.loginButton.click();
-      await expect(loginPage.toastNotification()).toHaveText(
-        'Passwort und Nutzername stimmen nicht überein.'
-      );
+      await expect(loginPage.toastNotification()).toHaveText('Passwort und Nutzername stimmen nicht überein.');
     });
 
     test('should show toast with correct message if backend returns a unexpected Backend-Error', async ({
@@ -282,7 +228,7 @@ test.describe('Authentication', () => {
       await loginPage.fillInputs('test@email.de', '123456');
       await loginPage.loginButton.click();
       await expect(loginPage.toastNotification()).toHaveText(
-        'Unbekannter Fehler ist aufgetreten. Versuche es später erneut.'
+        'Ein unbekannter Fehler ist aufgetreten. Versuche es später erneut.'
       );
     });
   });
