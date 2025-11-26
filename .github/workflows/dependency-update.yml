@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "::group::Check for Migrations"
           # 1. NX MIGRATION: Erzeugt das migrations.json File und aktualisiert die package.json
-          npx nx -- migrate latest
+          nx -- migrate latest
           echo "::endgroup::"
 
           # 2. PRÜFUNG: Wenn package.json oder migrations.json geändert wurden, ist ein Update nötig
@@ -46,7 +46,7 @@ jobs:
             echo "migration_needed=true" >> $GITHUB_OUTPUT
             echo "::group::Run Migrations"
             # 3. MIGRATION AUSFÜHREN: Führt alle notwendigen Code-Transformationen aus
-            npx nx -- migrate --run-migrations
+            nx -- migrate --run-migrations
             echo "::endgroup::"
           else
             echo "migration_needed=false" >> $GITHUB_OUTPUT
