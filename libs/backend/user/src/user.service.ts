@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import {
   RegisterDto,
   Tipgroup,
@@ -24,8 +24,12 @@ export class UserService {
     await this.userRepository.update(userId, { refreshToken });
   }
 
-  async findById(id: number): Promise<User | null> {
-    return this.userRepository.findOneBy({ id });
+  async findById(
+    id: number,
+    entityManager?: EntityManager
+  ): Promise<User | null> {
+    entityManager = entityManager ?? this.userRepository.manager;
+    return entityManager.findOne(User, { where: { id } });
   }
 
   async findByEmail(email: string): Promise<User | null> {

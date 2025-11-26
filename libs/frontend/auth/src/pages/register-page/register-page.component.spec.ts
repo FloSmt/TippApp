@@ -7,7 +7,11 @@ import {
 import { provideHttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
+import {
+  AuthStore,
+  confirmPasswordValidator,
+  ErrorManagementService,
+} from '@tippapp/frontend/utils';
 import { DeepPartial } from 'typeorm';
 import { signal } from '@angular/core';
 import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
@@ -200,7 +204,7 @@ describe('RegisterPageComponent', () => {
           password: new FormControl(passwordValue),
           confirmPassword: new FormControl(
             confirmPasswordValue,
-            component.confirmPasswordValidator()
+            confirmPasswordValidator('password')
           ),
         });
       };

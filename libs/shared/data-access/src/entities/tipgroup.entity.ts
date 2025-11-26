@@ -1,10 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TipgroupUser } from './tipgroupUser.entity';
 import { TipSeason } from './tipSeason.entity';
 
@@ -23,10 +17,10 @@ export class Tipgroup {
   passwordHash: string;
 
   @OneToMany(() => TipgroupUser, (tipgroupUser) => tipgroupUser.tipgroup, {
-    cascade: true
+    cascade: true,
   })
   users: TipgroupUser[];
 
-  @OneToMany(() => TipSeason, (tipSeason) => tipSeason.tipgroup)
+  @OneToMany(() => TipSeason, (tipSeason) => tipSeason.tipgroup, { cascade: true })
   seasons: TipSeason[];
 }

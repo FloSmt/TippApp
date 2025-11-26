@@ -32,7 +32,7 @@ export class NotificationService {
     switch (notificationType) {
       case NotificationType.ERROR:
         this.showMessage(
-          { ...notificationInput, duration: 6000, header: '' },
+          { ...notificationInput, duration: 6000 },
           'toast-error',
           closeCircle
         );
@@ -40,7 +40,7 @@ export class NotificationService {
 
       case NotificationType.INFO:
         this.showMessage(
-          { ...notificationInput, duration: 6000, header: '' },
+          { ...notificationInput, duration: 6000 },
           'toast-info',
           alertCircle
         );
@@ -48,7 +48,7 @@ export class NotificationService {
 
       case NotificationType.SUCCESS:
         this.showMessage(
-          { ...notificationInput, duration: 3000, header: '' },
+          { ...notificationInput, duration: 3000 },
           'toast-success',
           checkmarkCircle
         );

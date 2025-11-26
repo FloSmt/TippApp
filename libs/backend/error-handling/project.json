@@ -22,8 +22,7 @@
         ],
         "format": [
           "cjs"
-        ],
-        "generatePackageJson": true
+        ]
       }
     },
     "test": {

@@ -9,7 +9,7 @@ export class CreateTipgroupDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  passwordHash: string;
+  password: string;
 
   @IsString()
   @IsNotEmpty()

@@ -12,6 +12,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonToolbar,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -25,6 +26,8 @@ import { LoadingState, TipgroupStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
+import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
+import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dialog.component';
 
 @Component({
   selector: 'lib-tipgroup-list',
@@ -42,6 +45,7 @@ import { filter, pairwise, take } from 'rxjs';
     IonHeader,
     IonToolbar,
     NgTemplateOutlet,
+    ErrorCardTemplateComponent,
   ],
   templateUrl: './tipgroup-list.page.component.html',
   styleUrl: './tipgroup-list.page.component.scss',
@@ -49,13 +53,16 @@ import { filter, pairwise, take } from 'rxjs';
 export class TipgroupListPageComponent implements OnInit {
   readonly router = inject(Router);
   readonly tipgroupStore = inject(TipgroupStore);
+  readonly modalController = inject(ModalController);
 
-  isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoading);
-  availableTipgroups = this.tipgroupStore.availableTipgroups;
-  isLoading = this.tipgroupStore.isLoading;
-  hasError = this.tipgroupStore.hasError;
+  isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoadingTipgroups);
+  availableTipgroups = this.tipgroupStore.availableTipgroupsState.data;
+  isLoading = this.tipgroupStore.isLoadingTipgroups;
+  hasError = this.tipgroupStore.hasErrorOnLoadingTipgroups;
   initialLoading = computed(
-    () => this.tipgroupStore.loadingState() === LoadingState.INITIAL
+    () =>
+      this.tipgroupStore.availableTipgroupsState.loadingState() ===
+      LoadingState.INITIAL
   );
 
   constructor() {
@@ -78,5 +85,13 @@ export class TipgroupListPageComponent implements OnInit {
       .subscribe(() => {
         event.target.complete();
       });
+  }
+
+  async openCreateTipgroupDialog() {
+    const modal = await this.modalController.create({
+      component: CreateTipgroupDialogComponent,
+    });
+
+    await modal.present();
   }
 }

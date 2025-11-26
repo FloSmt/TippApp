@@ -13,7 +13,10 @@
       <ng-container *ngTemplateOutlet="skweletonTemplate"></ng-container>
     }
     @if (hasError() || availableTipgroups() === null && !isLoading()) {
-      <ng-container *ngTemplateOutlet="errorTemplate"></ng-container>
+      <lib-error-card
+        title="Fehler"
+        message="Beim laden der Tippgruppen ist ein Fehler aufgetreten. Versuche es erneut.">
+      </lib-error-card>
     } @else if (availableTipgroups() && availableTipgroups()!.length === 0) {
       <ng-container *ngTemplateOutlet="emptyListTemplate"></ng-container>
     } @else {
@@ -34,7 +37,7 @@
   </ion-item-group>
 </ion-content>
 <ion-footer class="button-container ion-no-border ion-padding">
-  <ion-button data-testid="create-tipgroup-button" expand="block" size="large">
+  <ion-button data-testid="create-tipgroup-button" expand="block" size="large" (click)="openCreateTipgroupDialog()">
     Tippgruppe erstellen
   </ion-button>
   <ion-button data-testid="join-tipgroup-button" expand="block" fill="outline" size="large">

@@ -1,18 +1,19 @@
-import {Component, effect, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { Component, effect, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
-import {addIcons} from 'ionicons';
-import {mail} from 'ionicons/icons';
-import {AuthStore, ErrorManagementService} from '@tippapp/frontend/utils';
+import { addIcons } from 'ionicons';
+import { mail } from 'ionicons/icons';
+import {
+  AuthStore,
+  confirmPasswordValidator,
+  ErrorManagementService,
+} from '@tippapp/frontend/utils';
 import {
   IonButton,
   IonContent,
@@ -23,8 +24,8 @@ import {
   IonSpinner,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import {Router} from '@angular/router';
-import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
+import { Router } from '@angular/router';
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 
 @Component({
   selector: 'lib-register-page',
@@ -61,14 +62,14 @@ export class RegisterPageComponent {
     ]),
     confirmPassword: new FormControl('', [
       Validators.required,
-      this.confirmPasswordValidator(),
+      confirmPasswordValidator('password'),
     ]),
   });
 
   isLoading = this.authStore.isLoading;
 
   constructor() {
-    addIcons({mail});
+    addIcons({ mail });
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
@@ -81,7 +82,7 @@ export class RegisterPageComponent {
           errorMessages.forEach((error) => {
             const control = this.registerForm.get(error.property);
             if (control) {
-              control.setErrors({backendError: error});
+              control.setErrors({ backendError: error });
             }
           });
         }
@@ -134,16 +135,6 @@ export class RegisterPageComponent {
     }
 
     return '';
-  }
-
-  confirmPasswordValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const formGroup = control.parent as FormGroup;
-      if (!formGroup) return null;
-      const password = formGroup.get('password')?.value;
-      const confirmPassword = control.value;
-      return password !== confirmPassword ? {passwordMismatch: true} : null;
-    };
   }
 
   navigateToLoginPage() {

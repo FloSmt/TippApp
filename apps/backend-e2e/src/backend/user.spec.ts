@@ -1,12 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateTipgroupDto, RegisterDto } from '@tippapp/shared/data-access';
-import {
-  setupE2ETestEnvironment,
-  setupMockApi,
-  TipgroupFactory,
-  UserFactory,
-} from '@tippapp/backend/test-helper';
+import { setupE2ETestEnvironment, setupMockApi, TipgroupFactory, UserFactory } from '@tippapp/backend/test-helper';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -19,13 +14,13 @@ describe('UserController (e2e)', () => {
       return [
         {
           name: 'Tipgroup1',
-          passwordHash: 'password',
+          password: 'password',
           leagueShortcut: 'bl1',
           currentSeason: 2024,
         },
         {
           name: 'Tipgroup2',
-          passwordHash: 'password',
+          password: 'password',
           leagueShortcut: 'bl1',
           currentSeason: 2024,
         },
@@ -70,10 +65,7 @@ describe('UserController (e2e)', () => {
       await userFactory.createUserInDatabase(mocks.registerData[1]);
 
       // Login to the first user and get the access token
-      accessTokenFirstUser = await userFactory.loginUser(
-        mocks.registerData[0].email,
-        mocks.registerData[0].password
-      );
+      accessTokenFirstUser = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
     });
 
     it('should return an empty list of tipgroups for a new user', async () => {
@@ -85,14 +77,8 @@ describe('UserController (e2e)', () => {
 
     it('should return correct Lists for two users after creating tipgroups', async () => {
       // Create 2 Tipgroups for the User1
-      await tipgroupFactory.createTipGroup(
-        accessTokenFirstUser,
-        mocks.createTipGroupData[0]
-      );
-      await tipgroupFactory.createTipGroup(
-        accessTokenFirstUser,
-        mocks.createTipGroupData[1]
-      );
+      await tipgroupFactory.createTipGroupWithRest(accessTokenFirstUser, mocks.createTipGroupData[0]);
+      await tipgroupFactory.createTipGroupWithRest(accessTokenFirstUser, mocks.createTipGroupData[1]);
 
       // Check if User has 2 tipgroups
       let response = await userFactory.getTipGroups(accessTokenFirstUser);

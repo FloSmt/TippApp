@@ -181,18 +181,19 @@ ion-tab-bar {
 
 /* Button */
 ion-button {
-  --border-radius: var(--ion-border-radius-m);
+  --border-radius: var(--ion-border-radius-m) !important;
   text-transform: none;
   --box-shadow: none;
   transition: all 0.2s ease-in-out;
 
   &.button-solid {
-    --background: var(--ion-color-primary-gradient);
+    --background: var(--ion-color-primary-gradient) !important;
   }
 
   &.button-clear::part(native) {
-    --background: var(--ion-color-primary-gradient);
-    background-clip: text;
+    --background: var(--ion-color-primary-gradient) !important;
+    --color: var(--ion-color-primary) !important;
+    background-clip: text !important;
   }
 
   &:active {
@@ -286,7 +287,6 @@ ion-input {
   --highlight-color-focused: var(--ion-color-primary);
   --inner-border-width: 0;
   --border-width: 0;
-  margin-bottom: 40px;
 
   &.input-fill-outline {
     border-radius: var(--ion-border-radius-m) !important;
@@ -311,19 +311,15 @@ ion-input {
     background: var(--ion-background-color-step-50);
     border-radius: var(--ion-border-radius-m);
   }
-
-  .input-bottom {
-    position: absolute;
-  }
 }
 
 /* Selection */
 ion-select {
-  --padding-start: 15px;
-  --inner-padding-end: 15px;
-  --highlight-height: 2px;
-  --highlight-color-focused: var(--ion-color-primary);
-  --inner-border-width: 0;
+  --padding-start: 15px !important;
+  --inner-padding-end: 15px !important;
+  --highlight-height: 2px !important;
+  --highlight-color-focused: var(--ion-color-primary) !important;
+  --inner-border-width: 0 !important;
 
   &.select-fill-outline {
     border-radius: var(--ion-border-radius-m) !important;
@@ -338,10 +334,26 @@ ion-select {
   &.select-fill-solid {
     border-radius: var(--ion-border-radius-m) !important;
     --border-radius: var(--ion-border-radius-m) !important;
-    background-color: var(--ion-background-color-step-50);
+    background-color: var(--ion-background-color-step-50) !important;
 
     &::part(label) {
       color: var(--ion-text-color) !important;
+    }
+  }
+}
+
+ion-select-popover {
+  ion-list {
+    --ion-item-background: var(--ion-background-color-step-50);
+    border-bottom-left-radius: var(--ion-border-radius-m) !important;
+    border-bottom-right-radius: var(--ion-border-radius-m) !important;
+    padding-bottom: var(--ion-space-m) !important;
+
+    ion-item {
+      --background: var(--ion-background-color-step-100);
+      border-radius: var(--ion-border-radius-s) !important;
+      margin-left: var(--ion-space-m);
+      margin-right: var(--ion-space-m);
     }
   }
 }

@@ -3,8 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tipgroup } from '@tippapp/shared/data-access';
 import { ApiModule } from '@tippapp/backend/api';
 import { UserModule } from '@tippapp/backend/user';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { HashService } from '@tippapp/backend/shared';
 import { TipSeasonModule } from '../tipseason';
-import { TipgroupController } from './tipgroup.controller';
+import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupService } from './tipgroup.service';
 
 @Module({
@@ -14,8 +16,8 @@ import { TipgroupService } from './tipgroup.service';
     ApiModule,
     forwardRef(() => UserModule),
   ],
-  controllers: [TipgroupController],
+  controllers: [TipgroupsController],
   exports: [TipgroupService],
-  providers: [TipgroupService],
+  providers: [TipgroupService, ErrorManagerService, HashService],
 })
 export class TipgroupModule {}

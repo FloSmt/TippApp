@@ -1,20 +1,19 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   CreateTipgroupDto,
+  ErrorCodes,
   GroupResponse,
   MatchResponse,
   Tipgroup,
   TipgroupUser,
-  User,
+  TipSeason,
 } from '@tippapp/shared/data-access';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { ApiService } from '@tippapp/backend/api';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { UserService } from '@tippapp/backend/user';
+import { HashService } from '@tippapp/backend/shared';
 import { TipSeasonService } from '../tipseason';
 
 @Injectable()
@@ -22,111 +21,79 @@ export class TipgroupService {
   constructor(
     @InjectRepository(Tipgroup)
     private tipgroupRepository: Repository<Tipgroup>,
-    private TipSeasonService: TipSeasonService,
     private apiService: ApiService,
-    private userService: UserService
+    private userService: UserService,
+    private tipSeasonService: TipSeasonService,
+    private hashService: HashService,
+    private errorManager: ErrorManagerService
   ) {}
 
-  async createTipgroup(
-    createTipgroupDto: CreateTipgroupDto,
-    userId: number
-  ): Promise<Tipgroup> {
-    const user = await this.userService.findById(userId);
-    if (!user) {
-      throw new NotFoundException('User was not found');
-    }
+  async createTipgroup(createTipgroupDto: CreateTipgroupDto, userId: number): Promise<Tipgroup> {
+    const entityManager = this.tipgroupRepository.manager;
+    return await entityManager.transaction(async (transactionalEntityManager) => {
+      // validate Tipgroup Name
+      await this.validateTipgroupName(createTipgroupDto.name, transactionalEntityManager);
 
-    await this.validateAndGetAvailableLeagues(createTipgroupDto.leagueShortcut);
+      // Get User
+      const user = await this.userService.findById(userId, transactionalEntityManager);
 
-    const { matchDays, matches } = await this.getApiMatchData(
-      createTipgroupDto.leagueShortcut,
-      createTipgroupDto.currentSeason
-    );
+      if (!user) {
+        throw this.errorManager.createError(ErrorCodes.User.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
 
-    if (matchDays && matches) {
-      const newTipgroup = this.createNewTipgroupEntity(
-        createTipgroupDto.name,
-        createTipgroupDto.passwordHash
+      // validate LeagueShortcut
+      await this.validateAndGetAvailableLeagues(createTipgroupDto.leagueShortcut);
+
+      // get Api MatchData
+      const matchDays: GroupResponse[] = await this.apiService.getAvailableGroups(
+        createTipgroupDto.leagueShortcut,
+        createTipgroupDto.currentSeason
+      );
+      const matches: MatchResponse[] = await this.apiService.getMatchData(
+        createTipgroupDto.leagueShortcut,
+        createTipgroupDto.currentSeason
       );
 
-      // Add User as Admin to Tipgroup
-      const newTipgroupUser = this.createNewTipgroupUserAsAdmin(user);
-      newTipgroup.users.push(newTipgroupUser);
-
-      // Add first Season to Tipgroup
-      const newTipSeason = this.TipSeasonService.createNewTipSeason({
-        api_LeagueSeason: createTipgroupDto.currentSeason,
-        isClosed: false,
-        matchdays: matchDays.map((group) => {
-          const matchesForGroup = matches.filter(
-            (match) => match.group.groupId === group.groupId
-          );
-          return {
-            name: group.groupName,
-            api_groupId: group.groupId,
-            matches: matchesForGroup.map((match) => ({
-              api_matchId: match.matchId,
-            })),
-          };
-        }),
+      // create TipgroupUser as admin
+      const tipgroupUser = transactionalEntityManager.create(TipgroupUser, {
+        user,
+        isAdmin: true,
       });
 
-      // Save new TipSeason
-      const savedTipSeason = await this.TipSeasonService.saveTipSeason(
-        newTipSeason
+      // create TipSeason with Matchdays and Matches
+      const tipSeason: TipSeason = this.tipSeasonService.createTipSeason(
+        createTipgroupDto.currentSeason,
+        matchDays,
+        matches,
+        transactionalEntityManager
       );
-      newTipgroup.seasons.push(savedTipSeason);
 
-      return this.tipgroupRepository.save(newTipgroup);
-    }
+      // create Tipgroup and set relations
+      const tipgroup = transactionalEntityManager.create(Tipgroup, {
+        name: createTipgroupDto.name,
+        passwordHash: await this.hashService.hashPassword(createTipgroupDto.password),
+        users: [tipgroupUser],
+        seasons: [tipSeason],
+      });
 
-    throw new InternalServerErrorException();
+      // save Tipgroup and TipSeason
+      return await transactionalEntityManager.save(Tipgroup, tipgroup);
+    });
   }
 
-  private async validateAndGetAvailableLeagues(
-    leagueShortcut: string
-  ): Promise<void> {
-    const availableLeagues = (await this.apiService.getAvailableLeagues()).map(
-      (league) => league.leagueShortcut
-    );
+  private async validateAndGetAvailableLeagues(leagueShortcut: string): Promise<void> {
+    const availableLeagues = (await this.apiService.getAvailableLeagues()).map((league) => league.leagueShortcut);
     if (!availableLeagues.includes(leagueShortcut)) {
-      throw new NotFoundException('LeagueShortcut was not found');
+      throw this.errorManager.createError(ErrorCodes.CreateTipgroup.LEAGUE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
   }
 
-  private async getApiMatchData(
-    leagueShortcut: string,
-    currentSeason: number
-  ): Promise<{ matchDays: GroupResponse[]; matches: MatchResponse[] }> {
-    const matchDaysFromApi: GroupResponse[] =
-      await this.apiService.getAvailableGroups(leagueShortcut, currentSeason);
-    const matchesFromApi: MatchResponse[] = await this.apiService.getMatchData(
-      leagueShortcut,
-      currentSeason
-    );
-
-    if (!matchDaysFromApi || !matchesFromApi) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve match data from external API.'
-      );
+  protected async validateTipgroupName(name: string, entityManager: EntityManager): Promise<void> {
+    const existingTipgroup = await entityManager.findOne(Tipgroup, {
+      where: { name },
+    });
+    if (existingTipgroup) {
+      throw this.errorManager.createError(ErrorCodes.CreateTipgroup.TIPGROUP_NAME_TAKEN, HttpStatus.CONFLICT);
     }
-    return { matchDays: matchDaysFromApi, matches: matchesFromApi };
-  }
-
-  private createNewTipgroupEntity(
-    name: string,
-    passwordHash?: string
-  ): Tipgroup {
-    const newTipgroup = this.tipgroupRepository.create({ name, passwordHash });
-    newTipgroup.users = [];
-    newTipgroup.seasons = [];
-    return newTipgroup;
-  }
-
-  private createNewTipgroupUserAsAdmin(user: User): TipgroupUser {
-    const newTipgroupUser = new TipgroupUser();
-    newTipgroupUser.isAdmin = true;
-    newTipgroupUser.user = user;
-    return newTipgroupUser;
   }
 }

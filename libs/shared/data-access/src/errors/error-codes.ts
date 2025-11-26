@@ -37,11 +37,26 @@ export abstract class ErrorCodes {
   public static readonly User = {
     USER_NOT_FOUND: {
       code: 'USER.USER_NOT_FOUND',
-      message: 'Benutzer nicht gefunden.',
+      message: 'User not found.',
     },
     USERNAME_TAKEN: {
       code: 'USER.USERNAME_TAKEN',
-      message: 'Dieser Benutzername ist bereits vergeben.',
+      message: 'The username is already taken.',
+    },
+  };
+
+  public static readonly CreateTipgroup = {
+    TIPGROUP_NAME_TAKEN: {
+      code: 'CREATE_TIPGROUP.TIPGROUP_NAME_TAKEN',
+      message: 'The tipgroup name is already taken.',
+    },
+    LEAGUE_NOT_FOUND: {
+      code: 'CREATE_TIPGROUP.LEAGUE_NOT_FOUND',
+      message: 'The referenced league was not found.',
+    },
+    API_DATA_UNAVAILABLE: {
+      code: 'CREATE_TIPGROUP.API_DATA_UNAVAILABLE',
+      message: 'External API data is currently unavailable.',
     },
   };
 }

@@ -1,0 +1,64 @@
+ion-input, ion-select {
+  width: 100%;
+  margin-bottom: 40px;
+
+  ion-icon {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+}
+
+.league-season {
+  --background: #fff;
+  font-weight: bolder;
+}
+
+.dialog-toolbar {
+  .close-button ion-icon {
+    color: var(--ion-text-color-step-50)
+  }
+
+  ion-title {
+    padding-left: 10px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10rem;
+
+  ion-spinner {
+    color: var(--ion-color-primary);
+  }
+}
+
+.info-card {
+  background-color: rgba(var(--ion-color-primary-shade-rgb), 0.1);
+  padding: 20px;
+  border-radius: var(--ion-border-radius-m);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 20px;
+
+  ion-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--ion-color-primary);
+  }
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: var(--ion-space-s);
+    font-size: 1.125rem;
+    color: var(--ion-color-primary);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ion-text-subtile-color);
+  }
+}

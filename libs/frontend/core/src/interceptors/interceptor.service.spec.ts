@@ -29,10 +29,7 @@ describe('InterceptorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        InterceptorService,
-        { provide: AuthStore, useClass: MockAuthStore },
-      ],
+      providers: [InterceptorService, { provide: AuthStore, useClass: MockAuthStore }],
     });
     service = TestBed.inject(InterceptorService);
     authStore = TestBed.inject(AuthStore) as any;
@@ -44,9 +41,7 @@ describe('InterceptorService', () => {
     it('should set auth-token in the header', () => {
       const token = 'test-token';
       const reqWithHeader = service.addAuthTokenToHeader(request, token);
-      expect(reqWithHeader.headers.get('Authorization')).toBe(
-        'Bearer test-token'
-      );
+      expect(reqWithHeader.headers.get('Authorization')).toBe('Bearer test-token');
     });
   });
 
@@ -56,7 +51,8 @@ describe('InterceptorService', () => {
       Object.defineProperty(service, 'tokenRefresh$', {
         value: of('new-token'),
       });
-      jest.spyOn(authStore, 'isLoading').mockReturnValue(false);
+      service.tokenRefresh$ = of(true, false);
+
       await new Promise((resolve) => {
         service.handleTokenRefresh(next, request).subscribe(() => {
           expect(authStore.refreshAccessToken).toHaveBeenCalled();
@@ -69,7 +65,8 @@ describe('InterceptorService', () => {
     it('should logoutAndRedirect if no token is available', async () => {
       authStore.setAccessToken(null);
       Object.defineProperty(service, 'tokenRefresh$', { value: of(null) });
-      jest.spyOn(authStore, 'isLoading').mockReturnValue(false);
+      service.tokenRefresh$ = of(true, false);
+
       await new Promise((resolve) => {
         service.handleTokenRefresh(next, request).subscribe({
           error: (err) => {
@@ -104,16 +101,12 @@ describe('InterceptorService', () => {
       Object.defineProperty(service, 'refreshTokenSignal$', {
         value: of(newToken),
       });
-      const nextSpy = jest
-        .fn()
-        .mockReturnValue(of(new HttpResponse({ status: 200 })));
+      const nextSpy = jest.fn().mockReturnValue(of(new HttpResponse({ status: 200 })));
       await new Promise((resolve) => {
         service.handleTokenRefresh(nextSpy, request).subscribe(() => {
           expect(nextSpy).toHaveBeenCalled();
           const calledWith = nextSpy.mock.calls[0][0];
-          expect(calledWith.headers.get('Authorization')).toBe(
-            'Bearer ' + newToken
-          );
+          expect(calledWith.headers.get('Authorization')).toBe('Bearer ' + newToken);
           resolve(null);
         });
       });

@@ -1,19 +1,30 @@
 import { expect, Page } from '@playwright/test';
 
-export async function waitForSuccessNotification(message: string, page: Page) {
-  const toastElement = page.locator('ion-toast.toast-success');
-  await expect(toastElement).toBeVisible();
-  await expect(toastElement).toHaveText(message);
+export interface NotificationOptionsHelper {
+  message: string;
+  header?: string;
+  page: Page;
 }
 
-export async function waitForErrorNotification(message: string, page: Page) {
-  const toastElement = page.locator('ion-toast.toast-error');
+export async function waitForSuccessNotification(notificationConfig: NotificationOptionsHelper) {
+  const toastElement = notificationConfig.page.locator('ion-toast.toast-success').first();
+  const containsHeader = notificationConfig.header || '';
   await expect(toastElement).toBeVisible();
-  await expect(toastElement).toHaveText(message);
+  await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
 }
 
-export async function waitForInfoNotification(message: string, page: Page) {
-  const toastElement = page.locator('ion-toast.toast-info');
+export async function waitForErrorNotification(notificationConfig: NotificationOptionsHelper) {
+  const toastElement = notificationConfig.page.locator('ion-toast.toast-error');
+  const containsHeader = notificationConfig.header || '';
+
   await expect(toastElement).toBeVisible();
-  await expect(toastElement).toHaveText(message);
+  await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+}
+
+export async function waitForInfoNotification(notificationConfig: NotificationOptionsHelper) {
+  const toastElement = notificationConfig.page.locator('ion-toast.toast-info');
+  const containsHeader = notificationConfig.header || '';
+
+  await expect(toastElement).toBeVisible();
+  await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
 }
