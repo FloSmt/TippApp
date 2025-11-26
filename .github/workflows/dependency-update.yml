@@ -2,8 +2,6 @@ name: 🔄 Nx Migration Check & Update
 
 on:
   workflow_dispatch:
-  pull_request: # NUR zum Testen
-    branches: [ main, master ]
   schedule:
     - cron: '0 6 * * 6'
 
@@ -39,15 +37,12 @@ jobs:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
         run: |
           echo "::group::Check for Migrations"
-          # 1. NX MIGRATION: Erzeugt das migrations.json File und aktualisiert die package.json
           npx nx migrate latest
           echo "::endgroup::"
 
-          # 2. PRÜFUNG: Wenn package.json oder migrations.json geändert wurden, ist ein Update nötig
           if git status --porcelain | grep -q 'package.json\|migrations.json'; then
             echo "migration_needed=true" >> $GITHUB_OUTPUT
             echo "::group::Run Migrations"
-            # 3. MIGRATION AUSFÜHREN: Führt alle notwendigen Code-Transformationen aus
             npx nx migrate --run-migrations
             echo "::endgroup::"
           else
@@ -61,15 +56,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'chore: Automated Nx Migration Update'
-          title: '🤖 Nx Migration Update: Core, Angular, NestJS Dependencies'
+          title: '🤖 Nx Migration Update'
           body: |
             Dieser Pull Request wurde automatisch durch den `Nx Migration Check` Workflow erstellt.
 
             Die folgenden Schritte wurden ausgeführt:
             * `nx migrate latest`
             * `nx migrate --run-migrations`
-            * **Tests wurden erfolgreich ausgeführt.**
 
             Bitte prüfen und mergen.
-          branch: 'feature/automated-nx-migration'
+          branch: 'dependency-updates/automated-nx-migration'
           delete-branch: true

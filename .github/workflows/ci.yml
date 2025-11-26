@@ -1,9 +1,9 @@
 name: CI on Pull Request
 
 on:
-#  pull_request:
-#    branches:
-#      - master
+  pull_request:
+    branches:
+      - master
 permissions:
   actions: read
   contents: read
@@ -24,12 +24,12 @@ jobs:
           fetch-depth: 0
           filter: tree:0
 
-      - name: Start Nx Cloud CI Run
+      - name: 🚀 Start Nx Cloud CI Run
         if: github.event_name == 'pull_request'
         id: start-nx-cloud-run
         run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
-      - name: Cache Node Modules
+      - name: 💾 Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
@@ -38,7 +38,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: Cache Playwright Browsers
+      - name: 💾 Cache Playwright Browsers
         id: cache-playwright-browsers
         uses: actions/cache@v4
         with:
@@ -61,11 +61,11 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v4
 
-      - name: Restore Playwright Browsers
+      - name: ♻️ Restore Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install
 
-      - name: "Run Linting"
+      - name: 📄 Run Linting
         run: npx nx run-many -t lint --parallel --configuration=ci
 
   # Job 2: Run Unit Tests (Depends on Prepare)
@@ -75,15 +75,15 @@ jobs:
     env:
       NX_CLOUD_CI_RUN_ID: ${{ needs.prepare.outputs.ci_run_id }}
     steps:
-      - name: Checkout Repository
+      - name: ⬇️ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Restore Node Modules Cache
+      - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4
         with:
           path: node_modules
@@ -92,7 +92,7 @@ jobs:
       - name: 🧪 Run Unit-Tests
         run: npx nx run-many --target=test --all --parallel --configuration=ci --coverage
 
-      - name: Upload Coverage Reports
+      - name: 📤 Upload Coverage Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -131,22 +131,22 @@ jobs:
       NX_CLOUD_CI_RUN_ID: ${{ needs.prepare.outputs.ci_run_id }}
 
     steps:
-      - name: Checkout Repository
+      - name: ⬇️ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Restore Node Modules Cache
+      - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Run Backend E2E Tests
+      - name: 🧪 Run Backend E2E Tests
         run: npx nx e2e backend-e2e -- --runInBand
 
   # Job 4: Run Frontend (Playwright) E2E Tests (Depends on Prepare)
@@ -156,28 +156,28 @@ jobs:
     env:
       NX_CLOUD_CI_RUN_ID: ${{ needs.prepare.outputs.ci_run_id }}
     steps:
-      - name: Checkout Repository
+      - name: ⬇️ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Restore Node Modules Cache
+      - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Restore Playwright Browsers Cache
+      - name: ♻️ Restore Playwright Browsers Cache
         uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.ts') }}
 
 
-      - name: Start Frontend for Playwright UI Tests
+      - name: 🚀 Start Frontend for Playwright UI Tests
         run: |
           npx nx serve mobile-app --configuration=production --port=4200 &
           sleep 15
@@ -185,10 +185,10 @@ jobs:
           NODE_ENV: test
           CI: true
 
-      - name: Run Playwright UI Tests
+      - name: 🧪 Run Playwright UI Tests
         run: npx nx e2e mobile-app-e2e
 
-      - name: Upload Playwright Test Results
+      - name: 📤 Upload Playwright Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
