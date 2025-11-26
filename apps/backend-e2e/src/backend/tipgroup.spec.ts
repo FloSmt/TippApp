@@ -78,9 +78,9 @@ describe('TipgroupController (e2e)', () => {
     accessToken = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
   });
 
-  fdescribe('/create (POST)', () => {
+  describe('/create (POST)', () => {
     it('should create tipgroup, tipseason, matchdays and matches', async () => {
-      const response = await tipgroupFactory.createTipGroup(accessToken, mocks.createTipgroupData[0]);
+      const response = await tipgroupFactory.createTipGroupWithRest(accessToken, mocks.createTipgroupData[0]);
 
       expect(response.status).toBe(201);
 
@@ -116,9 +116,44 @@ describe('TipgroupController (e2e)', () => {
     });
 
     it('should throw Error 401 if user is not authorized', async () => {
-      const response = await tipgroupFactory.createTipGroup('wrongToken', mocks.createTipgroupData[0]);
+      const response = await tipgroupFactory.createTipGroupWithRest('wrongToken', mocks.createTipgroupData[0]);
 
       expect(response.status).toBe(401);
+    });
+
+    it('should trow Error 404 if the user is not found', async () => {
+      await userFactory.deleteUserFromDatabase(testUser.id);
+      const response = await tipgroupFactory.createTipGroupWithRest(accessToken, mocks.createTipgroupData[0]);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('User not found.');
+      expect(response.body.code).toBe('USER.USER_NOT_FOUND');
+    });
+
+    it('should trow Error 409 if the tipgroup name is already taken', async () => {
+      // Create first Tipgroup
+      await tipgroupFactory.createTipGroupInDatabase(mocks.createTipgroupData[0].name);
+
+      // Try to create second Tipgroup with the same name
+      const response = await tipgroupFactory.createTipGroupWithRest(accessToken, mocks.createTipgroupData[0]);
+
+      expect(response.status).toBe(409);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('The tipgroup name is already taken.');
+      expect(response.body.code).toBe('CREATE_TIPGROUP.TIPGROUP_NAME_TAKEN');
+    });
+
+    it('should trow Error 404 if the submitted leagues wasnt found', async () => {
+      const response = await tipgroupFactory.createTipGroupWithRest(accessToken, {
+        ...mocks.createTipgroupData[0],
+        leagueShortcut: 'wrongLeague',
+      });
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('The referenced league was not found.');
+      expect(response.body.code).toBe('CREATE_TIPGROUP.LEAGUE_NOT_FOUND');
     });
   });
 

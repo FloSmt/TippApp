@@ -19,16 +19,17 @@ export class UserFactory extends Factory {
   }
 
   async loginUser(email: string, password: string) {
-    const response = await this.getAgent()
-      .post(API_ROUTES.AUTH.LOGIN)
-      .send({ email, password });
+    const response = await this.getAgent().post(API_ROUTES.AUTH.LOGIN).send({ email, password });
 
     return response.body.accessToken;
   }
 
+  async deleteUserFromDatabase(userId: number): Promise<void> {
+    const userRepository = this.getDataSource().getRepository(User);
+    await userRepository.delete({ id: userId });
+  }
+
   async getTipGroups(authToken: string) {
-    return await this.getAgent()
-      .get(API_ROUTES.USER.TIPGROUPS)
-      .set('Authorization', `Bearer ${authToken}`);
+    return await this.getAgent().get(API_ROUTES.USER.TIPGROUPS).set('Authorization', `Bearer ${authToken}`);
   }
 }
