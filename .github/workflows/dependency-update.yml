@@ -6,7 +6,7 @@ on:
     - cron: '0 6 * * 6'
 
 jobs:
-  migrate_and_pr:
+  migrate-dependencies:
     runs-on: ubuntu-latest
 
     strategy:
