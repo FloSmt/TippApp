@@ -31,6 +31,8 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm install
 
+      - uses: nrwl/nx-set-shas@v4
+
       - name: 🚀 Run Nx Migration Check and Execution
         id: migration
         env:
@@ -38,7 +40,7 @@ jobs:
         run: |
           echo "::group::Check for Migrations"
           # 1. NX MIGRATION: Erzeugt das migrations.json File und aktualisiert die package.json
-          nx -- migrate latest
+          npx nx -- migrate latest
           echo "::endgroup::"
 
           # 2. PRÜFUNG: Wenn package.json oder migrations.json geändert wurden, ist ein Update nötig
@@ -46,7 +48,7 @@ jobs:
             echo "migration_needed=true" >> $GITHUB_OUTPUT
             echo "::group::Run Migrations"
             # 3. MIGRATION AUSFÜHREN: Führt alle notwendigen Code-Transformationen aus
-            nx -- migrate --run-migrations
+            npx nx -- migrate --run-migrations
             echo "::endgroup::"
           else
             echo "migration_needed=false" >> $GITHUB_OUTPUT
