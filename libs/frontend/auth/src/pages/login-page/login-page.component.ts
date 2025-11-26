@@ -1,4 +1,4 @@
-import {Component, effect, inject} from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 
 import {
   IonButton,
@@ -10,12 +10,12 @@ import {
   IonSpinner,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators,} from '@angular/forms';
-import {AuthStore, ErrorManagementService} from '@tippapp/frontend/utils';
-import {Router} from '@angular/router';
-import {addIcons} from 'ionicons';
-import {mail} from 'ionicons/icons';
-import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
+import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { mail } from 'ionicons/icons';
+import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 
 @Component({
   selector: 'lib-login-page',
@@ -28,41 +28,38 @@ import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
     IonSpinner,
     ReactiveFormsModule,
     IonHeader,
-    IonToolbar
-],
+    IonToolbar,
+  ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })
 export class LoginPageComponent {
   readonly authStore = inject(AuthStore);
   readonly errorManagagementService = inject(ErrorManagementService);
+  readonly router = inject(Router);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-    ]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
   isLoading = this.authStore.isLoading;
   error = this.authStore.error;
 
-  constructor(public router: Router) {
-    addIcons({mail});
+  constructor() {
+    addIcons({ mail });
     effect(() => {
       if (this.authStore.isAuthenticated()) {
         this.router.navigate(['/']);
       }
 
       if (this.authStore.hasError()) {
-        const errorMessages: ApiValidationErrorMessage[] | null =
-          this.authStore.error();
+        const errorMessages: ApiValidationErrorMessage[] | null = this.authStore.error();
         if (errorMessages) {
           errorMessages.forEach((error) => {
             const control = this.loginForm.get(error.property);
             if (control) {
-              control.setErrors({backendError: error});
+              control.setErrors({ backendError: error });
             }
           });
         }
