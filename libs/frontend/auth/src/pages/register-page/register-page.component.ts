@@ -1,5 +1,5 @@
 import { Component, effect, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormControl,
   FormGroup,
@@ -30,7 +30,6 @@ import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
 @Component({
   selector: 'lib-register-page',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     IonLabel,
@@ -40,8 +39,8 @@ import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
     IonInput,
     IonContent,
     IonHeader,
-    IonToolbar,
-  ],
+    IonToolbar
+],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
 })

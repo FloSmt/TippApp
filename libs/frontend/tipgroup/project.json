@@ -4,18 +4,14 @@
   "sourceRoot": "libs/frontend/tipgroup/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": [
-    "scope:frontend",
-    "type:lib"
-  ],
+  "tags": ["scope:frontend", "type:lib"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/frontend/tipgroup/jest.config.ts"
+        "jestConfig": "libs/frontend/tipgroup/jest.config.ts",
+        "tsConfig": "libs/frontend/tipgroup/tsconfig.spec.json"
       }
     },
     "lint": {

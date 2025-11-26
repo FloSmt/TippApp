@@ -7,26 +7,18 @@
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/backend/user",
         "main": "libs/backend/user/src/index.ts",
         "tsConfig": "libs/backend/user/tsconfig.lib.json",
-        "assets": [
-          "libs/backend/user/*.md"
-        ],
-        "format": [
-          "cjs"
-        ]
+        "assets": ["libs/backend/user/*.md"],
+        "format": ["cjs"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "libs/backend/user/jest.config.ts"
       }

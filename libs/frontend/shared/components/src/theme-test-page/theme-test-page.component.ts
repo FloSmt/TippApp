@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {
   IonButton,
   IonButtons,
@@ -33,7 +33,6 @@ import {ReactiveFormsModule} from '@angular/forms';
 @Component({
   selector: 'lib-theme-test-page',
   imports: [
-    CommonModule,
     IonIcon,
     IonTab,
     IonTabs,
@@ -58,8 +57,8 @@ import {ReactiveFormsModule} from '@angular/forms';
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonHeader,
-  ],
+    IonHeader
+],
   templateUrl: './theme-test-page.component.html',
   styleUrl: './theme-test-page.component.scss',
 })
