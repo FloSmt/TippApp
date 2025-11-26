@@ -1,5 +1,5 @@
 import { Component, effect, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   IonButton,
   IonButtons,
@@ -46,7 +46,6 @@ import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components'
 @Component({
   selector: 'lib-create-tipgroup.dialog',
   imports: [
-    CommonModule,
     IonHeader,
     IonToolbar,
     IonButtons,
@@ -63,8 +62,8 @@ import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components'
     IonLabel,
     IonSpinner,
     ErrorCardTemplateComponent,
-    TransformLeagueNamePipe,
-  ],
+    TransformLeagueNamePipe
+],
   templateUrl: './create-tipgroup.dialog.component.html',
   styleUrl: './create-tipgroup.dialog.component.scss',
 })

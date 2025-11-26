@@ -1,5 +1,5 @@
 import {Component, effect, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {
   IonButton,
   IonContent,
@@ -20,7 +20,6 @@ import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
 @Component({
   selector: 'lib-login-page',
   imports: [
-    CommonModule,
     IonButton,
     IonContent,
     IonInput,
@@ -29,8 +28,8 @@ import {ApiValidationErrorMessage} from '@tippapp/shared/data-access';
     IonSpinner,
     ReactiveFormsModule,
     IonHeader,
-    IonToolbar,
-  ],
+    IonToolbar
+],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })

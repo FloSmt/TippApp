@@ -4,23 +4,16 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/mobile-app/src",
-  "tags": [
-    "scope:frontend",
-    "type:app"
-  ],
+  "tags": ["scope:frontend", "type:app"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/mobile-app",
         "index": "apps/mobile-app/src/index.html",
         "browser": "apps/mobile-app/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": ["zone.js"],
         "tsConfig": "apps/mobile-app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -101,7 +94,8 @@
           "buildTarget": "mobile-app:build:mobile-test"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -114,11 +108,10 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/mobile-app/jest.config.ts"
+        "jestConfig": "apps/mobile-app/jest.config.ts",
+        "tsConfig": "apps/mobile-app/tsconfig.spec.json"
       }
     },
     "serve-static": {
