@@ -4,3 +4,17 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      time: "05:00"
+      day: "saturday"
+      timezone: "Europe/Berlin"
+
+    groups:
+      all-patches-and-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
+
+    labels:
+      - "dependency"
