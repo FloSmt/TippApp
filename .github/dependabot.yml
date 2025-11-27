@@ -15,9 +15,6 @@ updates:
         update-types:
           - "patch"
           - "minor"
-        commit-message:
-          prefix: "[minor/patch]"
 
     labels:
       - "dependency"
-      - "major"
