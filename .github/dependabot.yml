@@ -22,10 +22,10 @@ updates:
       - dependency-name: "@angular/*"
         update-types: [ "version-update:semver-major" ]
       - dependency-name: "@nestjs/jwt"
-        version: [ ">11.0.0" ]
+        versions: [ ">11.0.0" ]
       - dependency-name: "@angular-devkit/*"
         update-types: [ "version-update:semver-major" ]
       - dependency-name: "@angular-eslint/*"
-        version: [ "version-update:semver-major" ]
+        versions: [ "version-update:semver-major" ]
       - dependency-name: "zone.js"
-        version: [ "version-update:semver-major", "version-update:semver-minor" ]
+        versions: [ "version-update:semver-major", "version-update:semver-minor" ]
