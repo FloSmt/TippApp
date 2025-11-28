@@ -12,6 +12,13 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
+  migrate-dependencies:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 22.x ]
+
   # Job 1: Prepare (Setup Node.js, Install Dependencies, Restore Playwright Browsers)
   prepare:
     runs-on: ubuntu-latest
@@ -50,7 +57,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -81,7 +88,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
 
       - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4
@@ -137,7 +144,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: ♻️ Restore Node Modules Cache
@@ -162,7 +169,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
 
       - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4

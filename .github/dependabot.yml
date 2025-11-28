@@ -9,7 +9,7 @@ updates:
       timezone: "Europe/Berlin"
 
     groups:
-      all-patches-and-minor:
+      minor-and-patch:
         patterns:
           - "*"
         update-types:
@@ -20,6 +20,8 @@ updates:
 
     ignore:
       - dependency-name: "@angular/*"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "@angular-eslint/*"
         update-types: [ "version-update:semver-major" ]
       - dependency-name: "@nestjs/jwt"
         versions: [ ">11.0.0" ]
