@@ -50,7 +50,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 22.x
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -81,7 +81,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 22.x
 
       - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4
@@ -137,7 +137,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 22.x
           cache: 'npm'
 
       - name: ♻️ Restore Node Modules Cache
@@ -162,7 +162,7 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 22.x
 
       - name: ♻️ Restore Node Modules Cache
         uses: actions/cache/restore@v4
