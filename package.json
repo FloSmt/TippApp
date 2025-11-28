@@ -47,7 +47,7 @@
     "@nestjs/jwt": "11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^10.0.2",
-    "@nestjs/swagger": "^8.1.1",
+    "@nestjs/swagger": "^11.2.3",
     "@nestjs/typeorm": "^11.0.0",
     "@ngrx/signals": "^20.1.0",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
