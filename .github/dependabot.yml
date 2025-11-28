@@ -26,6 +26,6 @@ updates:
       - dependency-name: "@angular-devkit/*"
         update-types: [ "version-update:semver-major" ]
       - dependency-name: "@angular-eslint/*"
-        versions: [ "version-update:semver-major" ]
+        update-types: [ "version-update:semver-major" ]
       - dependency-name: "zone.js"
-        versions: [ "version-update:semver-major", "version-update:semver-minor" ]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
