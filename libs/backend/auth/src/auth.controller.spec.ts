@@ -1,22 +1,17 @@
-import {createMock, DeepMocked} from '@golevelup/ts-jest';
-import {JwtService} from '@nestjs/jwt';
-import {ConfigService} from '@nestjs/config';
-import {Test, TestingModule} from '@nestjs/testing';
-import {UserService} from '@tippapp/backend/user';
-import {AuthResponseDto, LoginDto, RegisterDto,} from '@tippapp/shared/data-access';
-import {Response} from "express";
-import {AuthService} from './auth.service';
-import {AuthController} from './auth.controller';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserService } from '@tippapp/backend/user';
+import { AuthResponseDto, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 
 describe('AuthController', () => {
   let authController: AuthController;
   let authService: DeepMocked<AuthService>;
-
-  const responseMock = {
-    status: jest.fn(),
-    send: jest.fn(),
-    cookie: jest.fn(),
-  } as unknown as Response;
+  let errorManagerService: DeepMocked<ErrorManagerService>;
 
   const mocks = {
     get authResponse(): AuthResponseDto {
@@ -27,7 +22,7 @@ describe('AuthController', () => {
     },
 
     get loginData(): LoginDto {
-      return {email: 'test@email.de', password: 'password'};
+      return { email: 'test@email.de', password: 'password' };
     },
 
     get registerData(): RegisterDto {
@@ -59,6 +54,10 @@ describe('AuthController', () => {
           provide: UserService,
           useValue: createMock<UserService>(),
         },
+        {
+          provide: ErrorManagerService,
+          useValue: createMock<ErrorManagerService>(),
+        },
       ],
     }).compile();
 
@@ -67,22 +66,22 @@ describe('AuthController', () => {
   });
 
   it('should return auth-response on login', async () => {
-    authService.login.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
+    authService.login.mockResolvedValueOnce({ accessToken: 'accessToken', refreshToken: 'refreshToken' });
     const result = await authController.login(mocks.loginData);
 
     expect(result).toEqual(mocks.authResponse);
   });
 
   it('should return auth-response on register', async () => {
-    authService.register.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
+    authService.register.mockResolvedValueOnce({ accessToken: 'accessToken', refreshToken: 'refreshToken' });
     const result = await authController.register(mocks.registerData);
 
     expect(result).toEqual(mocks.authResponse);
   });
 
   it('should return auth-response on Token refresh', async () => {
-    authService.refreshTokens.mockResolvedValueOnce({accessToken: 'accessToken', refreshToken: 'refreshToken'});
-    const result = await authController.refresh({refreshToken: 'oldRefreshToken'});
+    authService.refreshTokens.mockResolvedValueOnce({ accessToken: 'accessToken', refreshToken: 'refreshToken' });
+    const result = await authController.refresh({ refreshToken: 'oldRefreshToken' });
 
     expect(result).toEqual(mocks.authResponse);
   });
