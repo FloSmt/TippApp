@@ -1,18 +1,13 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import {
-  ApiErrorDto,
-  AuthResponseDto,
-  ErrorCodes,
-  LoginDto,
-  RegisterDto,
-} from '@tippapp/shared/data-access';
+import { ApiErrorDto, AuthResponseDto, ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { AuthService } from './auth.service';
 import { Public } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private errorManager: ErrorManagerService) {}
 
   @Public()
   @Post('login')
@@ -67,6 +62,10 @@ export class AuthController {
     example: ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
   })
   async refresh(@Body() body: { refreshToken: string }) {
+    if (!body || !body.refreshToken) {
+      throw this.errorManager.createError(ErrorCodes.Auth.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
+    }
+    
     return await this.authService.refreshTokens(body.refreshToken);
   }
 }

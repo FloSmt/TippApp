@@ -73,7 +73,7 @@ export class AuthService {
 
     const user = await this.userService.findById(decodedToken.id);
 
-    if (!user || !refreshToken || user.refreshToken !== refreshToken) {
+    if (!user || user.refreshToken !== refreshToken) {
       throw this.errorManager.createError(ErrorCodes.Auth.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
     }
 
