@@ -7,17 +7,13 @@ import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HashService } from '@tippapp/backend/shared';
 import { TipSeasonModule } from '../tipseason';
 import { TipgroupsController } from './tipgroups.controller';
-import { TipgroupService } from './tipgroup.service';
+import { TipgroupsService } from './tipgroups.service';
+import { TipgroupController } from './tipgroup/tipgroup.controller';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Tipgroup]),
-    TipSeasonModule,
-    ApiModule,
-    forwardRef(() => UserModule),
-  ],
-  controllers: [TipgroupsController],
-  exports: [TipgroupService],
-  providers: [TipgroupService, ErrorManagerService, HashService],
+  imports: [TypeOrmModule.forFeature([Tipgroup]), TipSeasonModule, ApiModule, forwardRef(() => UserModule)],
+  controllers: [TipgroupsController, TipgroupController],
+  exports: [TipgroupsService],
+  providers: [TipgroupsService, ErrorManagerService, HashService],
 })
-export class TipgroupModule {}
+export class TipgroupsModule {}

@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
-  AvailableLeagueResponseDto,
   CreateTipgroupDto,
+  LeagueOverviewResponseDto,
   Tipgroup,
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
 import { ApiService } from '@tippapp/backend/api';
-import { TipgroupService } from './tipgroup.service';
+import { TipgroupsService } from './tipgroups.service';
 import { TipgroupsController } from './tipgroups.controller';
 
 describe('TipgroupsController', () => {
   let controller: TipgroupsController;
-  let tipgroupService: DeepMocked<TipgroupService>;
+  let tipgroupService: DeepMocked<TipgroupsService>;
   let apiService: DeepMocked<ApiService>;
 
   const mocks = {
@@ -27,7 +27,7 @@ describe('TipgroupsController', () => {
       };
     },
 
-    get availableLeaguesMock(): AvailableLeagueResponseDto[] {
+    get availableLeaguesMock(): LeagueOverviewResponseDto[] {
       return [
         {
           leagueId: 1,
@@ -65,10 +65,10 @@ describe('TipgroupsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TipgroupsController],
       providers: [
-        TipgroupService,
+        TipgroupsService,
         {
-          provide: TipgroupService,
-          useValue: createMock<TipgroupService>(),
+          provide: TipgroupsService,
+          useValue: createMock<TipgroupsService>(),
         },
         {
           provide: ApiService,
@@ -78,7 +78,7 @@ describe('TipgroupsController', () => {
     }).compile();
 
     controller = module.get<TipgroupsController>(TipgroupsController);
-    tipgroupService = module.get(TipgroupService);
+    tipgroupService = module.get(TipgroupsService);
     apiService = module.get(ApiService);
   });
 
@@ -92,17 +92,12 @@ describe('TipgroupsController', () => {
 
     const result = await controller.create(mocks.createTipgroupDtoMock, req);
 
-    expect(tipgroupService.createTipgroup).toHaveBeenCalledWith(
-      mocks.createTipgroupDtoMock,
-      req.user.id
-    );
+    expect(tipgroupService.createTipgroup).toHaveBeenCalledWith(mocks.createTipgroupDtoMock, req.user.id);
     expect(result).toEqual(mocks.tipgroupResponse);
   });
 
   it('should return available Leagues', async () => {
-    apiService.getAvailableLeagues.mockResolvedValueOnce(
-      mocks.availableLeaguesMock
-    );
+    apiService.getAvailableLeagues.mockResolvedValueOnce(mocks.availableLeaguesMock);
 
     const result = await controller.getAvailableLeagues();
 

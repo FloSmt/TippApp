@@ -1,6 +1,6 @@
-import { AvailableLeagueResponseDto } from '@tippapp/shared/data-access';
+import { LeagueOverviewResponseDto } from '@tippapp/shared/data-access';
 
-export const availableLeaguesMockResponse: AvailableLeagueResponseDto[] = [
+export const availableLeaguesMockResponse: LeagueOverviewResponseDto[] = [
   {
     leagueId: 1,
     leagueName: 'TestLeague 1',

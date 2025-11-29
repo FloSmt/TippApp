@@ -1,24 +1,11 @@
 import { computed, inject } from '@angular/core';
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
-import {
-  AvailableLeagueResponseDto,
-  CreateTipgroupDto,
-  TipgroupEntryResponseDto,
-} from '@tippapp/shared/data-access';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupEntryResponseDto } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TipgroupService } from '../tipgroup.service';
-import {
-  NotificationService,
-  NotificationType,
-} from '../../notifications/notification.service';
+import { NotificationService, NotificationType } from '../../notifications/notification.service';
 
 export enum LoadingState {
   LOADING = 'LOADING',
@@ -29,7 +16,7 @@ export enum LoadingState {
 
 type TipgroupState = {
   availableLeaguesState: {
-    data: AvailableLeagueResponseDto[] | null;
+    data: LeagueOverviewResponseDto[] | null;
     error: HttpErrorResponse | null;
     isLoading: boolean;
   };
@@ -64,16 +51,10 @@ export const TipgroupStore = signalStore(
   withState(initialState),
   withComputed((store) => ({
     hasTipgroups: computed(
-      () =>
-        store.availableTipgroupsState.data() &&
-        store.availableTipgroupsState.data()!.length > 0
+      () => store.availableTipgroupsState.data() && store.availableTipgroupsState.data()!.length > 0
     ),
-    hasAvailableLeaguesError: computed(
-      () => !!store.availableLeaguesState.error()
-    ),
-    hasErrorOnLoadingTipgroups: computed(
-      () => store.availableTipgroupsState.loadingState() === LoadingState.ERROR
-    ),
+    hasAvailableLeaguesError: computed(() => !!store.availableLeaguesState.error()),
+    hasErrorOnLoadingTipgroups: computed(() => store.availableTipgroupsState.loadingState() === LoadingState.ERROR),
     isLoadingTipgroups: computed(
       () =>
         store.availableTipgroupsState.loadingState() === LoadingState.LOADING ||
@@ -82,9 +63,7 @@ export const TipgroupStore = signalStore(
   })),
 
   withMethods((store, notificationService = inject(NotificationService)) => ({
-    loadAvailableTipgroupsSuccess: (
-      availableGroups: TipgroupEntryResponseDto[]
-    ) => {
+    loadAvailableTipgroupsSuccess: (availableGroups: TipgroupEntryResponseDto[]) => {
       patchState(store, {
         availableTipgroupsState: {
           ...store.availableTipgroupsState(),
@@ -103,9 +82,7 @@ export const TipgroupStore = signalStore(
       });
     },
 
-    loadAvailableLeaguesSuccess: (
-      availableLeagues: AvailableLeagueResponseDto[]
-    ) => {
+    loadAvailableLeaguesSuccess: (availableLeagues: LeagueOverviewResponseDto[]) => {
       patchState(store, {
         availableLeaguesState: {
           ...store.availableLeaguesState(),
@@ -164,17 +141,13 @@ export const TipgroupStore = signalStore(
           patchState(store, {
             availableTipgroupsState: {
               ...store.availableTipgroupsState(),
-              loadingState: reload
-                ? LoadingState.LOADING
-                : LoadingState.INITIAL,
+              loadingState: reload ? LoadingState.LOADING : LoadingState.INITIAL,
             },
           })
         ),
         switchMap(() => {
           return tipgroupService.getAvailableTipgroups().pipe(
-            tap((response: TipgroupEntryResponseDto[]) =>
-              store.loadAvailableTipgroupsSuccess(response)
-            ),
+            tap((response: TipgroupEntryResponseDto[]) => store.loadAvailableTipgroupsSuccess(response)),
             catchError(() => {
               store.loadAvailableTipgroupsFailure();
               return EMPTY;
@@ -196,7 +169,7 @@ export const TipgroupStore = signalStore(
         ),
         switchMap(() =>
           tipgroupService.getAvailableLeagues().pipe(
-            tap((response: AvailableLeagueResponseDto[]) => {
+            tap((response: LeagueOverviewResponseDto[]) => {
               store.loadAvailableLeaguesSuccess(response);
             }),
             catchError((error: HttpErrorResponse) => {

@@ -17,30 +17,10 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import {
-  close,
-  closeCircle,
-  informationCircleOutline,
-  shieldCheckmark,
-  textOutline,
-  trophy,
-} from 'ionicons/icons';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import {
-  confirmPasswordValidator,
-  TipgroupStore,
-  TransformLeagueNamePipe,
-} from '@tippapp/frontend/utils';
-import {
-  AvailableLeagueResponseDto,
-  CreateTipgroupDto,
-} from '@tippapp/shared/data-access';
+import { close, closeCircle, informationCircleOutline, shieldCheckmark, textOutline, trophy } from 'ionicons/icons';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { confirmPasswordValidator, TipgroupStore, TransformLeagueNamePipe } from '@tippapp/frontend/utils';
+import { CreateTipgroupDto, LeagueOverviewResponseDto } from '@tippapp/shared/data-access';
 import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
@@ -62,8 +42,8 @@ import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components'
     IonLabel,
     IonSpinner,
     ErrorCardTemplateComponent,
-    TransformLeagueNamePipe
-],
+    TransformLeagueNamePipe,
+  ],
   templateUrl: './create-tipgroup.dialog.component.html',
   styleUrl: './create-tipgroup.dialog.component.scss',
 })
@@ -75,19 +55,10 @@ export class CreateTipgroupDialogComponent {
   readonly nameMaxLength = 50;
 
   createForm = new FormGroup({
-    name: new FormControl('', [
-      Validators.required,
-      Validators.minLength(3),
-      Validators.maxLength(this.nameMaxLength),
-    ]),
-    selectedLeague: new FormControl(this.noSelectionValue, [
-      Validators.required,
-    ]),
+    name: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(this.nameMaxLength)]),
+    selectedLeague: new FormControl(this.noSelectionValue, [Validators.required]),
     password: new FormControl('', Validators.required),
-    passwordConfirm: new FormControl('', [
-      Validators.required,
-      confirmPasswordValidator('password'),
-    ]),
+    passwordConfirm: new FormControl('', [Validators.required, confirmPasswordValidator('password')]),
   });
 
   constructor() {
@@ -103,17 +74,13 @@ export class CreateTipgroupDialogComponent {
     this.tipgroupStore.loadAvailableLeagues();
 
     effect(() => {
-      if (
-        !this.isLoadingCreateTipgroup() &&
-        !this.tipgroupStore.createTipgroupState.error()
-      ) {
+      if (!this.isLoadingCreateTipgroup() && !this.tipgroupStore.createTipgroupState.error()) {
         this.modalController.dismiss(null, 'created');
       }
     });
   }
 
-  isLoadingAvailableLeagues =
-    this.tipgroupStore.availableLeaguesState.isLoading;
+  isLoadingAvailableLeagues = this.tipgroupStore.availableLeaguesState.isLoading;
   isLoadingCreateTipgroup = this.tipgroupStore.createTipgroupState.isLoading;
   availableLeagues = this.tipgroupStore.availableLeaguesState;
   hasAvailableLeaguesError = this.tipgroupStore.hasAvailableLeaguesError;
@@ -155,23 +122,15 @@ export class CreateTipgroupDialogComponent {
   getSelectedLeague(): { shortcut: string; season: number } | null {
     const leagueId = Number(this.createForm.value.selectedLeague);
 
-    const league = this.availableLeagues
-      .data()
-      ?.find((league) => league.leagueId === leagueId);
-    return league
-      ? { shortcut: league.leagueShortcut, season: Number(league.leagueSeason) }
-      : null;
+    const league = this.availableLeagues.data()?.find((league) => league.leagueId === leagueId);
+    return league ? { shortcut: league.leagueShortcut, season: Number(league.leagueSeason) } : null;
   }
 
   getLeagueSeasonGroups(): LeagueSeasonGroup[] {
     const leagues =
-      this.availableLeagues
-        .data()
-        ?.filter(
-          (league) =>
-            Number(league.leagueSeason) >= new Date().getFullYear() - 1
-        ) || [];
-    const seasonGroups: { [key: number]: AvailableLeagueResponseDto[] } = {};
+      this.availableLeagues.data()?.filter((league) => Number(league.leagueSeason) >= new Date().getFullYear() - 1) ||
+      [];
+    const seasonGroups: { [key: number]: LeagueOverviewResponseDto[] } = {};
 
     leagues.forEach((league) => {
       if (!seasonGroups[league.leagueSeason]) {
@@ -183,9 +142,7 @@ export class CreateTipgroupDialogComponent {
     return Object.keys(seasonGroups)
       .map((season) => ({
         season: Number(season),
-        leagues: seasonGroups[Number(season)].sort((a, b) =>
-          a.leagueName.localeCompare(b.leagueName)
-        ),
+        leagues: seasonGroups[Number(season)].sort((a, b) => a.leagueName.localeCompare(b.leagueName)),
       }))
       .sort((a, b) => b.season - a.season); // Sort seasons in descending order
   }
@@ -220,5 +177,5 @@ export class CreateTipgroupDialogComponent {
 
 export interface LeagueSeasonGroup {
   season: number;
-  leagues: AvailableLeagueResponseDto[];
+  leagues: LeagueOverviewResponseDto[];
 }

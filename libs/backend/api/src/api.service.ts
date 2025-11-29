@@ -2,9 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import {
-  AvailableLeagueResponseDto,
   ErrorCodes,
   GroupResponse,
+  LeagueOverviewResponseDto,
   LeagueResponse,
   MatchResponse,
 } from '@tippapp/shared/data-access';
@@ -21,25 +21,13 @@ export class ApiService {
 
   private readonly apiUrl = this.config.get<string>('EXTERNAL_API_BASE_URL');
 
-  private fetchedLeagues: AvailableLeagueResponseDto[] | null = null;
+  private fetchedLeagues: LeagueOverviewResponseDto[] | null = null;
   private dateOfLastFetch: number | null = null;
   private cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-  private readonly allowedLeagues = [
-    'bl1',
-    'bl2',
-    'pl',
-    'sa',
-    'pd',
-    'fl1',
-    'ded',
-  ];
+  private readonly allowedLeagues = ['bl1', 'bl2', 'pl', 'sa', 'pd', 'fl1', 'ded'];
 
-  async getMatchData(
-    leagueShortcut: string,
-    season: number,
-    groupId?: number
-  ): Promise<MatchResponse[]> {
+  async getMatchData(leagueShortcut: string, season: number, groupId?: number): Promise<MatchResponse[]> {
     try {
       let url: string;
       if (groupId) {
@@ -53,20 +41,13 @@ export class ApiService {
       return response.data.map((match: any) => new MatchResponse(match));
     } catch (error) {
       console.warn('Error on calling external API (getMatchData)', error);
-      throw this.errorManager.createError(
-        ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE,
-        HttpStatus.BAD_REQUEST
-      );
+      throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getAvailableLeagues(): Promise<AvailableLeagueResponseDto[]> {
+  async getAvailableLeagues(): Promise<LeagueOverviewResponseDto[]> {
     const now = Date.now();
-    if (
-      this.fetchedLeagues &&
-      this.dateOfLastFetch &&
-      now - this.dateOfLastFetch < this.cacheDuration
-    ) {
+    if (this.fetchedLeagues && this.dateOfLastFetch && now - this.dateOfLastFetch < this.cacheDuration) {
       console.log('Returning cached leagues');
       return this.fetchedLeagues;
     }
@@ -92,21 +73,12 @@ export class ApiService {
       );
       return filteredMatches.map((league: any) => new LeagueResponse(league));
     } catch (error) {
-      console.warn(
-        'Error on calling external API (getAvailableLeagues)',
-        error
-      );
-      throw this.errorManager.createError(
-        ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE,
-        HttpStatus.BAD_REQUEST
-      );
+      console.warn('Error on calling external API (getAvailableLeagues)', error);
+      throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getAvailableGroups(
-    leagueShortcut: string,
-    season: number
-  ): Promise<GroupResponse[]> {
+  async getAvailableGroups(leagueShortcut: string, season: number): Promise<GroupResponse[]> {
     try {
       const url = `${this.apiUrl}/getavailablegroups/${leagueShortcut}/${season}`;
       const response = await firstValueFrom(this.httpService.get(url));
@@ -114,10 +86,7 @@ export class ApiService {
       return response.data.map((group: any) => new GroupResponse(group));
     } catch (error) {
       console.warn('Error on calling external API (getAvailableGroups)', error);
-      throw this.errorManager.createError(
-        ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE,
-        HttpStatus.BAD_REQUEST
-      );
+      throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
 }

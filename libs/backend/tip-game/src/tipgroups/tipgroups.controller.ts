@@ -1,18 +1,18 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
 import {
   ApiErrorDto,
-  AvailableLeagueResponseDto,
   CreateTipgroupDto,
   ErrorCodes,
+  LeagueOverviewResponseDto,
   TipgroupEntryResponseDto,
 } from '@tippapp/shared/data-access';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiService } from '@tippapp/backend/api';
-import { TipgroupService } from './tipgroup.service';
+import { TipgroupsService } from './tipgroups.service';
 
 @Controller('tipgroups')
 export class TipgroupsController {
-  constructor(private readonly tipgroupService: TipgroupService, private readonly apiService: ApiService) {}
+  constructor(private readonly tipgroupService: TipgroupsService, private readonly apiService: ApiService) {}
 
   @Post('create')
   @ApiBearerAuth()
@@ -55,13 +55,13 @@ export class TipgroupsController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: AvailableLeagueResponseDto,
+    type: LeagueOverviewResponseDto,
     isArray: true,
   })
   @ApiOperation({
     summary: 'responses a list of available leagues for creating a new tipgroup',
   })
-  async getAvailableLeagues(): Promise<AvailableLeagueResponseDto[]> {
+  async getAvailableLeagues(): Promise<LeagueOverviewResponseDto[]> {
     return this.apiService.getAvailableLeagues();
   }
 }

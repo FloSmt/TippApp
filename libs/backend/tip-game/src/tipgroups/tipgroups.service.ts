@@ -17,7 +17,7 @@ import { HashService } from '@tippapp/backend/shared';
 import { TipSeasonService } from '../tipseason';
 
 @Injectable()
-export class TipgroupService {
+export class TipgroupsService {
   constructor(
     @InjectRepository(Tipgroup)
     private tipgroupRepository: Repository<Tipgroup>,

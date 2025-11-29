@@ -1,4 +1,4 @@
-export * from './available-league-response.dto';
-export * from './create-tipgroup.dto';
-export * from './tipgroup-entry-response.dto';
-export * from './update-tipgroup.dto';
+export { LeagueOverviewResponseDto } from './league-overview-response.dto';
+export { CreateTipgroupDto } from './create-tipgroup.dto';
+export { TipgroupEntryResponseDto } from './tipgroup-entry-response.dto';
+export { UpdateTipgroupDto } from './update-tipgroup.dto';

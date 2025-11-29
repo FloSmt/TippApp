@@ -1,10 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  AvailableLeagueResponseDto,
-  CreateTipgroupDto,
-  TipgroupEntryResponseDto,
-} from '@tippapp/shared/data-access';
+import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupEntryResponseDto } from '@tippapp/shared/data-access';
 import { HttpClient } from '@angular/common/http';
 import { ENVIRONMENT } from '../environments/environment.token';
 
@@ -18,23 +14,14 @@ export class TipgroupService {
   readonly BACKEND_URL = this.env.apiUrl;
 
   getAvailableTipgroups(): Observable<TipgroupEntryResponseDto[]> {
-    return this.httpClient.get<TipgroupEntryResponseDto[]>(
-      this.BACKEND_URL + 'user/tipgroups'
-    );
+    return this.httpClient.get<TipgroupEntryResponseDto[]>(this.BACKEND_URL + 'user/tipgroups');
   }
 
-  getAvailableLeagues(): Observable<AvailableLeagueResponseDto[]> {
-    return this.httpClient.get<AvailableLeagueResponseDto[]>(
-      this.BACKEND_URL + 'tipgroups/getAvailableLeagues'
-    );
+  getAvailableLeagues(): Observable<LeagueOverviewResponseDto[]> {
+    return this.httpClient.get<LeagueOverviewResponseDto[]>(this.BACKEND_URL + 'tipgroups/getAvailableLeagues');
   }
 
-  createTipgroup(
-    createTipgroupDto: CreateTipgroupDto
-  ): Observable<TipgroupEntryResponseDto> {
-    return this.httpClient.post<TipgroupEntryResponseDto>(
-      this.BACKEND_URL + 'tipgroups/create',
-      createTipgroupDto
-    );
+  createTipgroup(createTipgroupDto: CreateTipgroupDto): Observable<TipgroupEntryResponseDto> {
+    return this.httpClient.post<TipgroupEntryResponseDto>(this.BACKEND_URL + 'tipgroups/create', createTipgroupDto);
   }
 }

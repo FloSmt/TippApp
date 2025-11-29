@@ -7,11 +7,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HashService } from '@tippapp/backend/shared';
-import { TipgroupService } from './tipgroup.service';
+import { TipgroupsService } from './tipgroups.service';
 import { TipSeasonService } from '../tipseason';
 
-describe('TipgroupService', () => {
-  let service: TipgroupService;
+describe('TipgroupsService', () => {
+  let service: TipgroupsService;
   let tipSeasonService: DeepMocked<TipSeasonService>;
   let apiService: DeepMocked<ApiService>;
   let userService: DeepMocked<UserService>;
@@ -84,7 +84,7 @@ describe('TipgroupService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        TipgroupService,
+        TipgroupsService,
         {
           provide: getRepositoryToken(Tipgroup),
           useValue: mockTipgroupRepository,
@@ -112,7 +112,7 @@ describe('TipgroupService', () => {
       ],
     }).compile();
 
-    service = module.get<TipgroupService>(TipgroupService);
+    service = module.get<TipgroupsService>(TipgroupsService);
     tipSeasonService = module.get(TipSeasonService);
     apiService = module.get(ApiService);
     userService = module.get(UserService);
