@@ -1,12 +1,10 @@
 import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
-import { MatchdayOverviewResponseDto, MatchdayResponseDto } from '@tippapp/shared/data-access';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiErrorDto, ErrorCodes, MatchdayOverviewResponseDto, MatchdayResponseDto } from '@tippapp/shared/data-access';
 import { TipgroupService } from './tipgroup.service';
-import { Public } from '../../../../auth/src/guards/jwt-auth.guard';
 
 @Controller('tipgroup')
-@Public()
-// @ApiBearerAuth()
+@ApiBearerAuth()
 export class TipgroupController {
   constructor(private tipgroupService: TipgroupService) {}
 
@@ -32,6 +30,12 @@ export class TipgroupController {
   })
   @ApiOkResponse({
     type: MatchdayResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Matchday not found',
+    type: ApiErrorDto,
+    example: ErrorCodes.Tipgroup.MATCHDAY_DETAILS_NOT_FOUND,
   })
   public async getMatchday(@Param() params: { tipgroupId: number; seasonId: number; matchdayId: number }) {
     return this.tipgroupService.getMatchdayDetails(params.tipgroupId, params.seasonId, params.matchdayId);

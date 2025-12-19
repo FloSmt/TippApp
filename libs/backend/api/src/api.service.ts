@@ -43,12 +43,13 @@ export class ApiService {
 
     // Check if data is in cache
     if (this.matchDataCache[cacheKey]) {
+      console.log('Found cached match data');
       const cachedData = this.matchDataCache[cacheKey];
       const timeout = 1000 * 60 * 3; // 3 minutes
-      const now = new Date();
+      const now = Date.now();
 
       // If cached data is recent enough, return it
-      if (now.getTime() - cachedData.lastUpdate.getTime() < timeout) {
+      if (now - cachedData.lastUpdate.getTime() < timeout) {
         console.log('Returning recently cached match data');
         return cachedData.data;
       }
@@ -56,8 +57,9 @@ export class ApiService {
       const lastUpdatedDate = new Date(await this.getLastUpdatedMatchdayDate(leagueShortcut, season, groupId));
 
       // If the last updated date matches, return cached data
-      if (cachedData.lastUpdate === lastUpdatedDate) {
+      if (cachedData.lastUpdate.getTime() === lastUpdatedDate.getTime()) {
         console.log('Returning cached match data');
+        this.matchDataCache[cacheKey] = { data: cachedData.data, lastUpdate: lastUpdatedDate };
         return cachedData.data;
       }
     }

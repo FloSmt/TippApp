@@ -4,7 +4,7 @@ import { TeamResponse } from './team.response';
 
 export class MatchApiResponse {
   matchId: number;
-  matchDateTime: Date;
+  matchDateTime: string;
   timeZoneId: string;
   leagueId: number;
   leagueName: string;
@@ -20,7 +20,7 @@ export class MatchApiResponse {
 
   constructor(data: any) {
     this.matchId = data.matchID;
-    this.matchDateTime = new Date(data.matchDateTime);
+    this.matchDateTime = data.matchDateTime;
     this.timeZoneId = data.timeZoneID;
     this.leagueId = data.leagueId;
     this.leagueName = data.leagueName;

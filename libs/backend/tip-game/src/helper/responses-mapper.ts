@@ -4,7 +4,7 @@ export function mapApiMatchResponsesToMatchDayResponseDto(apiMatch: MatchApiResp
   return apiMatch.map((match) => ({
     matchId: match.matchId,
     lastUpdatedDateTime: match.lastUpdatedDateTime,
-    scheduledDateTime: match.matchDateTime.toISOString(),
+    scheduledDateTime: match.matchDateTime,
     homeTeam: {
       teamId: match.team1.teamId,
       name: match.team1.teamName,
