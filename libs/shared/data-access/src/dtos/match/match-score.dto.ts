@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class MatchScoreDto {
   @ApiProperty()
-  homeTeamScore: number;
+  homeTeamScore: number | null;
 
   @ApiProperty()
-  awayTeamScore: number;
+  awayTeamScore: number | null;
 }

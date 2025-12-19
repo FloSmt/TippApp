@@ -59,4 +59,11 @@ export abstract class ErrorCodes {
       message: 'External API data is currently unavailable.',
     },
   };
+
+  public static readonly Tipgroup = {
+    MATCHDAY_DETAILS_NOT_FOUND: {
+      code: 'TIPGROUP.MATCHDAY_DETAILS_NOT_FOUND',
+      message: 'Matchday details not found for the given parameters.',
+    },
+  };
 }

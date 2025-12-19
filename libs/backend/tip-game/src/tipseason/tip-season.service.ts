@@ -1,11 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  GroupResponse,
-  Match,
-  Matchday,
-  MatchResponse,
-  TipSeason,
-} from '@tippapp/shared/data-access';
+import { GroupResponse, Match, MatchApiResponse, Matchday, TipSeason } from '@tippapp/shared/data-access';
 import { EntityManager } from 'typeorm';
 
 @Injectable()
@@ -13,7 +7,7 @@ export class TipSeasonService {
   createTipSeason(
     season: number,
     matchDays: GroupResponse[],
-    matches: MatchResponse[],
+    matches: MatchApiResponse[],
     entityManager: EntityManager
   ): TipSeason {
     return entityManager.create(TipSeason, {
@@ -22,7 +16,8 @@ export class TipSeasonService {
       matchdays: matchDays.map((group) =>
         entityManager.create(Matchday, {
           name: group.groupName,
-          api_groupId: group.groupId,
+          api_groupOrderId: group.groupOrderId,
+          api_leagueShortcut: group.leagueShortcut,
           matches: matches
             .filter((m) => m.group.groupId === group.groupId)
             .map((match) =>

@@ -2,12 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpService } from '@nestjs/axios';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import {
-  ErrorCodes,
-  GroupResponse,
-  LeagueResponse,
-  MatchResponse,
-} from '@tippapp/shared/data-access';
+import { ErrorCodes, GroupResponse, LeagueResponse, MatchApiResponse } from '@tippapp/shared/data-access';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
@@ -39,9 +34,7 @@ describe('ApiService', () => {
     service = module.get<ApiService>(ApiService);
     errorManagerService = module.get(ErrorManagerService);
 
-    jest
-      .spyOn(errorManagerService, 'createError')
-      .mockReturnValue(new HttpException('Error', 404));
+    jest.spyOn(errorManagerService, 'createError').mockReturnValue(new HttpException('Error', 404));
   });
 
   afterEach(() => {
@@ -61,21 +54,13 @@ describe('ApiService', () => {
 
       const result = await service.getMatchData('bl1', 2024, 1);
       expect(result).toHaveLength(2);
-      expect(result[0]).toBeInstanceOf(MatchResponse);
-
-      const resultWithoutMatchday = await service.getMatchData('bl1', 2024);
-      expect(resultWithoutMatchday).toHaveLength(2);
-      expect(resultWithoutMatchday[0]).toBeInstanceOf(MatchResponse);
+      expect(result[0]).toBeInstanceOf(MatchApiResponse);
     });
 
     it('should throw HttpException on error', async () => {
-      mockHttpService.get.mockReturnValue(
-        throwError(() => new Error('Network error'))
-      );
+      mockHttpService.get.mockReturnValue(throwError(() => new Error('Network error')));
 
-      await expect(service.getMatchData('bl1', 2024, 1)).rejects.toThrow(
-        HttpException
-      );
+      await expect(service.getMatchData('bl1', 2024, 1)).rejects.toThrow(HttpException);
       expect(errorManagerService.createError).toHaveBeenCalledWith(
         ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE,
         HttpStatus.BAD_REQUEST
@@ -111,13 +96,9 @@ describe('ApiService', () => {
     });
 
     it('should throw HttpException on error', async () => {
-      mockHttpService.get.mockReturnValue(
-        throwError(() => new Error('API Error'))
-      );
+      mockHttpService.get.mockReturnValue(throwError(() => new Error('API Error')));
 
-      await expect(
-        (service as any).getAvailableLeaguesFromApi()
-      ).rejects.toThrow();
+      await expect((service as any).getAvailableLeaguesFromApi()).rejects.toThrow();
       expect(errorManagerService.createError).toHaveBeenCalledWith(
         ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE,
         HttpStatus.BAD_REQUEST
@@ -145,13 +126,9 @@ describe('ApiService', () => {
     });
 
     it('should throw HttpException on error', async () => {
-      mockHttpService.get.mockReturnValue(
-        throwError(() => new Error('API Error'))
-      );
+      mockHttpService.get.mockReturnValue(throwError(() => new Error('API Error')));
 
-      await expect(service.getAvailableGroups('bl1', 2024)).rejects.toThrow(
-        HttpException
-      );
+      await expect(service.getAvailableGroups('bl1', 2024)).rejects.toThrow(HttpException);
       expect(errorManagerService.createError).toHaveBeenCalledWith(
         ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE,
         HttpStatus.BAD_REQUEST
@@ -184,13 +161,9 @@ describe('ApiService', () => {
       service['cacheDuration'] = 10000;
 
       jest.spyOn(Date, 'now').mockReturnValue(now);
-      const newLeagues: LeagueResponse[] = [
-        { leagueId: 3, leagueName: 'La Liga' },
-      ] as LeagueResponse[];
+      const newLeagues: LeagueResponse[] = [{ leagueId: 3, leagueName: 'La Liga' }] as LeagueResponse[];
 
-      jest
-        .spyOn(service as any, 'getAvailableLeaguesFromApi')
-        .mockResolvedValue(newLeagues);
+      jest.spyOn(service as any, 'getAvailableLeaguesFromApi').mockResolvedValue(newLeagues);
 
       const result = await service.getAvailableLeagues();
       expect(result).toEqual(newLeagues);
@@ -204,12 +177,8 @@ describe('ApiService', () => {
       const now = Date.now();
 
       jest.spyOn(Date, 'now').mockReturnValue(now);
-      const newLeagues: LeagueResponse[] = [
-        { leagueId: 4, leagueName: 'Serie A' },
-      ] as LeagueResponse[];
-      jest
-        .spyOn(service as any, 'getAvailableLeaguesFromApi')
-        .mockResolvedValue(newLeagues);
+      const newLeagues: LeagueResponse[] = [{ leagueId: 4, leagueName: 'Serie A' }] as LeagueResponse[];
+      jest.spyOn(service as any, 'getAvailableLeaguesFromApi').mockResolvedValue(newLeagues);
 
       const result = await service.getAvailableLeagues();
       expect(result).toEqual(newLeagues);

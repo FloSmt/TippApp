@@ -2,7 +2,7 @@ import { GroupResponse } from './group.response';
 import { MatchResultResponse } from './matchResult.response';
 import { TeamResponse } from './team.response';
 
-export class MatchResponse {
+export class MatchApiResponse {
   matchId: number;
   matchDateTime: Date;
   timeZoneId: string;
@@ -11,6 +11,7 @@ export class MatchResponse {
   leagueSeason: number;
   leagueShortcut: string;
   matchDateTimeUTC: string;
+  lastUpdatedDateTime: string;
   group: GroupResponse;
   team1: TeamResponse;
   team2: TeamResponse;
@@ -30,8 +31,7 @@ export class MatchResponse {
     this.team1 = new TeamResponse(data.team1);
     this.team2 = new TeamResponse(data.team2);
     this.matchIsFinished = data.matchIsFinished;
-    this.matchResults = data.matchResults.map(
-      (matchResult: any) => new MatchResultResponse(matchResult)
-    );
+    this.lastUpdatedDateTime = data.lastUpdatedDateTime;
+    this.matchResults = data.matchResults.map((matchResult: any) => new MatchResultResponse(matchResult)) || null;
   }
 }

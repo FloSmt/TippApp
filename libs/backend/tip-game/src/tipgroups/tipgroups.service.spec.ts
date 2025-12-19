@@ -198,7 +198,7 @@ describe('TipgroupsService', () => {
       expect(validateAndGetAvailableLeaguesSpy).toHaveBeenCalledWith(mocks.createTipgroupDtoMocks[0].leagueShortcut);
       expect(userService.findById).toHaveBeenCalledWith(mocks.userMock.id, mockTransactionalEntityManager);
       expect(apiService.getAvailableGroups).toHaveBeenCalledWith('l1', 2022);
-      expect(apiService.getMatchData).toHaveBeenCalledWith('l1', 2022);
+      expect(apiService.getMatchDataOfSeason).toHaveBeenCalledWith('l1', 2022);
       expect(hashService.hashPassword).toHaveBeenCalledWith(mocks.createTipgroupDtoMocks[0].password);
 
       expect(mockTransactionalEntityManager.create).toHaveBeenCalledWith(

@@ -3,7 +3,7 @@ import {
   CreateTipgroupDto,
   ErrorCodes,
   GroupResponse,
-  MatchResponse,
+  MatchApiResponse,
   Tipgroup,
   TipgroupUser,
   TipSeason,
@@ -49,7 +49,7 @@ export class TipgroupsService {
         createTipgroupDto.leagueShortcut,
         createTipgroupDto.currentSeason
       );
-      const matches: MatchResponse[] = await this.apiService.getMatchData(
+      const matches: MatchApiResponse[] = await this.apiService.getMatchDataOfSeason(
         createTipgroupDto.leagueShortcut,
         createTipgroupDto.currentSeason
       );
