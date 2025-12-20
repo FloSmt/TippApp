@@ -178,7 +178,6 @@ describe('TipgroupController (e2e)', () => {
       });
 
       // Create two test users
-      console.log('Anzahl Tipgroups ', await tipgroupFactory.countTipGroupsInDatabase());
       await userFactory.createUserInDatabase(mocks.registerData[0]);
       await userFactory.createUserInDatabase(mocks.registerData[1]);
 
@@ -197,8 +196,6 @@ describe('TipgroupController (e2e)', () => {
       // Create 2 Tipgroups for the User1
       await tipgroupFactory.createTipGroupWithRest(accessTokenFirstUser, mocks.createTipgroupData[0]);
       await tipgroupFactory.createTipGroupWithRest(accessTokenFirstUser, mocks.createTipgroupData[1]);
-
-      console.log('Anzahl Tipgroups nach erstellung', await tipgroupFactory.countTipGroupsInDatabase());
 
       // Check if User has 2 tipgroups
       let response = await tipgroupFactory.getTipGroupsOfUser(accessTokenFirstUser);

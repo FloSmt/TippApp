@@ -25,13 +25,8 @@ export class TipgroupFactory extends Factory {
       users: [],
       seasons: [],
     });
-    const savedTipgroup = await tipgroupRepository.save(tipgroup);
-    return savedTipgroup;
-  }
 
-  async countTipGroupsInDatabase(): Promise<number> {
-    const tipgroupRepository = this.getDataSource().getRepository(Tipgroup);
-    return await tipgroupRepository.count();
+    return await tipgroupRepository.save(tipgroup);
   }
 
   async getTipGroupsOfUser(authToken: string) {
