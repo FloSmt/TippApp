@@ -4,11 +4,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ApiService, MatchResponseMock } from '@tippapp/backend/api';
 import { ErrorCodes } from '@tippapp/shared/data-access';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { TipgroupService } from './tipgroup.service';
+import { MatchdayService } from './matchday.service';
 import { QueriesService } from '../../queries/queries.service';
 
-describe('TipgroupService', () => {
-  let service: TipgroupService;
+describe('MatchdayService', () => {
+  let service: MatchdayService;
   let apiServiceMock: DeepMocked<ApiService>;
   let queriesServiceMock: DeepMocked<QueriesService>;
   let errorManagerServiceMock: DeepMocked<ErrorManagerService>;
@@ -16,7 +16,7 @@ describe('TipgroupService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        TipgroupService,
+        MatchdayService,
         {
           provide: QueriesService,
           useValue: createMock<QueriesService>(),
@@ -32,7 +32,7 @@ describe('TipgroupService', () => {
       ],
     }).compile();
 
-    service = module.get<TipgroupService>(TipgroupService);
+    service = module.get<MatchdayService>(MatchdayService);
     queriesServiceMock = module.get(QueriesService);
     errorManagerServiceMock = module.get(ErrorManagerService);
     apiServiceMock = module.get(ApiService);

@@ -6,7 +6,7 @@ import { mapApiMatchResponsesToMatchDayResponseDto } from '../../helper/response
 import { QueriesService } from '../../queries/queries.service';
 
 @Injectable()
-export class TipgroupService {
+export class MatchdayService {
   constructor(
     private apiService: ApiService,
     private errorManager: ErrorManagerService,

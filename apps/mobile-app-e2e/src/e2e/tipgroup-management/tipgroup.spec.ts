@@ -25,7 +25,7 @@ test.describe('Tipgroups', () => {
       await expect(tipgroupListPage.errorCard).toBeVisible();
     });
 
-    test('should show a information if the tipgroup-list is empty', async ({ tipgroupListPage, page }) => {
+    test('should show a information if the matchday-list is empty', async ({ tipgroupListPage, page }) => {
       await mockTipgroupListResponse(page, [], 200);
 
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
@@ -127,7 +127,7 @@ test.describe('Tipgroups', () => {
       });
     });
 
-    test('should show an error-notification if create tipgroup fails', async ({
+    test('should show an error-notification if create matchday fails', async ({
       tipgroupListPage,
       tipgroupCreateDialog,
     }) => {

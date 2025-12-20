@@ -3,13 +3,15 @@ import { GroupResponse, Match, MatchApiResponse, Matchday, TipSeason } from '@ti
 import { EntityManager } from 'typeorm';
 
 @Injectable()
-export class TipSeasonService {
+export class SeasonService {
   createTipSeason(
     season: number,
+    leagueShortcut: string,
     matchDays: GroupResponse[],
     matches: MatchApiResponse[],
     entityManager: EntityManager
   ): TipSeason {
+    console.log('matchDays:', matchDays);
     return entityManager.create(TipSeason, {
       api_LeagueSeason: season,
       isClosed: false,
@@ -17,7 +19,7 @@ export class TipSeasonService {
         entityManager.create(Matchday, {
           name: group.groupName,
           api_groupOrderId: group.groupOrderId,
-          api_leagueShortcut: group.leagueShortcut,
+          api_leagueShortcut: leagueShortcut,
           matches: matches
             .filter((m) => m.group.groupId === group.groupId)
             .map((match) =>

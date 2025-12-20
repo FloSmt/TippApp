@@ -24,7 +24,7 @@ import { CreateTipgroupDto, LeagueOverviewResponseDto } from '@tippapp/shared/da
 import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
-  selector: 'lib-create-tipgroup.dialog',
+  selector: 'lib-create-matchday.dialog',
   imports: [
     IonHeader,
     IonToolbar,

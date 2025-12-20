@@ -24,9 +24,9 @@ export class QueriesService {
   ): Promise<MatchDayQueryResult | undefined> {
     return this.dataSource
       .createQueryBuilder(Tipgroup, 'tipgroup')
-      .where('tipgroup.id = :tipgroupId', { tipgroupId })
-      .leftJoin('tipgroup.seasons', 'season', 'season.id = :seasonId', { seasonId })
-      .leftJoin('season.matchdays', 'matchday', 'matchday.id = :matchdayId', { matchdayId })
+      .where('matchday.id = :tipgroupId', { tipgroupId })
+      .leftJoin('matchday.seasons', 'season', 'season.id = :seasonId', { seasonId })
+      .leftJoin('season.matchday', 'matchday', 'matchday.id = :matchdayId', { matchdayId })
       .leftJoin('matchday.matches', 'match')
       .select(
         `JSON_OBJECT(

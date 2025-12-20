@@ -1,26 +1,25 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Match, Matchday, Tipgroup, TipSeason } from '@tippapp/shared/data-access';
+import { Match, Matchday, Tipgroup, TipgroupUser, TipSeason } from '@tippapp/shared/data-access';
 import { ApiModule } from '@tippapp/backend/api';
 import { UserModule } from '@tippapp/backend/user';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HashService } from '@tippapp/backend/shared';
-import { TipSeasonModule } from '../tipseason';
+import { SeasonController, SeasonService } from './season';
 import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupsService } from './tipgroups.service';
-import { TipgroupController } from './tipgroup/tipgroup.controller';
-import { TipgroupService } from './tipgroup/tipgroup.service';
+import { MatchdayController } from './matchday/matchday.controller';
+import { MatchdayService } from './matchday/matchday.service';
 import { QueriesService } from '../queries/queries.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Tipgroup, TipSeason, Matchday, Match]),
-    TipSeasonModule,
+    TypeOrmModule.forFeature([Tipgroup, TipSeason, Matchday, Match, TipgroupUser]),
     ApiModule,
     forwardRef(() => UserModule),
   ],
-  controllers: [TipgroupsController, TipgroupController],
-  exports: [TipgroupsService, TipgroupService],
-  providers: [TipgroupsService, ErrorManagerService, HashService, TipgroupService, QueriesService],
+  controllers: [TipgroupsController, MatchdayController, SeasonController],
+  exports: [TipgroupsService, MatchdayService, SeasonService],
+  providers: [TipgroupsService, ErrorManagerService, HashService, MatchdayService, QueriesService, SeasonService],
 })
 export class TipgroupsModule {}

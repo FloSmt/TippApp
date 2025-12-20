@@ -14,16 +14,18 @@ import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { UserService } from '@tippapp/backend/user';
 import { HashService } from '@tippapp/backend/shared';
-import { TipSeasonService } from '../tipseason';
+import { SeasonService } from './season';
 
 @Injectable()
 export class TipgroupsService {
   constructor(
     @InjectRepository(Tipgroup)
     private tipgroupRepository: Repository<Tipgroup>,
+    @InjectRepository(TipgroupUser)
+    private tipgroupUserRepository: Repository<TipgroupUser>,
     private apiService: ApiService,
     private userService: UserService,
-    private tipSeasonService: TipSeasonService,
+    private tipSeasonService: SeasonService,
     private hashService: HashService,
     private errorManager: ErrorManagerService
   ) {}
@@ -63,6 +65,7 @@ export class TipgroupsService {
       // create TipSeason with Matchdays and Matches
       const tipSeason: TipSeason = this.tipSeasonService.createTipSeason(
         createTipgroupDto.currentSeason,
+        createTipgroupDto.leagueShortcut,
         matchDays,
         matches,
         transactionalEntityManager
@@ -79,6 +82,15 @@ export class TipgroupsService {
       // save Tipgroup and TipSeason
       return await transactionalEntityManager.save(Tipgroup, tipgroup);
     });
+  }
+
+  async getTipGroupsByUserId(userId: number): Promise<Tipgroup[]> {
+    const tipGroupUserEntries = await this.tipgroupUserRepository.find({
+      where: { userId: userId },
+      relations: ['tipgroup'],
+    });
+
+    return tipGroupUserEntries.map((entry) => entry.tipgroup);
   }
 
   private async validateAndGetAvailableLeagues(leagueShortcut: string): Promise<void> {

@@ -48,7 +48,7 @@ export abstract class ErrorCodes {
   public static readonly CreateTipgroup = {
     TIPGROUP_NAME_TAKEN: {
       code: 'CREATE_TIPGROUP.TIPGROUP_NAME_TAKEN',
-      message: 'The tipgroup name is already taken.',
+      message: 'The matchday name is already taken.',
     },
     LEAGUE_NOT_FOUND: {
       code: 'CREATE_TIPGROUP.LEAGUE_NOT_FOUND',

@@ -1,17 +1,17 @@
 import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { ApiErrorDto, ErrorCodes, MatchdayOverviewResponseDto, MatchdayResponseDto } from '@tippapp/shared/data-access';
-import { TipgroupService } from './tipgroup.service';
+import { ApiErrorDto, ErrorCodes, MatchdayResponseDto } from '@tippapp/shared/data-access';
+import { MatchdayService } from './matchday.service';
 
-@Controller('tipgroup')
+@Controller('tipgroups/:tipgroupId/season/:seasonId/matchday')
 @ApiBearerAuth()
-export class TipgroupController {
-  constructor(private tipgroupService: TipgroupService) {}
+export class MatchdayController {
+  constructor(private matchdayService: MatchdayService) {}
 
-  @Get(':tipgroupId/:seasonId/getMatchday/:matchdayId')
+  @Get(':matchdayId')
   @ApiParam({
     name: 'tipgroupId',
-    description: 'The ID of the tipgroup',
+    description: 'The ID of the matchday',
     type: Number,
   })
   @ApiParam({
@@ -38,19 +38,6 @@ export class TipgroupController {
     example: ErrorCodes.Tipgroup.MATCHDAY_DETAILS_NOT_FOUND,
   })
   public async getMatchday(@Param() params: { tipgroupId: number; seasonId: number; matchdayId: number }) {
-    return this.tipgroupService.getMatchdayDetails(params.tipgroupId, params.seasonId, params.matchdayId);
-  }
-
-  @Get(':tipgroupId/:seasonId/getAllMatchdays')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Gets an overview of all matchdays in the current season',
-  })
-  @ApiOkResponse({
-    type: MatchdayOverviewResponseDto,
-    isArray: true,
-  })
-  public async getAllMatchdays() {
-    // Implementation goes here
+    return this.matchdayService.getMatchdayDetails(params.tipgroupId, params.seasonId, params.matchdayId);
   }
 }

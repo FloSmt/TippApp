@@ -1,26 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MatchdayResponseDto } from '@tippapp/shared/data-access';
-import { TipgroupController } from './tipgroup.controller';
-import { TipgroupService } from './tipgroup.service';
+import { MatchdayController } from './matchday.controller';
+import { MatchdayService } from './matchday.service';
 
-describe('TipgroupController', () => {
-  let controller: TipgroupController;
-  let tipgroupServiceMock: DeepMocked<TipgroupService>;
+describe('MatchdayController', () => {
+  let controller: MatchdayController;
+  let tipgroupServiceMock: DeepMocked<MatchdayService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [TipgroupController],
+      controllers: [MatchdayController],
       providers: [
         {
-          provide: TipgroupService,
-          useValue: createMock<TipgroupService>(),
+          provide: MatchdayService,
+          useValue: createMock<MatchdayService>(),
         },
       ],
     }).compile();
 
-    controller = module.get<TipgroupController>(TipgroupController);
-    tipgroupServiceMock = module.get(TipgroupService);
+    controller = module.get<MatchdayController>(MatchdayController);
+    tipgroupServiceMock = module.get(MatchdayService);
   });
 
   it('should be defined', () => {

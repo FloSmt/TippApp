@@ -1,9 +1,4 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { TipgroupStore } from '@tippapp/frontend/utils';
 import { BehaviorSubject } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
@@ -45,8 +40,7 @@ describe('TipgroupListPageComponent', () => {
 
     fixture = TestBed.createComponent(TipgroupListPageComponent);
     component = fixture.componentInstance;
-    component.isLoadingAfterRefresh$ =
-      isLoadingAfterRefreshSubject.asObservable();
+    component.isLoadingAfterRefresh$ = isLoadingAfterRefreshSubject.asObservable();
     fixture.detectChanges();
   });
 
@@ -63,7 +57,7 @@ describe('TipgroupListPageComponent', () => {
     expect(tipgroupStoreMock.loadAvailableTipgroups).toHaveBeenCalled();
   }));
 
-  it('should refresh the tipgroup-list', () => {
+  it('should refresh the matchday-list', () => {
     const event = { target: { complete: jest.fn() } };
     component.refreshTipgroups(event);
     expect(tipgroupStoreMock.loadAvailableTipgroups).toHaveBeenCalled();

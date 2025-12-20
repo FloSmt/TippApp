@@ -28,8 +28,4 @@ export class UserFactory extends Factory {
     const userRepository = this.getDataSource().getRepository(User);
     await userRepository.delete({ id: userId });
   }
-
-  async getTipGroups(authToken: string) {
-    return await this.getAgent().get(API_ROUTES.USER.TIPGROUPS).set('Authorization', `Bearer ${authToken}`);
-  }
 }

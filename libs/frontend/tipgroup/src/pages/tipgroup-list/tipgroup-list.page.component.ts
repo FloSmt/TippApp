@@ -15,12 +15,7 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import {
-  banOutline,
-  chevronForwardOutline,
-  closeCircleOutline,
-  people,
-} from 'ionicons/icons';
+import { banOutline, chevronForwardOutline, closeCircleOutline, people } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { LoadingState, TipgroupStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
@@ -30,7 +25,7 @@ import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components'
 import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dialog.component';
 
 @Component({
-  selector: 'lib-tipgroup-list',
+  selector: 'lib-matchday-list',
   imports: [
     FormsModule,
     IonContent,
@@ -59,11 +54,7 @@ export class TipgroupListPageComponent implements OnInit {
   availableTipgroups = this.tipgroupStore.availableTipgroupsState.data;
   isLoading = this.tipgroupStore.isLoadingTipgroups;
   hasError = this.tipgroupStore.hasErrorOnLoadingTipgroups;
-  initialLoading = computed(
-    () =>
-      this.tipgroupStore.availableTipgroupsState.loadingState() ===
-      LoadingState.INITIAL
-  );
+  initialLoading = computed(() => this.tipgroupStore.availableTipgroupsState.loadingState() === LoadingState.INITIAL);
 
   constructor() {
     addIcons({ chevronForwardOutline, people, closeCircleOutline, banOutline });

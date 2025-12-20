@@ -13,11 +13,11 @@ export class TipgroupCreateDialog {
 
   constructor(page: Page) {
     this.page = page;
-    this.tipgroupNameInput = this.page.getByTestId('tipgroup-name-input');
-    this.leagueSelection = this.page.getByTestId('tipgroup-league-select');
+    this.tipgroupNameInput = this.page.getByTestId('matchday-name-input');
+    this.leagueSelection = this.page.getByTestId('matchday-league-select');
     this.passwordInput = this.page.getByTestId('password-input');
     this.passwordConfirmInput = this.page.getByTestId('password-confirm-input');
-    this.createButton = this.page.getByTestId('create-tipgroup-submit-button');
+    this.createButton = this.page.getByTestId('create-matchday-submit-button');
     this.errorCard = this.page.getByTestId('error-card');
     this.spinner = this.page.getByTestId('spinner');
   }

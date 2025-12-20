@@ -28,4 +28,13 @@ export class TipgroupFactory extends Factory {
     const savedTipgroup = await tipgroupRepository.save(tipgroup);
     return savedTipgroup;
   }
+
+  async countTipGroupsInDatabase(): Promise<number> {
+    const tipgroupRepository = this.getDataSource().getRepository(Tipgroup);
+    return await tipgroupRepository.count();
+  }
+
+  async getTipGroupsOfUser(authToken: string) {
+    return await this.getAgent().get(API_ROUTES.TIPGROUP.GET_ALL).set('Authorization', `Bearer ${authToken}`);
+  }
 }

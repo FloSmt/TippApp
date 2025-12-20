@@ -15,13 +15,13 @@ export class TipgroupListPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.createTipgroupButton = this.page.getByTestId('create-tipgroup-button');
-    this.joinTipgroupButton = this.page.getByTestId('join-tipgroup-button');
+    this.createTipgroupButton = this.page.getByTestId('create-matchday-button');
+    this.joinTipgroupButton = this.page.getByTestId('join-matchday-button');
     this.errorCard = this.page.getByTestId('error-card');
     this.skeletonCard = this.page.getByTestId('skeleton-card');
     this.emptyCard = this.page.getByTestId('empty-card');
     this.itemGroup = this.page.getByTestId('item-group');
-    this.tipgroupItem = this.page.getByTestId('tipgroup-item');
+    this.tipgroupItem = this.page.getByTestId('matchday-item');
     this.refresherContent = this.page.getByTestId('refresher-content');
   }
 

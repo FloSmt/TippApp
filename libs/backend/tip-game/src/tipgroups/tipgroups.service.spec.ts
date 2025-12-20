@@ -7,16 +7,18 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HashService } from '@tippapp/backend/shared';
+import { Repository } from 'typeorm';
 import { TipgroupsService } from './tipgroups.service';
-import { TipSeasonService } from '../tipseason';
+import { SeasonService } from './season';
 
 describe('TipgroupsService', () => {
   let service: TipgroupsService;
-  let tipSeasonService: DeepMocked<TipSeasonService>;
+  let tipSeasonService: DeepMocked<SeasonService>;
   let apiService: DeepMocked<ApiService>;
   let userService: DeepMocked<UserService>;
   let hashService: DeepMocked<HashService>;
   let errorManagerService: DeepMocked<ErrorManagerService>;
+  let tipgroupUserRepository: DeepMocked<Repository<TipgroupUser>>;
 
   const mockTransactionalEntityManager = {
     create: jest.fn().mockImplementation((entity, plainObject) => {
@@ -90,8 +92,12 @@ describe('TipgroupsService', () => {
           useValue: mockTipgroupRepository,
         },
         {
-          provide: TipSeasonService,
-          useValue: createMock<TipSeasonService>(),
+          provide: getRepositoryToken(TipgroupUser),
+          useValue: createMock<Repository<TipgroupUser>>(),
+        },
+        {
+          provide: SeasonService,
+          useValue: createMock<SeasonService>(),
         },
         {
           provide: ApiService,
@@ -113,11 +119,12 @@ describe('TipgroupsService', () => {
     }).compile();
 
     service = module.get<TipgroupsService>(TipgroupsService);
-    tipSeasonService = module.get(TipSeasonService);
+    tipSeasonService = module.get(SeasonService);
     apiService = module.get(ApiService);
     userService = module.get(UserService);
     hashService = module.get(HashService);
     errorManagerService = module.get(ErrorManagerService);
+    tipgroupUserRepository = module.get(getRepositoryToken(TipgroupUser));
 
     jest.spyOn(errorManagerService, 'createError').mockReturnValue(new HttpException('Error', 404));
   });
@@ -131,7 +138,7 @@ describe('TipgroupsService', () => {
   });
 
   describe('create Tipgroup', () => {
-    it('should throw an error if tipgroup name already taken', async () => {
+    it('should throw an error if matchday name already taken', async () => {
       mockTransactionalEntityManager.findOne.mockResolvedValueOnce({
         name: 'Tipgroup1',
       } as unknown as Tipgroup);
@@ -170,7 +177,7 @@ describe('TipgroupsService', () => {
       );
     });
 
-    it('should create a tipgroup successfully with correct data', async () => {
+    it('should create a matchday successfully with correct data', async () => {
       userService.findById.mockResolvedValue({ ...mocks.userMock });
       apiService.getAvailableLeagues.mockResolvedValue(LeaguesResponseMock);
       apiService.getMatchData.mockResolvedValue(MatchResponseMock);
@@ -221,6 +228,38 @@ describe('TipgroupsService', () => {
         })
       );
       expect(result).toEqual(expectedTipgroup);
+    });
+  });
+
+  describe('get Tipgroups for user', () => {
+    it('should return an array of tip groups for a given user ID', async () => {
+      const userId = 1;
+
+      const tipgroup1 = new Tipgroup();
+      tipgroup1.id = 101;
+      tipgroup1.name = 'Group1';
+
+      const tipgroup2 = new Tipgroup();
+      tipgroup2.id = 102;
+      tipgroup2.name = 'Group2';
+
+      const tipgroupUserEntry1 = new TipgroupUser();
+      tipgroupUserEntry1.userId = userId;
+      tipgroupUserEntry1.tipgroup = tipgroup1;
+
+      const tipgroupUserEntry2 = new TipgroupUser();
+      tipgroupUserEntry2.userId = userId;
+      tipgroupUserEntry2.tipgroup = tipgroup2;
+
+      tipgroupUserRepository.find.mockResolvedValue([tipgroupUserEntry1, tipgroupUserEntry2]);
+
+      const result = await service.getTipGroupsByUserId(userId);
+
+      expect(result).toEqual([tipgroup1, tipgroup2]);
+      expect(tipgroupUserRepository.find).toHaveBeenCalledWith({
+        where: { userId: userId },
+        relations: ['tipgroup'],
+      });
     });
   });
 });

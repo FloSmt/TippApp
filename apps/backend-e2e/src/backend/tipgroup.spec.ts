@@ -32,9 +32,6 @@ describe('TipgroupController (e2e)', () => {
   let matchRepository: Repository<Match>;
   let tipgroupUserRepository: Repository<TipgroupUser>;
 
-  let testUser: User;
-  let accessToken: string;
-
   const mocks = {
     get createTipgroupData(): CreateTipgroupDto[] {
       return [
@@ -44,6 +41,12 @@ describe('TipgroupController (e2e)', () => {
           leagueShortcut: 'bl1',
           currentSeason: 2007,
         },
+        {
+          name: 'Tipgroup2',
+          password: 'password',
+          leagueShortcut: 'bl1',
+          currentSeason: 2024,
+        },
       ];
     },
 
@@ -52,6 +55,11 @@ describe('TipgroupController (e2e)', () => {
         {
           username: 'test',
           email: 'test@email.de',
+          password: '1234',
+        },
+        {
+          username: 'test2',
+          email: 'test2@email.de',
           password: '1234',
         },
       ];
@@ -72,14 +80,17 @@ describe('TipgroupController (e2e)', () => {
     tipgroupUserRepository = dataSource.getRepository(TipgroupUser);
   });
 
-  beforeEach(async () => {
-    await setupMockApi();
-    testUser = await userFactory.createUserInDatabase(mocks.registerData[0]);
-    accessToken = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
-  });
+  describe('/ (POST)', () => {
+    let testUser: User;
+    let accessToken: string;
 
-  describe('/create (POST)', () => {
-    it('should create tipgroup, tipseason, matchdays and matches', async () => {
+    beforeEach(async () => {
+      await setupMockApi();
+      testUser = await userFactory.createUserInDatabase(mocks.registerData[0]);
+      accessToken = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
+    });
+
+    it('should create matchday, tipseason, matchday and matches', async () => {
       const response = await tipgroupFactory.createTipGroupWithRest(accessToken, mocks.createTipgroupData[0]);
 
       expect(response.status).toBe(201);
@@ -107,7 +118,7 @@ describe('TipgroupController (e2e)', () => {
       const matchdays: Matchday[] = await matchdayRepository.find();
       expect(matchdays.length).toBe(AVAILABLE_GROUPS_MOCK.length);
       expect(matchdays[0].name).toEqual(AVAILABLE_GROUPS_MOCK[0].groupName);
-      expect(matchdays[0].api_groupId).toEqual(AVAILABLE_GROUPS_MOCK[0].groupID);
+      expect(matchdays[0].api_groupOrderId).toEqual(AVAILABLE_GROUPS_MOCK[0].groupOrderID);
 
       // Check if Matches were created
       const matches: Match[] = await matchRepository.find();
@@ -131,7 +142,7 @@ describe('TipgroupController (e2e)', () => {
       expect(response.body.code).toBe('USER.USER_NOT_FOUND');
     });
 
-    it('should trow Error 409 if the tipgroup name is already taken', async () => {
+    it('should trow Error 409 if the matchday name is already taken', async () => {
       // Create first Tipgroup
       await tipgroupFactory.createTipGroupInDatabase(mocks.createTipgroupData[0].name);
 
@@ -140,7 +151,7 @@ describe('TipgroupController (e2e)', () => {
 
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('The tipgroup name is already taken.');
+      expect(response.body.message).toBe('The matchday name is already taken.');
       expect(response.body.code).toBe('CREATE_TIPGROUP.TIPGROUP_NAME_TAKEN');
     });
 
@@ -157,11 +168,64 @@ describe('TipgroupController (e2e)', () => {
     });
   });
 
+  describe('/ (GET)', () => {
+    let accessTokenFirstUser: string;
+
+    beforeEach(async () => {
+      await setupMockApi({
+        matchDataResponse: [],
+        availableGroupsResponse: [],
+      });
+
+      // Create two test users
+      console.log('Anzahl Tipgroups ', await tipgroupFactory.countTipGroupsInDatabase());
+      await userFactory.createUserInDatabase(mocks.registerData[0]);
+      await userFactory.createUserInDatabase(mocks.registerData[1]);
+
+      // Login to the first user and get the access token
+      accessTokenFirstUser = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
+    });
+
+    it('should return an empty list of tipgroups for a new user', async () => {
+      const response = await tipgroupFactory.getTipGroupsOfUser(accessTokenFirstUser);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
+    });
+
+    it('should return correct Lists for two users after creating tipgroups', async () => {
+      // Create 2 Tipgroups for the User1
+      await tipgroupFactory.createTipGroupWithRest(accessTokenFirstUser, mocks.createTipgroupData[0]);
+      await tipgroupFactory.createTipGroupWithRest(accessTokenFirstUser, mocks.createTipgroupData[1]);
+
+      console.log('Anzahl Tipgroups nach erstellung', await tipgroupFactory.countTipGroupsInDatabase());
+
+      // Check if User has 2 tipgroups
+      let response = await tipgroupFactory.getTipGroupsOfUser(accessTokenFirstUser);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([
+        { id: 1, name: 'Tipgroup1' },
+        { id: 2, name: 'Tipgroup2' },
+      ]);
+
+      //Login to other User
+      const authTokenForSecondUser = await userFactory.loginUser(
+        mocks.registerData[1].email,
+        mocks.registerData[1].password
+      );
+
+      response = await tipgroupFactory.getTipGroupsOfUser(authTokenForSecondUser);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });
 
   afterEach(async () => {
-    await userFactory.clearDatabase();
+    await tipgroupFactory.clearDatabase();
   });
 });
