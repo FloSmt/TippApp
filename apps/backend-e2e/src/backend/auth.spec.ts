@@ -3,11 +3,7 @@ import request from 'supertest';
 import * as bcrypt from 'bcrypt';
 import { DataSource, Repository } from 'typeorm';
 import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
-import {
-  API_ROUTES,
-  setupE2ETestEnvironment,
-  UserFactory,
-} from '@tippapp/backend/test-helper';
+import { API_ROUTES, setupE2ETestEnvironment, UserFactory } from '@tippapp/backend/test-helper';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -36,13 +32,11 @@ describe('AuthController (e2e)', () => {
     userFactory = new UserFactory(app, dataSource);
   });
 
-  describe('/register (POST)', () => {
+  describe('POST /auth/register', () => {
     it('should add a user into Database and response AuthResponse', async () => {
       const registerDto = mocks.registerData[0];
 
-      const response = await request(app.getHttpServer())
-        .post(API_ROUTES.AUTH.REGISTER)
-        .send(registerDto);
+      const response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
 
       // Check if correct Response was sent
       expect(response.status).toBe(201);
@@ -57,10 +51,7 @@ describe('AuthController (e2e)', () => {
       expect(foundUser.email).toBe(registerDto.email);
       expect(foundUser.refreshToken).toBeDefined();
 
-      const correctPassword = await bcrypt.compare(
-        registerDto.password,
-        foundUser.password
-      );
+      const correctPassword = await bcrypt.compare(registerDto.password, foundUser.password);
       expect(correctPassword).toBeTruthy();
     });
 
@@ -68,15 +59,11 @@ describe('AuthController (e2e)', () => {
       const registerDto = mocks.registerData[0];
 
       // first Register of User
-      let response = await request(app.getHttpServer())
-        .post(API_ROUTES.AUTH.REGISTER)
-        .send(registerDto);
+      let response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
       expect(response.status).toBe(201);
 
       // second registration with same User content
-      response = await request(app.getHttpServer())
-        .post(API_ROUTES.AUTH.REGISTER)
-        .send(registerDto);
+      response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REGISTER).send(registerDto);
 
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty('message');
@@ -85,7 +72,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/login (POST)', () => {
+  describe('POST /auth/login', () => {
     const registerDto = mocks.registerData[0];
     let registeredUser: User;
 
@@ -148,7 +135,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/refresh (POST)', () => {
+  describe('POST /auth/refresh', () => {
     const registerDto = mocks.registerData[0];
     let registeredUser: User;
 
@@ -191,9 +178,7 @@ describe('AuthController (e2e)', () => {
 
     it('should throw Error 401 if no refreshToken was send', async () => {
       // Refresh with wrong refreshToken
-      const response = await request(app.getHttpServer()).post(
-        API_ROUTES.AUTH.REFRESH
-      );
+      const response = await request(app.getHttpServer()).post(API_ROUTES.AUTH.REFRESH);
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message');
@@ -217,9 +202,7 @@ describe('AuthController (e2e)', () => {
   }
 
   function expectAuthResponse(response: any) {
-    expect(Object.keys(response.body).sort()).toEqual(
-      ['accessToken', 'refreshToken'].sort()
-    );
+    expect(Object.keys(response.body).sort()).toEqual(['accessToken', 'refreshToken'].sort());
 
     // Verify Access Token
     const accessToken = response.body.accessToken;

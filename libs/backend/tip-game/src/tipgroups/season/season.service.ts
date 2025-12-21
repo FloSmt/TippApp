@@ -11,7 +11,6 @@ export class SeasonService {
     matches: MatchApiResponse[],
     entityManager: EntityManager
   ): TipSeason {
-    console.log('matchDays:', matchDays);
     return entityManager.create(TipSeason, {
       api_LeagueSeason: season,
       isClosed: false,

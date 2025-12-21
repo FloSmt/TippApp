@@ -19,6 +19,7 @@ export class MatchdayService {
     matchdayId: number
   ): Promise<MatchdayResponseDto> {
     const matchdayFromDb = await this.queryService.getMatchdayFromDb(tipgroupId, seasonId, matchdayId);
+    console.log(2);
 
     if (
       !matchdayFromDb ||

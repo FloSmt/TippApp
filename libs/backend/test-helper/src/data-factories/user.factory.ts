@@ -28,4 +28,14 @@ export class UserFactory extends Factory {
     const userRepository = this.getDataSource().getRepository(User);
     await userRepository.delete({ id: userId });
   }
+
+  async prepareUserAndLogin(): Promise<string> {
+    const registerDto: RegisterDto = {
+      username: 'testuser',
+      email: 'testUser@test.de',
+      password: 'testpassword',
+    };
+    await this.createUserInDatabase(registerDto);
+    return this.loginUser(registerDto.email, registerDto.password);
+  }
 }

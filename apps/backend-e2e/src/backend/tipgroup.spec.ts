@@ -80,7 +80,7 @@ describe('TipgroupController (e2e)', () => {
     tipgroupUserRepository = dataSource.getRepository(TipgroupUser);
   });
 
-  describe('/ (POST)', () => {
+  describe('POST /tipgroups', () => {
     let testUser: User;
     let accessToken: string;
 
@@ -168,7 +168,7 @@ describe('TipgroupController (e2e)', () => {
     });
   });
 
-  describe('/ (GET)', () => {
+  describe('GET /tipgroups', () => {
     let accessTokenFirstUser: string;
 
     beforeEach(async () => {

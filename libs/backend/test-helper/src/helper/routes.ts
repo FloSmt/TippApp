@@ -2,7 +2,10 @@ export const API_ROUTES = {
   TIPGROUP: {
     CREATE: '/tipgroups',
     GET_ALL: '/tipgroups',
-    //GET_BY_ID: (id: string) => `/matchday/${id}`,
+    MATCHDAY: {
+      GET_DETAILS: (tipgroupId: number, seasonId: number, matchdayId: number) =>
+        `/tipgroups/${tipgroupId}/seasons/${seasonId}/matchdays/${matchdayId}`,
+    },
   },
   AUTH: {
     LOGIN: '/auth/login',

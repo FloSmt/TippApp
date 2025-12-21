@@ -32,4 +32,15 @@ export class TipgroupFactory extends Factory {
   async getTipGroupsOfUser(authToken: string) {
     return await this.getAgent().get(API_ROUTES.TIPGROUP.GET_ALL).set('Authorization', `Bearer ${authToken}`);
   }
+
+  async prepareTipgroupAndGetId(accessToken: string): Promise<number> {
+    const createTipGroupDto: CreateTipgroupDto = {
+      name: 'Test Tipgroup',
+      password: 'testpassword',
+      leagueShortcut: 'bl1',
+      currentSeason: 2024,
+    };
+    const response = await this.createTipGroupWithRest(accessToken, createTipGroupDto);
+    return response.body.id;
+  }
 }
