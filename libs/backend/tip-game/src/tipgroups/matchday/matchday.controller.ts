@@ -38,7 +38,6 @@ export class MatchdayController {
     example: ErrorCodes.Tipgroup.MATCHDAY_DETAILS_NOT_FOUND,
   })
   public async getMatchday(@Param() params: { tipgroupId: number; seasonId: number; matchdayId: number }) {
-    console.log('Getting matchday details for', params);
     return this.matchdayService.getMatchdayDetails(params.tipgroupId, params.seasonId, params.matchdayId);
   }
 }
