@@ -129,7 +129,7 @@ jobs:
 
       - name: 🚀 Start mockserver an database with Docker Compose
         run: |
-          docker compose -f `docker-compose.test.yaml` --env-file ./environments/.env.test up -d db-test mockserver
+          docker compose -f docker-compose.test.yaml --env-file ./environments/.env.test up -d db-test mockserver
 
       - name: 🧪 Run Backend E2E Tests
         env:
