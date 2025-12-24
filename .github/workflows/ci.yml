@@ -127,9 +127,9 @@ jobs:
           docker compose version || true
           docker info || true
 
-      - name: 🚀 Start test containers with Docker Compose
+      - name: 🚀 Start mockserver an database with Docker Compose
         run: |
-          npm run env:test
+          docker compose -f `docker-compose.test.yaml` --env-file ./environments/.env.test up -d db-test mockserver
 
       - name: 🧪 Run Backend E2E Tests
         env:

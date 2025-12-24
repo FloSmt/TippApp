@@ -51,6 +51,12 @@ services:
         condition: service_healthy
       mockserver:
         condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:3000/api || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
 
 
 volumes:
