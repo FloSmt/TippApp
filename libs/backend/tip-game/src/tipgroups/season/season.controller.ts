@@ -1,6 +1,7 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
+import { DefaultResponse } from '@tippapp/backend/shared';
 import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.service';
 
 @Controller('tipgroups/:tipgroupId/season/:seasonId')
@@ -8,12 +9,10 @@ import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.ser
 @UseGuards(IsTipgroupMemberGuard)
 export class SeasonController {
   @Get('getAllMatchdays')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Gets an overview of all matchday in the current season',
-  })
-  @ApiOkResponse({
-    type: MatchdayOverviewResponseDto,
+  @DefaultResponse({
+    httpStatus: HttpStatus.OK,
+    endpointSummary: 'Gets an overview of all matchday in the given season',
+    responseType: MatchdayOverviewResponseDto,
     isArray: true,
   })
   public async getAllMatchdays() {
