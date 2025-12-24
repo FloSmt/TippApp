@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LeagueOverviewResponseDto } from '../tipgroup';
 
 export class MatchdayOverviewResponseDto {
   @ApiProperty()
@@ -10,9 +9,6 @@ export class MatchdayOverviewResponseDto {
 
   @ApiProperty()
   orderId: number;
-
-  @ApiProperty()
-  league: LeagueOverviewResponseDto;
 
   @ApiProperty()
   matchCount: number;

@@ -35,9 +35,4 @@ import { TipgroupsModule } from '@tippapp/backend/tip-game';
   controllers: [],
   providers: [],
 })
-export class AppModule {
-  constructor() {
-    console.log('AppModule initialized');
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-  }
-}
+export class AppModule {}

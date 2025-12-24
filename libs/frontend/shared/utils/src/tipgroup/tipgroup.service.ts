@@ -14,7 +14,7 @@ export class TipgroupService {
   readonly BACKEND_URL = this.env.apiUrl;
 
   getAvailableTipgroups(): Observable<TipgroupEntryResponseDto[]> {
-    return this.httpClient.get<TipgroupEntryResponseDto[]>(this.BACKEND_URL + 'user/tipgroups');
+    return this.httpClient.get<TipgroupEntryResponseDto[]>(this.BACKEND_URL + 'tipgroups');
   }
 
   getAvailableLeagues(): Observable<LeagueOverviewResponseDto[]> {
@@ -22,6 +22,6 @@ export class TipgroupService {
   }
 
   createTipgroup(createTipgroupDto: CreateTipgroupDto): Observable<TipgroupEntryResponseDto> {
-    return this.httpClient.post<TipgroupEntryResponseDto>(this.BACKEND_URL + 'tipgroups/create', createTipgroupDto);
+    return this.httpClient.post<TipgroupEntryResponseDto>(this.BACKEND_URL + 'tipgroups', createTipgroupDto);
   }
 }

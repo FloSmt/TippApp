@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { ErrorCodes } from '@tippapp/shared/data-access';
 import { TipgroupsService } from '../tipgroups/tipgroups.service';
@@ -12,7 +11,7 @@ export class IsTipgroupMemberGuard implements CanActivate {
     private readonly errorManagerService: ErrorManagerService
   ) {}
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userId = request.user.id;
     const tipgroupId = request.params.tipgroupId;
@@ -21,7 +20,7 @@ export class IsTipgroupMemberGuard implements CanActivate {
       throw this.errorManagerService.createError(ErrorCodes.Tipgroup.NOT_A_MEMBER, HttpStatus.FORBIDDEN);
     }
 
-    const isMember = this.tipgroupsService.isUserMemberOfTipgroup(userId, tipgroupId);
+    const isMember = await this.tipgroupsService.isUserMemberOfTipgroup(userId, tipgroupId);
 
     if (!isMember) {
       throw this.errorManagerService.createError(ErrorCodes.Tipgroup.NOT_A_MEMBER, HttpStatus.FORBIDDEN);

@@ -1,15 +1,7 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { AuthStore } from '@tippapp/frontend/utils';
-import {
-  catchError,
-  filter,
-  Observable,
-  pairwise,
-  switchMap,
-  take,
-  throwError,
-} from 'rxjs';
+import { catchError, filter, Observable, pairwise, switchMap, take, throwError } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -23,19 +15,13 @@ export class InterceptorService {
   tokenRefresh$ = toObservable(this.authStore.isLoading);
   refreshTokenSignal$ = toObservable(this.refreshTokenSignal);
 
-  addAuthTokenToHeader(
-    request: HttpRequest<unknown>,
-    token: string
-  ): HttpRequest<unknown> {
+  addAuthTokenToHeader(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
     return request.clone({
       headers: request.headers.set('Authorization', `Bearer ${token}`),
     });
   }
 
-  handleTokenRefresh(
-    next: HttpHandlerFn,
-    req: HttpRequest<unknown>
-  ): Observable<HttpEvent<unknown>> {
+  handleTokenRefresh(next: HttpHandlerFn, req: HttpRequest<unknown>): Observable<HttpEvent<unknown>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSignal.set(null);
@@ -47,7 +33,6 @@ export class InterceptorService {
         take(1),
         switchMap(() => {
           // Refresh Token success
-          console.log('Refresh Token Success');
           this.isRefreshing = false;
           const newToken = this.authStore.accessToken();
           if (newToken) {

@@ -100,6 +100,7 @@ export class TipgroupsService {
         tipgroupId: tipgroupId,
       },
     });
+
     return !!membership;
   }
 

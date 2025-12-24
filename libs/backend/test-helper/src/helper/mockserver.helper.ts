@@ -11,7 +11,6 @@ export interface MockApiOptions {
 
 export const resetMockApi = async () => {
   const client = mockServerClient('localhost', 1080);
-  console.log('Resetting mock server...');
   await client.reset();
 };
 
@@ -33,7 +32,6 @@ export const setupMockApi = async (
   };
   const client = mockServerClient('localhost', 1080);
 
-  console.log('Setting up mock server...');
   await client.reset();
 
   await client.mockAnyResponse({
@@ -83,6 +81,4 @@ export const setupMockApi = async (
       headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
-
-  console.log('Mock server setup complete.');
 };

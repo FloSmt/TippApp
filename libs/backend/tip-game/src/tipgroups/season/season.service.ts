@@ -1,9 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { GroupResponse, Match, MatchApiResponse, Matchday, TipSeason } from '@tippapp/shared/data-access';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ErrorCodes,
+  GroupResponse,
+  Match,
+  MatchApiResponse,
+  Matchday,
+  MatchdayOverviewResponseDto,
+  TipSeason,
+} from '@tippapp/shared/data-access';
 import { EntityManager } from 'typeorm';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { QueriesService } from '../../queries/queries.service';
 
 @Injectable()
 export class SeasonService {
+  constructor(private readonly queryService: QueriesService, private readonly errorManager: ErrorManagerService) {}
+
+  /**
+   * Creates a TipSeason entity with associated Matchdays and Matches.
+   *
+   * @param season - The season year (e.g., 2023).
+   * @param leagueShortcut - The shortcut identifier for the league.
+   * @param matchDays - An array of GroupResponse objects representing match days.
+   * @param matches - An array of MatchApiResponse objects representing matches.
+   * @param entityManager - The TypeORM EntityManager for database operations.
+   * @returns A TipSeason entity populated with Matchdays and Matches.
+   */
   createTipSeason(
     season: number,
     leagueShortcut: string,
@@ -18,6 +40,7 @@ export class SeasonService {
         entityManager.create(Matchday, {
           name: group.groupName,
           api_groupOrderId: group.groupOrderId,
+          orderId: group.groupOrderId,
           api_leagueShortcut: leagueShortcut,
           matches: matches
             .filter((m) => m.group.groupId === group.groupId)
@@ -29,5 +52,20 @@ export class SeasonService {
         })
       ),
     });
+  }
+
+  /**
+   * Retrieves all matchdays for a given tipgroup and season.
+   *
+   * @param tipgroupId
+   * @param seasonId
+   * @returns A promise that resolves to an array of MatchdayOverviewResponseDto objects.
+   */
+  getAllMatchdays(tipgroupId: number, seasonId: number | null | undefined): Promise<MatchdayOverviewResponseDto[]> {
+    if (!seasonId || !Number.isInteger(Number(seasonId))) {
+      throw this.errorManager.createError(ErrorCodes.Tipgroup.SEASON_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    return this.queryService.getAllMatchdays(tipgroupId, seasonId);
   }
 }

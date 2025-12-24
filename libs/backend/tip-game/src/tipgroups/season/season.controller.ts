@@ -1,21 +1,36 @@
-import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
+import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { ErrorCodes, MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
 import { DefaultResponse } from '@tippapp/backend/shared';
+import { ErrorResponse } from '@tippapp/backend/error-handling';
+import { SeasonService } from './season.service';
 import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.service';
 
-@Controller('tipgroups/:tipgroupId/season/:seasonId')
+@Controller('tipgroups/:tipgroupId/seasons/:seasonId')
 @ApiBearerAuth()
 @UseGuards(IsTipgroupMemberGuard)
 export class SeasonController {
+  constructor(private readonly seasonService: SeasonService) {}
+
   @Get('getAllMatchdays')
+  @ApiParam({
+    name: 'tipgroupId',
+    description: 'The ID of the matchday',
+    type: Number,
+  })
+  @ApiParam({
+    name: 'seasonId',
+    description: 'The ID of the season',
+    type: Number,
+  })
   @DefaultResponse({
     httpStatus: HttpStatus.OK,
     endpointSummary: 'Gets an overview of all matchday in the given season',
     responseType: MatchdayOverviewResponseDto,
     isArray: true,
   })
-  public async getAllMatchdays() {
-    // Implementation goes here
+  @ErrorResponse(HttpStatus.NOT_FOUND, ErrorCodes.Tipgroup.SEASON_NOT_FOUND)
+  public async getAllMatchdays(@Param() params: { tipgroupId: number; seasonId: number }) {
+    return this.seasonService.getAllMatchdays(params.tipgroupId, params.seasonId);
   }
 }

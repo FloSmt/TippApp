@@ -9,17 +9,14 @@ import {
 } from '@tippapp/backend/test-helper';
 import request from 'supertest';
 
-describe('MatchdayController (e2e)', () => {
+describe('SeasonController (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let userFactory: UserFactory;
   let tipgroupFactory: TipgroupFactory;
 
   let accessToken: string;
-
   let tipgroupId: number;
-  const seasonId = 1;
-  const matchdayId = 1;
 
   beforeAll(async () => {
     const setup = await setupE2ETestEnvironment();
@@ -35,37 +32,29 @@ describe('MatchdayController (e2e)', () => {
     tipgroupId = await tipgroupFactory.prepareTipgroupAndGetId(accessToken);
   });
 
-  describe('GET /tipgroups/:tipgroupId/seasons/:seasonId/matchday/:matchdayId', () => {
-    it('should return 200 and matchday details', async () => {
+  describe('GET /tipgroups/:tipgroupId/seasons/:seasonId/getAllMatchdays', () => {
+    it('should return 200 and matchday list', async () => {
       const response = await request(app.getHttpServer())
-        .get(API_ROUTES.TIPGROUP.MATCHDAY.GET_DETAILS(tipgroupId, seasonId, matchdayId))
+        .get(API_ROUTES.TIPGROUP.SEASON.GET_ALL_MATCHDAYS(tipgroupId, 1))
         .set('Authorization', `Bearer ${accessToken}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body.matches).toBeDefined();
-      expect(response.body.matchdayId).toStrictEqual(matchdayId.toString());
-      expect(Array.isArray(response.body.matches)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body[0]).toHaveProperty('matchdayId');
+      expect(response.body[0]).toHaveProperty('name');
+      expect(response.body[0]).toHaveProperty('orderId');
+      expect(response.body[0]).toHaveProperty('matchCount');
     });
 
-    it('should return 404 when matchday not found', async () => {
+    it('should return 404 when given parameters are missing', async () => {
       const response = await request(app.getHttpServer())
-        .get(API_ROUTES.TIPGROUP.MATCHDAY.GET_DETAILS(tipgroupId, seasonId, 9999))
+        .get(API_ROUTES.TIPGROUP.SEASON.GET_ALL_MATCHDAYS(tipgroupId, 'xx' as any))
         .set('Authorization', `Bearer ${accessToken}`);
 
       expect(response.status).toBe(404);
       expect(response.body).toBeDefined();
-      expect(response.body.code).toBe('TIPGROUP.MATCHDAY_DETAILS_NOT_FOUND');
-    });
-
-    it('should throw error if user is not a member of the tipgroup (IsTipgroupMemberGuard)', async () => {
-      const response = await request(app.getHttpServer())
-        .get(API_ROUTES.TIPGROUP.MATCHDAY.GET_DETAILS(9999, seasonId, matchdayId))
-        .set('Authorization', `Bearer ${accessToken}`);
-
-      expect(response.status).toBe(403);
-      expect(response.body).toBeDefined();
-      expect(response.body.code).toBe('TIPGROUP.NOT_A_MEMBER');
+      expect(response.body.code).toBe('TIPGROUP.SEASON_NOT_FOUND');
     });
   });
 

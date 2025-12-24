@@ -69,5 +69,9 @@ export abstract class ErrorCodes {
       code: 'TIPGROUP.NOT_A_MEMBER',
       message: 'User is not a member of the specified tipgroup.',
     },
+    SEASON_NOT_FOUND: {
+      code: 'TIPGROUP.SEASON_NOT_FOUND',
+      message: 'Season not found for the given parameters.',
+    },
   };
 }
