@@ -1,7 +1,6 @@
-import supertest from "supertest";
-import {INestApplication} from "@nestjs/common";
-import {DataSource} from "typeorm";
-import {Match, Matchday, Tip, Tipgroup, TipgroupUser, TipSeason, User} from "@tippapp/shared/data-access";
+import supertest from 'supertest';
+import { INestApplication } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 export class Factory {
   private readonly app: INestApplication;
@@ -13,10 +12,7 @@ export class Factory {
   }
 
   public async clearDatabase() {
-    const entities = [TipgroupUser, Tipgroup, TipSeason, Matchday, Match, User, Tip];
-    for (const entity of entities) {
-      await this.dataSource.createQueryBuilder().delete().from(entity).execute();
-    }
+    await this.dataSource.synchronize(true);
   }
 
   protected getAgent() {
