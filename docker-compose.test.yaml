@@ -1,10 +1,62 @@
+version: '2.4'
 services:
+  # MockServer for API mocking
   mockserver:
     image: mockserver/mockserver:latest
+    container_name: mockserver-external-api
+    restart: always
     ports:
       - "1080:1080"
     environment:
       MOCKSERVER_SERVER_PORT: 1080
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:1080/status || exit 1" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 5s
+
+  # MySQL Test Database
+  db-test:
+    image: mysql:8.0
+    container_name: test-mysql-database
+    restart: always
+    env_file:
+      - environments/.env.test
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_HOST: ${DB_HOST}
+    ports:
+      - "3306:3306"
+    volumes:
+      - test_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 >/dev/null 2>&1 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # NestJS Backend
+  backend:
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/backend/Dockerfile
+    env_file:
+      - environments/.env.test
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=db-test
+    container_name: backend-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      db-test:
+        condition: service_healthy
+      mockserver:
+        condition: service_healthy
 
 volumes:
-  test_db_data:
+  test_mysql_data:

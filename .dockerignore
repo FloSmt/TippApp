@@ -1,0 +1,10 @@
+node_modules
+dist
+.nx
+.git
+.gitignore
+.angular
+./tmp
+.vscode
+./**/coverage
+.idea
