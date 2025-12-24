@@ -121,12 +121,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      - name: 🚢 Docker info (debug)
-        run: |
-          docker --version
-          docker compose version || true
-          docker info || true
-
       - name: 🚀 Start mockserver an database with Docker Compose
         run: |
           docker compose -f docker-compose.test.yaml --env-file ./environments/.env.test up -d db-test mockserver
