@@ -129,7 +129,7 @@ jobs:
 
       - name: 🚀 Start test containers with Docker Compose
         run: |
-          docker compose -f docker-compose.test.yaml up -d --build
+          npm run env:test
 
       - name: 🧪 Run Backend E2E Tests
         env:
