@@ -37,7 +37,7 @@
     "@capacitor/ios": "^6.0.0",
     "@capacitor/keyboard": "^6.0.0",
     "@capacitor/preferences": "^6.0.0",
-    "@capacitor/status-bar": "^6.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "@golevelup/ts-jest": "^0.7.0",
     "@ionic/angular": "^8.0.0",
     "@nestjs/axios": "^4.0.0",
