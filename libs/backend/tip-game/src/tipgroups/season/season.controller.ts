@@ -1,9 +1,11 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
+import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.service';
 
 @Controller('tipgroups/:tipgroupId/season/:seasonId')
 @ApiBearerAuth()
+@UseGuards(IsTipgroupMemberGuard)
 export class SeasonController {
   @Get('getAllMatchdays')
   @HttpCode(HttpStatus.OK)

@@ -5,7 +5,7 @@ import {
   setupE2ETestEnvironment,
   setupMockApi,
   TipgroupFactory,
-  UserFactory,
+  UserFactory
 } from '@tippapp/backend/test-helper';
 
 describe('MatchdayController (e2e)', () => {
@@ -61,6 +61,20 @@ describe('MatchdayController (e2e)', () => {
       expect(response.status).toBe(404);
       expect(response.body).toBeDefined();
       expect(response.body.code).toBe('TIPGROUP.MATCHDAY_DETAILS_NOT_FOUND');
+    });
+
+    it('should throw error if user is not a member of the tipgroup (IsTipgroupMemberGuard)', () => {
+      const matchdayId = 1;
+      const seasonId = 1;
+
+      return matchdayFactory
+        .setParameters(tipgroupId + 9999, seasonId, matchdayId) // Use invalid tipgroupId
+        .getMatchdayDetails(accessToken)
+        .then((response) => {
+          expect(response.status).toBe(403);
+          expect(response.body).toBeDefined();
+          expect(response.body.code).toBe('TIPGROUP.NOT_A_MEMBER');
+        });
     });
   });
 

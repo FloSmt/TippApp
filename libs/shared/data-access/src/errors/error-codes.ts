@@ -65,5 +65,9 @@ export abstract class ErrorCodes {
       code: 'TIPGROUP.MATCHDAY_DETAILS_NOT_FOUND',
       message: 'Matchday details not found for the given parameters.',
     },
+    NOT_A_MEMBER: {
+      code: 'TIPGROUP.NOT_A_MEMBER',
+      message: 'User is not a member of the specified tipgroup.',
+    },
   };
 }

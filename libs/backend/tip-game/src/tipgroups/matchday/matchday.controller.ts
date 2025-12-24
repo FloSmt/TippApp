@@ -1,10 +1,12 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ApiErrorDto, ErrorCodes, MatchdayResponseDto } from '@tippapp/shared/data-access';
 import { MatchdayService } from './matchday.service';
+import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.service';
 
 @Controller('tipgroups/:tipgroupId/seasons/:seasonId/matchdays')
 @ApiBearerAuth()
+@UseGuards(IsTipgroupMemberGuard)
 export class MatchdayController {
   constructor(private matchdayService: MatchdayService) {}
 

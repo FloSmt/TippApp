@@ -93,6 +93,16 @@ export class TipgroupsService {
     return tipGroupUserEntries.map((entry) => entry.tipgroup);
   }
 
+  async isUserMemberOfTipgroup(userId: number, tipgroupId: number): Promise<boolean> {
+    const membership = await this.tipgroupUserRepository.findOne({
+      where: {
+        userId: userId,
+        tipgroupId: tipgroupId,
+      },
+    });
+    return !!membership;
+  }
+
   private async validateAndGetAvailableLeagues(leagueShortcut: string): Promise<void> {
     const availableLeagues = (await this.apiService.getAvailableLeagues()).map((league) => league.leagueShortcut);
     if (!availableLeagues.includes(leagueShortcut)) {
