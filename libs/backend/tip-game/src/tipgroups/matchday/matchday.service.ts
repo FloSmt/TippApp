@@ -3,14 +3,14 @@ import { ErrorCodes, MatchApiResponse, MatchdayResponseDto } from '@tippapp/shar
 import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { mapApiMatchResponsesToMatchDayResponseDto } from '../../helper/responses-mapper';
-import { QueriesService } from '../../queries/queries.service';
+import { MatchdayRepository } from '../../repositories/matchday.repository';
 
 @Injectable()
 export class MatchdayService {
   constructor(
     private apiService: ApiService,
     private errorManager: ErrorManagerService,
-    private queryService: QueriesService
+    private matchdayRepository: MatchdayRepository
   ) {}
 
   public async getMatchdayDetails(
@@ -18,7 +18,7 @@ export class MatchdayService {
     seasonId: number,
     matchdayId: number
   ): Promise<MatchdayResponseDto> {
-    const matchdayFromDb = await this.queryService.getMatchdayFromDb(tipgroupId, seasonId, matchdayId);
+    const matchdayFromDb = await this.matchdayRepository.getMatchdayFromDb(tipgroupId, seasonId, matchdayId);
 
     if (
       !matchdayFromDb ||

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MatchdayOverviewResponseDto, Tipgroup } from '@tippapp/shared/data-access';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Matchday, Tipgroup } from '@tippapp/shared/data-access';
 
 export interface MatchDayQueryResult {
   matchday: {
@@ -14,8 +14,10 @@ export interface MatchDayQueryResult {
 }
 
 @Injectable()
-export class QueriesService {
-  constructor(private dataSource: DataSource) {}
+export class MatchdayRepository extends Repository<Matchday> {
+  constructor(private dataSource: DataSource) {
+    super(Matchday, dataSource.createEntityManager());
+  }
 
   async getMatchdayFromDb(
     tipgroupId: number,
@@ -47,25 +49,5 @@ export class QueriesService {
       .addGroupBy('matchday.api_groupOrderId')
       .addGroupBy('matchday.api_leagueShortcut')
       .getRawOne();
-  }
-
-  async getAllMatchdays(tipgroupId: number, seasonId: number): Promise<MatchdayOverviewResponseDto[]> {
-    return this.dataSource
-      .createQueryBuilder(Tipgroup, 'tipgroup')
-      .where('tipgroup.id = :tipgroupId', { tipgroupId })
-      .leftJoin('tipgroup.seasons', 'season', 'season.id = :seasonId', { seasonId })
-      .leftJoin('season.matchdays', 'matchday')
-      .select([
-        'matchday.id AS matchdayId',
-        'matchday.name AS name',
-        'matchday.orderId AS orderId',
-        'COUNT(match.id) AS matchCount',
-      ])
-      .leftJoin('matchday.matches', 'match')
-      .groupBy('matchday.id')
-      .addGroupBy('matchday.name')
-      .addGroupBy('matchday.orderId')
-      .orderBy('matchday.orderId', 'ASC')
-      .getRawMany<MatchdayOverviewResponseDto>();
   }
 }

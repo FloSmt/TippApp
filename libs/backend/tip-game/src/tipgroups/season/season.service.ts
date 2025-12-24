@@ -10,11 +10,14 @@ import {
 } from '@tippapp/shared/data-access';
 import { EntityManager } from 'typeorm';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
-import { QueriesService } from '../../queries/queries.service';
+import { SeasonRepository } from '../../repositories/season.repository';
 
 @Injectable()
 export class SeasonService {
-  constructor(private readonly queryService: QueriesService, private readonly errorManager: ErrorManagerService) {}
+  constructor(
+    private readonly seasonRepository: SeasonRepository,
+    private readonly errorManager: ErrorManagerService
+  ) {}
 
   /**
    * Creates a TipSeason entity with associated Matchdays and Matches.
@@ -66,6 +69,6 @@ export class SeasonService {
       throw this.errorManager.createError(ErrorCodes.Tipgroup.SEASON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    return this.queryService.getAllMatchdays(tipgroupId, seasonId);
+    return this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
   }
 }

@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, Repository } from 'typeorm';
-import { RegisterDto, TipgroupUser, User } from '@tippapp/shared/data-access';
-import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { RegisterDto, User } from '@tippapp/shared/data-access';
+import { UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(TipgroupUser)
-    private readonly tipgroupUserRepository: Repository<TipgroupUser>
-  ) {}
+  constructor(private userRepository: UserRepository) {}
 
   async updateRefreshToken(userId: number, refreshToken: string): Promise<void> {
     await this.userRepository.update(userId, { refreshToken });
