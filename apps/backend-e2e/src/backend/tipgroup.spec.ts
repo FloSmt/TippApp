@@ -18,7 +18,7 @@ import {
   TipgroupFactory,
   UserFactory,
 } from '@tippapp/backend/test-helper';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 describe('TipgroupController (e2e)', () => {
   let app: INestApplication;

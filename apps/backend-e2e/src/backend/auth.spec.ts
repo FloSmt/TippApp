@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { DataSource, Repository } from 'typeorm';
 import { LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
 import { API_ROUTES, setupE2ETestEnvironment, UserFactory } from '@tippapp/backend/test-helper';

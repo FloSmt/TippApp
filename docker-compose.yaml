@@ -1,25 +1,42 @@
 services:
-  mysql_dev:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: tippApp-DB
-    ports:
-      - 3306:3306
-    volumes:
-      - my-db-volume:/var/lib/mysql
-
-  phpmyadmin_dev:
-    image: phpmyadmin/phpmyadmin:latest
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: mysql-database
     restart: always
+    env_file:
+      - environments/.env.development
     environment:
-      PMA_HOST: mysql_dev
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
     ports:
-      - 8080:80
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # NestJS Backend
+  backend:
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/backend/Dockerfile
+    env_file:
+      - environments/.env.development
+    container_name: backend-api
+    environment:
+      - DB_HOST=db
+    ports:
+      - "3000:3000"
     depends_on:
-      - mysql_dev
+      - db
+
+  # ZUKUNFT: Frontend (hier vorbereitet)
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.frontend
+  #   ports:
+  #     - "4200:80"
 
 volumes:
-  my-db-volume:
+  mysql_data:
