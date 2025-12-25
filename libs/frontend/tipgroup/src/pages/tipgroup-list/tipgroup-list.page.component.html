@@ -21,7 +21,7 @@
       <ng-container *ngTemplateOutlet="emptyListTemplate"></ng-container>
     } @else {
       @for (tipgroup of availableTipgroups(); track tipgroup) {
-        <ion-item href="/overview?tipgroup={{ tipgroup.id }}" lines="full" data-testid="tipgroup-item">
+        <ion-item href="/tipgroup/{{ tipgroup.id }}" lines="full" data-testid="tipgroup-item">
           <ion-label class="tipgroup-item">
             <div class="information truncate-one-line-text">
               <h2>{{ tipgroup.name }}</h2>
