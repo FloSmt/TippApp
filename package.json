@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "nx run-many --target=lint",
-    "env:dev": "docker compose --env-file ./environments/.env.development up",
-    "env:test": "docker compose -f docker-compose.test.yaml --env-file ./environments/.env.test up",
+    "env:dev": "docker compose --env-file ./environments/.env.development up --build",
+    "env:test": "docker compose -f docker-compose.test.yaml --env-file ./environments/.env.test up --build",
     "local:backend": "nx run backend:serve",
     "local:backend:mobile-test": "nx run backend:serve --configuration=mobile-test",
     "build:backend": "nx run backend:build",

@@ -4,13 +4,20 @@ import { Match, Matchday, Tipgroup, TipgroupUser, TipSeason } from '@tippapp/sha
 import { ApiModule } from '@tippapp/backend/api';
 import { UserModule } from '@tippapp/backend/user';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
-import { HashService } from '@tippapp/backend/shared';
+import {
+  HashService,
+  MatchdayRepository,
+  SeasonRepository,
+  TipgroupRepository,
+  TipgroupUserRepository,
+} from '@tippapp/backend/shared';
 import { SeasonController, SeasonService } from './season';
 import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupsService } from './tipgroups.service';
 import { MatchdayController } from './matchday/matchday.controller';
 import { MatchdayService } from './matchday/matchday.service';
 import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.service';
+import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.service';
 
 @Module({
   imports: [
@@ -22,10 +29,15 @@ import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.servic
   exports: [TipgroupsService, MatchdayService, SeasonService],
   providers: [
     TipgroupsService,
+    TipgroupMembersService,
     ErrorManagerService,
     HashService,
     MatchdayService,
     SeasonService,
+    TipgroupRepository,
+    TipgroupUserRepository,
+    MatchdayRepository,
+    SeasonRepository,
     IsTipgroupMemberGuard,
   ],
 })
