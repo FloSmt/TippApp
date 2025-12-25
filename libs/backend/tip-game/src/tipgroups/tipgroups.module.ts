@@ -10,7 +10,6 @@ import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupsService } from './tipgroups.service';
 import { MatchdayController } from './matchday/matchday.controller';
 import { MatchdayService } from './matchday/matchday.service';
-import { QueriesService } from '../queries/queries.service';
 import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.service';
 
 @Module({
@@ -26,7 +25,6 @@ import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.servic
     ErrorManagerService,
     HashService,
     MatchdayService,
-    QueriesService,
     SeasonService,
     IsTipgroupMemberGuard,
   ],

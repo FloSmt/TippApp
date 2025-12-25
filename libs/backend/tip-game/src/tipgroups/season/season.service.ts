@@ -10,7 +10,7 @@ import {
 } from '@tippapp/shared/data-access';
 import { EntityManager } from 'typeorm';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
-import { SeasonRepository } from '../../repositories/season.repository';
+import { SeasonRepository } from '@tippapp/backend/shared';
 
 @Injectable()
 export class SeasonService {
@@ -64,7 +64,10 @@ export class SeasonService {
    * @param seasonId
    * @returns A promise that resolves to an array of MatchdayOverviewResponseDto objects.
    */
-  getAllMatchdays(tipgroupId: number, seasonId: number | null | undefined): Promise<MatchdayOverviewResponseDto[]> {
+  async getAllMatchdays(
+    tipgroupId: number,
+    seasonId: number | null | undefined
+  ): Promise<MatchdayOverviewResponseDto[]> {
     if (!seasonId || !Number.isInteger(Number(seasonId))) {
       throw this.errorManager.createError(ErrorCodes.Tipgroup.SEASON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }

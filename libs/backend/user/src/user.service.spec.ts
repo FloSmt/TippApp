@@ -1,33 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { RegisterDto, TipgroupUser, User } from '@tippapp/shared/data-access';
+import { RegisterDto, User } from '@tippapp/shared/data-access';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserRepository } from '@tippapp/backend/shared';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
   let service: UserService;
-  let userRepository: DeepMocked<Repository<User>>;
-  let tipgroupUserRepository: DeepMocked<Repository<TipgroupUser>>;
+  let userRepository: DeepMocked<UserRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
         {
-          provide: getRepositoryToken(User),
-          useValue: createMock<Repository<User>>(),
-        },
-        {
-          provide: getRepositoryToken(TipgroupUser),
-          useValue: createMock<Repository<TipgroupUser>>(),
+          provide: UserRepository,
+          useValue: createMock<UserRepository>(),
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    userRepository = module.get(getRepositoryToken(User));
-    tipgroupUserRepository = module.get(getRepositoryToken(TipgroupUser));
+    userRepository = module.get(UserRepository);
   });
 
   it('should be defined', () => {
@@ -51,7 +44,7 @@ describe('UserService', () => {
       findOne: jest.fn().mockResolvedValue(user),
     };
 
-    const serviceWithManager = new UserService({ manager: entityManager } as any, tipgroupUserRepository);
+    const serviceWithManager = new UserService({ manager: entityManager } as any);
 
     const result = await serviceWithManager.findById(2);
 

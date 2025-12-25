@@ -1,13 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GroupResponse, MatchApiResponse, TipSeason } from '@tippapp/shared/data-access';
+import { ErrorCodes, GroupResponse, MatchApiResponse, TipSeason } from '@tippapp/shared/data-access';
+import { SeasonRepository } from '@tippapp/backend/shared';
+import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SeasonService } from './season.service';
-import { QueriesService } from '../../queries/queries.service';
 
 describe('SeasonService', () => {
   let service: SeasonService;
+  let errorManagerServiceMock: DeepMocked<ErrorManagerService>;
 
-  const queriesServiceMock = {
-    getAllMatchdays: jest.fn().mockResolvedValue([]),
+  const seasonRepositoryMock = {
+    getAllMatchdays: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -15,13 +19,22 @@ describe('SeasonService', () => {
       providers: [
         SeasonService,
         {
-          provide: QueriesService,
-          useValue: queriesServiceMock,
+          provide: SeasonRepository,
+          useValue: seasonRepositoryMock,
+        },
+        {
+          provide: ErrorManagerService,
+          useValue: createMock(ErrorManagerService),
         },
       ],
     }).compile();
 
     service = module.get<SeasonService>(SeasonService);
+    errorManagerServiceMock = module.get(ErrorManagerService);
+
+    jest.spyOn(errorManagerServiceMock, 'createError').mockImplementation(() => {
+      throw new HttpException('Error', HttpStatus.NOT_FOUND);
+    });
   });
 
   it('should be defined', () => {
@@ -71,13 +84,34 @@ describe('SeasonService', () => {
   });
 
   describe('getAllMatchdays', () => {
-    it('should call queryService.getAllMatchdays with correct parameters', async () => {
-      const tipgroupId = 1;
-      const seasonId = 2023;
+    it('should throw an error if seasonId is null, undefined or not an integer', async () => {
+      const invalidIds = [null, undefined, 'abc', 1.5];
 
-      await service.getAllMatchdays(tipgroupId, seasonId);
-
-      expect(queriesServiceMock.getAllMatchdays).toHaveBeenCalledWith(tipgroupId, seasonId);
+      for (const id of invalidIds) {
+        await expect(service.getAllMatchdays(1, id as any)).rejects.toThrow(HttpException);
+        expect(errorManagerServiceMock.createError).toHaveBeenCalledWith(
+          ErrorCodes.Tipgroup.SEASON_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        );
+      }
     });
+
+    it('should return matchdays from repository if seasonId is valid', async () => {
+      const mockMatchdays = [
+        { id: 1, name: 'Spieltag 1' },
+        { id: 2, name: 'Spieltag 2' },
+      ];
+      seasonRepositoryMock.getAllMatchdays.mockResolvedValue(mockMatchdays);
+
+      const result = await service.getAllMatchdays(1, 10);
+
+      expect(result).toEqual(mockMatchdays);
+      expect(seasonRepositoryMock.getAllMatchdays).toHaveBeenCalledWith(1, 10);
+      expect(errorManagerServiceMock.createError).not.toHaveBeenCalled();
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 });

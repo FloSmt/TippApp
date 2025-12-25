@@ -12,10 +12,8 @@ import { EntityManager } from 'typeorm';
 import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { UserService } from '@tippapp/backend/user';
-import { HashService } from '@tippapp/backend/shared';
+import { HashService, TipgroupRepository, TipgroupUserRepository } from '@tippapp/backend/shared';
 import { SeasonService } from './season';
-import { TipgroupRepository } from '../repositories/tipgroup.repository';
-import { TipgroupUserRepository } from '../repositories/tipgroup-user.repository';
 
 @Injectable()
 export class TipgroupsService {
@@ -90,17 +88,6 @@ export class TipgroupsService {
     });
 
     return tipGroupUserEntries.map((entry) => entry.tipgroup);
-  }
-
-  async isUserMemberOfTipgroup(userId: number, tipgroupId: number): Promise<boolean> {
-    const membership = await this.tipgroupUserRepository.findOne({
-      where: {
-        userId: userId,
-        tipgroupId: tipgroupId,
-      },
-    });
-
-    return !!membership;
   }
 
   private async validateAndGetAvailableLeagues(leagueShortcut: string): Promise<void> {

@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ErrorCodes, MatchApiResponse, MatchdayResponseDto } from '@tippapp/shared/data-access';
 import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { MatchdayRepository } from '@tippapp/backend/shared';
 import { mapApiMatchResponsesToMatchDayResponseDto } from '../../helper/responses-mapper';
-import { MatchdayRepository } from '../../repositories/matchday.repository';
 
 @Injectable()
 export class MatchdayService {

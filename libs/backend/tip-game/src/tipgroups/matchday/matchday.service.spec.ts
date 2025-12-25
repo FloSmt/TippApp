@@ -4,13 +4,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ApiService, MatchResponseMock } from '@tippapp/backend/api';
 import { ErrorCodes } from '@tippapp/shared/data-access';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { MatchdayRepository } from '@tippapp/backend/shared';
 import { MatchdayService } from './matchday.service';
-import { QueriesService } from '../../queries/queries.service';
 
 describe('MatchdayService', () => {
   let service: MatchdayService;
   let apiServiceMock: DeepMocked<ApiService>;
-  let queriesServiceMock: DeepMocked<QueriesService>;
+  let matchdayRepositoryMock: DeepMocked<MatchdayRepository>;
   let errorManagerServiceMock: DeepMocked<ErrorManagerService>;
 
   beforeEach(async () => {
@@ -18,8 +18,8 @@ describe('MatchdayService', () => {
       providers: [
         MatchdayService,
         {
-          provide: QueriesService,
-          useValue: createMock<QueriesService>(),
+          provide: MatchdayRepository,
+          useValue: createMock<MatchdayRepository>(),
         },
         {
           provide: ErrorManagerService,
@@ -33,7 +33,7 @@ describe('MatchdayService', () => {
     }).compile();
 
     service = module.get<MatchdayService>(MatchdayService);
-    queriesServiceMock = module.get(QueriesService);
+    matchdayRepositoryMock = module.get(MatchdayRepository);
     errorManagerServiceMock = module.get(ErrorManagerService);
     apiServiceMock = module.get(ApiService);
   });
@@ -44,11 +44,11 @@ describe('MatchdayService', () => {
 
   describe('getMatchdayData', () => {
     it('should throw an error if no matchday data was found', async () => {
-      queriesServiceMock.getMatchdayFromDb.mockResolvedValue(undefined);
+      matchdayRepositoryMock.getMatchdayFromDb.mockResolvedValue(undefined);
       errorManagerServiceMock.createError.mockReturnValue(new HttpException('Error', 500));
 
       await expect(service.getMatchdayDetails(1, 2023, 1)).rejects.toThrow();
-      expect(queriesServiceMock.getMatchdayFromDb).toHaveBeenCalledWith(1, 2023, 1);
+      expect(matchdayRepositoryMock.getMatchdayFromDb).toHaveBeenCalledWith(1, 2023, 1);
       expect(errorManagerServiceMock.createError).toHaveBeenCalledWith(
         ErrorCodes.Tipgroup.MATCHDAY_DETAILS_NOT_FOUND,
         HttpStatus.NOT_FOUND
@@ -67,12 +67,12 @@ describe('MatchdayService', () => {
         },
       };
 
-      queriesServiceMock.getMatchdayFromDb.mockResolvedValue(matchdayFromDb);
+      matchdayRepositoryMock.getMatchdayFromDb.mockResolvedValue(matchdayFromDb);
       apiServiceMock.getMatchData.mockResolvedValue(MatchResponseMock);
 
       const result = await service.getMatchdayDetails(123, 2025, 7);
 
-      expect(queriesServiceMock.getMatchdayFromDb).toHaveBeenCalledWith(123, 2025, 7);
+      expect(matchdayRepositoryMock.getMatchdayFromDb).toHaveBeenCalledWith(123, 2025, 7);
       expect(apiServiceMock.getMatchData).toHaveBeenCalledWith('LIGA', 2025, 2);
 
       expect(result.orderId).toBe(5);

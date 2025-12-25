@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { RegisterDto, User } from '@tippapp/shared/data-access';
-import { UserRepository } from './repositories/user.repository';
+import { UserRepository } from '@tippapp/backend/shared';
 
 @Injectable()
 export class UserService {

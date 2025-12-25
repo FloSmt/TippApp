@@ -3,11 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CreateTipgroupDto, ErrorCodes, Tipgroup, TipgroupUser, TipSeason, User } from '@tippapp/shared/data-access';
 import { ApiService, LeaguesResponseMock, MatchResponseMock } from '@tippapp/backend/api';
 import { UserService } from '@tippapp/backend/user';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
-import { HashService } from '@tippapp/backend/shared';
-import { Repository } from 'typeorm';
+import { HashService, TipgroupRepository, TipgroupUserRepository } from '@tippapp/backend/shared';
 import { TipgroupsService } from './tipgroups.service';
 import { SeasonService } from './season';
 
@@ -18,7 +16,7 @@ describe('TipgroupsService', () => {
   let userService: DeepMocked<UserService>;
   let hashService: DeepMocked<HashService>;
   let errorManagerService: DeepMocked<ErrorManagerService>;
-  let tipgroupUserRepository: DeepMocked<Repository<TipgroupUser>>;
+  let tipgroupUserRepository: DeepMocked<TipgroupUserRepository>;
 
   const mockTransactionalEntityManager = {
     create: jest.fn().mockImplementation((entity, plainObject) => {
@@ -88,12 +86,12 @@ describe('TipgroupsService', () => {
       providers: [
         TipgroupsService,
         {
-          provide: getRepositoryToken(Tipgroup),
+          provide: TipgroupRepository,
           useValue: mockTipgroupRepository,
         },
         {
-          provide: getRepositoryToken(TipgroupUser),
-          useValue: createMock<Repository<TipgroupUser>>(),
+          provide: TipgroupUserRepository,
+          useValue: createMock<TipgroupUserRepository>(),
         },
         {
           provide: SeasonService,
@@ -124,7 +122,7 @@ describe('TipgroupsService', () => {
     userService = module.get(UserService);
     hashService = module.get(HashService);
     errorManagerService = module.get(ErrorManagerService);
-    tipgroupUserRepository = module.get(getRepositoryToken(TipgroupUser));
+    tipgroupUserRepository = module.get(TipgroupUserRepository);
 
     jest.spyOn(errorManagerService, 'createError').mockReturnValue(new HttpException('Error', 404));
   });
@@ -259,46 +257,6 @@ describe('TipgroupsService', () => {
       expect(tipgroupUserRepository.find).toHaveBeenCalledWith({
         where: { userId: userId },
         relations: ['tipgroup'],
-      });
-    });
-  });
-
-  describe('isUserMemberOfTipgroup', () => {
-    it('should return true if user is a member of the tipgroup', async () => {
-      const userId = 1;
-      const tipgroupId = 10;
-
-      tipgroupUserRepository.findOne.mockResolvedValue({
-        id: 100,
-        userId: userId,
-        tipgroupId: tipgroupId,
-      } as unknown as TipgroupUser);
-
-      const result = await service.isUserMemberOfTipgroup(userId, tipgroupId);
-
-      expect(result).toBe(true);
-      expect(tipgroupUserRepository.findOne).toHaveBeenCalledWith({
-        where: {
-          userId: userId,
-          tipgroupId: tipgroupId,
-        },
-      });
-    });
-
-    it('should return false if user is not a member of the tipgroup', async () => {
-      const userId = 2;
-      const tipgroupId = 20;
-
-      tipgroupUserRepository.findOne.mockResolvedValue(null);
-
-      const result = await service.isUserMemberOfTipgroup(userId, tipgroupId);
-
-      expect(result).toBe(false);
-      expect(tipgroupUserRepository.findOne).toHaveBeenCalledWith({
-        where: {
-          userId: userId,
-          tipgroupId: tipgroupId,
-        },
       });
     });
   });

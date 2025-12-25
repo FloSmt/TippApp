@@ -1,13 +1,12 @@
-import { CanActivate, ExecutionContext, forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { ErrorCodes } from '@tippapp/shared/data-access';
-import { TipgroupsService } from '../tipgroups/tipgroups.service';
+import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.service';
 
 @Injectable()
 export class IsTipgroupMemberGuard implements CanActivate {
   constructor(
-    @Inject(forwardRef(() => TipgroupsService))
-    private readonly tipgroupsService: TipgroupsService,
+    private readonly tipgroupMembersService: TipgroupMembersService,
     private readonly errorManagerService: ErrorManagerService
   ) {}
 
@@ -20,7 +19,7 @@ export class IsTipgroupMemberGuard implements CanActivate {
       throw this.errorManagerService.createError(ErrorCodes.Tipgroup.NOT_A_MEMBER, HttpStatus.FORBIDDEN);
     }
 
-    const isMember = await this.tipgroupsService.isUserMemberOfTipgroup(userId, tipgroupId);
+    const isMember = await this.tipgroupMembersService.isUserMemberOfTipgroup(userId, tipgroupId);
 
     if (!isMember) {
       throw this.errorManagerService.createError(ErrorCodes.Tipgroup.NOT_A_MEMBER, HttpStatus.FORBIDDEN);
