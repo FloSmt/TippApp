@@ -1,5 +1,5 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { TipgroupStore } from '@tippapp/frontend/utils';
+import { TipgroupManagementStore } from '@tippapp/frontend/utils';
 import { BehaviorSubject } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ModalController } from '@ionic/angular/standalone';
@@ -28,7 +28,7 @@ describe('TipgroupListPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TipgroupListPageComponent],
       providers: [
-        { provide: TipgroupStore, useValue: tipgroupStoreMock },
+        { provide: TipgroupManagementStore, useValue: tipgroupStoreMock },
         {
           provide: ModalController,
           useValue: modalControllerMock,

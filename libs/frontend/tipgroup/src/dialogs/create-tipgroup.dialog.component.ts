@@ -19,7 +19,7 @@ import {
 import { addIcons } from 'ionicons';
 import { close, closeCircle, informationCircleOutline, shieldCheckmark, textOutline, trophy } from 'ionicons/icons';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { confirmPasswordValidator, TipgroupStore, TransformLeagueNamePipe } from '@tippapp/frontend/utils';
+import { confirmPasswordValidator, TipgroupManagementStore, TransformLeagueNamePipe } from '@tippapp/frontend/utils';
 import { CreateTipgroupDto, LeagueOverviewResponseDto } from '@tippapp/shared/data-access';
 import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
 
@@ -49,7 +49,7 @@ import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components'
 })
 export class CreateTipgroupDialogComponent {
   readonly modalController = inject(ModalController);
-  readonly tipgroupStore = inject(TipgroupStore);
+  readonly tipgroupManagementStore = inject(TipgroupManagementStore);
 
   readonly noSelectionValue = 'no_selection';
   readonly nameMaxLength = 50;
@@ -71,19 +71,19 @@ export class CreateTipgroupDialogComponent {
       trophy,
     });
 
-    this.tipgroupStore.loadAvailableLeagues();
+    this.tipgroupManagementStore.loadAvailableLeagues();
 
     effect(() => {
-      if (!this.isLoadingCreateTipgroup() && !this.tipgroupStore.createTipgroupState.error()) {
+      if (!this.isLoadingCreateTipgroup() && !this.tipgroupManagementStore.createTipgroupState.error()) {
         this.modalController.dismiss(null, 'created');
       }
     });
   }
 
-  isLoadingAvailableLeagues = this.tipgroupStore.availableLeaguesState.isLoading;
-  isLoadingCreateTipgroup = this.tipgroupStore.createTipgroupState.isLoading;
-  availableLeagues = this.tipgroupStore.availableLeaguesState;
-  hasAvailableLeaguesError = this.tipgroupStore.hasAvailableLeaguesError;
+  isLoadingAvailableLeagues = this.tipgroupManagementStore.availableLeaguesState.isLoading;
+  isLoadingCreateTipgroup = this.tipgroupManagementStore.createTipgroupState.isLoading;
+  availableLeagues = this.tipgroupManagementStore.availableLeaguesState;
+  hasAvailableLeaguesError = this.tipgroupManagementStore.hasAvailableLeaguesError;
 
   disableCreateButton() {
     return (
@@ -115,7 +115,7 @@ export class CreateTipgroupDialogComponent {
         currentSeason: league.season,
       };
 
-      this.tipgroupStore.createTipgroup({ createTipgroupDto });
+      this.tipgroupManagementStore.createTipgroup({ createTipgroupDto });
     }
   }
 

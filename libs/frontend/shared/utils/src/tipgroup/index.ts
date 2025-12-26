@@ -1,2 +1,2 @@
 export * from './tipgroup.service';
-export * from './store/tipgroup.store';
+export * from './store/tipgroup-management.store';

@@ -17,7 +17,7 @@ import {
 import { addIcons } from 'ionicons';
 import { banOutline, chevronForwardOutline, closeCircleOutline, people } from 'ionicons/icons';
 import { Router } from '@angular/router';
-import { LoadingState, TipgroupStore } from '@tippapp/frontend/utils';
+import { LoadingState, TipgroupManagementStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
@@ -47,7 +47,7 @@ import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dia
 })
 export class TipgroupListPageComponent implements OnInit {
   readonly router = inject(Router);
-  readonly tipgroupStore = inject(TipgroupStore);
+  readonly tipgroupStore = inject(TipgroupManagementStore);
   readonly modalController = inject(ModalController);
 
   isLoadingAfterRefresh$ = toObservable(this.tipgroupStore.isLoadingTipgroups);

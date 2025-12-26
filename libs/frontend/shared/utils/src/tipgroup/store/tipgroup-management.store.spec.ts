@@ -5,10 +5,10 @@ import { delay, of, throwError } from 'rxjs';
 import { NotificationService, NotificationType } from '../../notifications/notification.service';
 import { TipgroupService } from '../tipgroup.service';
 import { ErrorManagementService } from '../../error-management/error-management.service';
-import { LoadingState, TipgroupStore } from './tipgroup.store';
+import { LoadingState, TipgroupManagementStore } from './tipgroup-management.store';
 
-describe('TipgroupStore', () => {
-  let store: InstanceType<typeof TipgroupStore>;
+describe('TipgroupManagementStore', () => {
+  let store: InstanceType<typeof TipgroupManagementStore>;
 
   const errorManagementServiceMock = {
     handleApiError: jest.fn(),
@@ -37,6 +37,7 @@ describe('TipgroupStore', () => {
       return {
         id: 1,
         name: 'Mock Tipgroup',
+        currentSeasonId: 1,
       };
     },
     get availableLeaguesMock(): LeagueOverviewResponseDto[] {
@@ -56,10 +57,12 @@ describe('TipgroupStore', () => {
         {
           id: 1,
           name: 'Group 1',
+          currentSeasonId: 1,
         },
         {
           id: 2,
           name: 'Group 2',
+          currentSeasonId: 2,
         },
       ];
     },
@@ -83,7 +86,7 @@ describe('TipgroupStore', () => {
       ],
     });
 
-    store = TestBed.inject(TipgroupStore);
+    store = TestBed.inject(TipgroupManagementStore);
   });
 
   afterEach(() => {
@@ -210,13 +213,10 @@ describe('TipgroupStore', () => {
 
         store.loadAvailableTipgroups({ reload: false });
 
-        // Direkt nach dem Aufruf sollte loadingState INITIAL sein
         expect(store.availableTipgroupsState.loadingState()).toBe(LoadingState.INITIAL);
 
-        // Timer vorspulen, damit das Observable "fertig" ist
         jest.advanceTimersByTime(20);
 
-        // Jetzt sollte der State auf LOADED stehen
         expect(store.availableTipgroupsState.loadingState()).toBe(LoadingState.LOADED);
         expect(store.availableTipgroupsState.data()).toEqual(mocks.availableTipgroupsMock);
 

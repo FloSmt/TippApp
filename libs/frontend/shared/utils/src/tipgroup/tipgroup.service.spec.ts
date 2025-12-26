@@ -38,8 +38,9 @@ describe('TipgroupService', () => {
       {
         id: 1,
         name: 'testgroup1',
+        currentSeasonId: 1,
       },
-      { id: 2, name: 'testgroup2' },
+      { id: 2, name: 'testgroup2', currentSeasonId: 2 },
     ];
 
     service.getAvailableTipgroups().subscribe((response) => {

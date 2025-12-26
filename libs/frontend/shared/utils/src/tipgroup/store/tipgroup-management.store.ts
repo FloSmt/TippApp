@@ -14,7 +14,7 @@ export enum LoadingState {
   INITIAL = 'INITIAL',
 }
 
-type TipgroupState = {
+type TipgroupManagementState = {
   availableLeaguesState: {
     data: LeagueOverviewResponseDto[] | null;
     error: HttpErrorResponse | null;
@@ -30,7 +30,7 @@ type TipgroupState = {
   };
 };
 
-const initialState: TipgroupState = {
+const initialState: TipgroupManagementState = {
   availableLeaguesState: {
     data: null,
     error: null,
@@ -46,7 +46,7 @@ const initialState: TipgroupState = {
   },
 };
 
-export const TipgroupStore = signalStore(
+export const TipgroupManagementStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => ({
