@@ -81,11 +81,8 @@ export class TipgroupsService {
     });
   }
 
-  async getTipGroupsByUserId(userId: number): Promise<Tipgroup[]> {
-    const tipGroupUserEntries = await this.tipgroupUserRepository.find({
-      where: { userId: userId },
-      relations: ['tipgroup'],
-    });
+  async getTipgroupsByUserId(userId: number): Promise<Tipgroup[]> {
+    const tipGroupUserEntries = await this.tipgroupUserRepository.getAllTipgroupsForUser(userId);
 
     return tipGroupUserEntries.map((entry) => entry.tipgroup);
   }
@@ -95,6 +92,16 @@ export class TipgroupsService {
     if (!availableLeagues.includes(leagueShortcut)) {
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.LEAGUE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+  }
+
+  async getTipgroupById(tipgroupId: number): Promise<Tipgroup> {
+    const tipgroup = await this.tipgroupRepository.getTipgroupById(tipgroupId);
+
+    if (!tipgroup) {
+      throw this.errorManager.createError(ErrorCodes.Tipgroup.TIPGROUP_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    return tipgroup;
   }
 
   protected async validateTipgroupName(name: string, entityManager: EntityManager): Promise<void> {

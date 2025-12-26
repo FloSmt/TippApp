@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupEntryResponseDto } from '@tippapp/shared/data-access';
+import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupOverviewResponseDto } from '@tippapp/shared/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import { delay, of, throwError } from 'rxjs';
 import { NotificationService, NotificationType } from '../../notifications/notification.service';
@@ -33,7 +33,7 @@ describe('TipgroupStore', () => {
         currentSeason: 2024,
       };
     },
-    get tipgroupEntryResponseDtoMock(): TipgroupEntryResponseDto {
+    get tipgroupEntryResponseDtoMock(): TipgroupOverviewResponseDto {
       return {
         id: 1,
         name: 'Mock Tipgroup',
@@ -51,7 +51,7 @@ describe('TipgroupStore', () => {
         },
       ] as unknown as LeagueOverviewResponseDto[];
     },
-    get availableTipgroupsMock(): TipgroupEntryResponseDto[] {
+    get availableTipgroupsMock(): TipgroupOverviewResponseDto[] {
       return [
         {
           id: 1,

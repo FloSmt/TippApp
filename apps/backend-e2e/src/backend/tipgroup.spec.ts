@@ -202,8 +202,8 @@ describe('TipgroupController (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([
-        { id: 1, name: 'Tipgroup1' },
-        { id: 2, name: 'Tipgroup2' },
+        { id: 1, name: 'Tipgroup1', currentSeasonId: 1 },
+        { id: 2, name: 'Tipgroup2', currentSeasonId: 2 },
       ]);
 
       //Login to other User
@@ -215,6 +215,40 @@ describe('TipgroupController (e2e)', () => {
       response = await tipgroupFactory.getTipGroupsOfUser(authTokenForSecondUser);
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
+    });
+  });
+
+  describe('GET /tipgroups/:tipgroupId', () => {
+    let accessToken: string;
+    let createdTipgroupId: number;
+
+    beforeEach(async () => {
+      await setupMockApi();
+      await userFactory.createUserInDatabase(mocks.registerData[0]);
+      accessToken = await userFactory.loginUser(mocks.registerData[0].email, mocks.registerData[0].password);
+
+      const createResponse = await tipgroupFactory.createTipGroupWithRest(accessToken, mocks.createTipgroupData[0]);
+      createdTipgroupId = createResponse.body.id;
+    });
+
+    it('should return tipgroup details for valid tipgroupId', async () => {
+      const response = await tipgroupFactory.getTipGroupDetails(accessToken, createdTipgroupId);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        id: createdTipgroupId,
+        name: mocks.createTipgroupData[0].name,
+        currentSeasonId: 1,
+      });
+    });
+
+    it('should return 404 for non-existing tipgroupId', async () => {
+      const response = await tipgroupFactory.getTipGroupDetails(accessToken, 9999);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Tipgroup not found.');
+      expect(response.body.code).toBe('TIPGROUP.TIPGROUP_NOT_FOUND');
     });
   });
 

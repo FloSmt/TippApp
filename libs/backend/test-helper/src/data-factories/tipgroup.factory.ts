@@ -33,6 +33,12 @@ export class TipgroupFactory extends Factory {
     return await this.getAgent().get(API_ROUTES.TIPGROUP.GET_ALL).set('Authorization', `Bearer ${authToken}`);
   }
 
+  async getTipGroupDetails(authToken: string, tipgroupId: number) {
+    return await this.getAgent()
+      .get(API_ROUTES.TIPGROUP.GET_DETAILS(tipgroupId))
+      .set('Authorization', `Bearer ${authToken}`);
+  }
+
   async prepareTipgroupAndGetId(accessToken: string): Promise<number> {
     const createTipGroupDto: CreateTipgroupDto = {
       name: 'Test Tipgroup',

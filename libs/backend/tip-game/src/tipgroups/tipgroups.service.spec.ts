@@ -34,6 +34,7 @@ describe('TipgroupsService', () => {
     manager: {
       transaction: mockTransaction,
     },
+    getTipgroupById: jest.fn(),
   };
 
   const mocks = {
@@ -135,7 +136,7 @@ describe('TipgroupsService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create Tipgroup', () => {
+  describe('createTipgroup', () => {
     it('should throw an error if matchday name already taken', async () => {
       mockTransactionalEntityManager.findOne.mockResolvedValueOnce({
         name: 'Tipgroup1',
@@ -229,17 +230,19 @@ describe('TipgroupsService', () => {
     });
   });
 
-  describe('get Tipgroups for user', () => {
+  describe('getTipgroupsByUserId', () => {
     it('should return an array of tip groups for a given user ID', async () => {
       const userId = 1;
 
       const tipgroup1 = new Tipgroup();
       tipgroup1.id = 101;
       tipgroup1.name = 'Group1';
+      tipgroup1.seasons = [];
 
       const tipgroup2 = new Tipgroup();
       tipgroup2.id = 102;
       tipgroup2.name = 'Group2';
+      tipgroup2.seasons = [{ id: 1 } as TipSeason];
 
       const tipgroupUserEntry1 = new TipgroupUser();
       tipgroupUserEntry1.userId = userId;
@@ -249,15 +252,39 @@ describe('TipgroupsService', () => {
       tipgroupUserEntry2.userId = userId;
       tipgroupUserEntry2.tipgroup = tipgroup2;
 
-      tipgroupUserRepository.find.mockResolvedValue([tipgroupUserEntry1, tipgroupUserEntry2]);
+      tipgroupUserRepository.getAllTipgroupsForUser.mockResolvedValue([tipgroupUserEntry1, tipgroupUserEntry2]);
 
-      const result = await service.getTipGroupsByUserId(userId);
+      const result = await service.getTipgroupsByUserId(userId);
 
       expect(result).toEqual([tipgroup1, tipgroup2]);
-      expect(tipgroupUserRepository.find).toHaveBeenCalledWith({
-        where: { userId: userId },
-        relations: ['tipgroup'],
-      });
+      expect(tipgroupUserRepository.getAllTipgroupsForUser).toHaveBeenCalledWith(userId);
+    });
+  });
+
+  describe('getTipgroupById', () => {
+    it('should throw an error if tipgroup not found', async () => {
+      const tipgroupId = 1;
+      mockTipgroupRepository.getTipgroupById = jest.fn().mockResolvedValueOnce(null);
+
+      await expect(service.getTipgroupById(tipgroupId)).rejects.toThrow();
+      expect(errorManagerService.createError).toHaveBeenCalledWith(
+        ErrorCodes.Tipgroup.TIPGROUP_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    });
+    it('should return the tipgroup if found', async () => {
+      const tipgroupId = 1;
+      const tipgroupMock = {
+        id: tipgroupId,
+        name: 'Tipgroup1',
+      } as unknown as Tipgroup;
+
+      mockTipgroupRepository.getTipgroupById = jest.fn().mockResolvedValueOnce(tipgroupMock);
+
+      const result = await service.getTipgroupById(tipgroupId);
+
+      expect(result).toEqual(tipgroupMock);
+      expect(mockTipgroupRepository.getTipgroupById).toHaveBeenCalledWith(tipgroupId);
     });
   });
 });

@@ -73,5 +73,9 @@ export abstract class ErrorCodes {
       code: 'TIPGROUP.SEASON_NOT_FOUND',
       message: 'Season not found for the given parameters.',
     },
+    TIPGROUP_NOT_FOUND: {
+      code: 'TIPGROUP.TIPGROUP_NOT_FOUND',
+      message: 'Tipgroup not found for the given parameters.',
+    },
   };
 }

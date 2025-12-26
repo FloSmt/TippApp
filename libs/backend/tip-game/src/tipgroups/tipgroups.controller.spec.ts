@@ -4,11 +4,13 @@ import {
   CreateTipgroupDto,
   LeagueOverviewResponseDto,
   Tipgroup,
-  TipgroupEntryResponseDto,
+  TipgroupOverviewResponseDto,
+  TipSeason,
 } from '@tippapp/shared/data-access';
 import { ApiService } from '@tippapp/backend/api';
 import { TipgroupsService } from './tipgroups.service';
 import { TipgroupsController } from './tipgroups.controller';
+import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.service';
 
 describe('TipgroupsController', () => {
   let controller: TipgroupsController;
@@ -20,7 +22,7 @@ describe('TipgroupsController', () => {
       return {
         createDate: new Date('1.1.1970'),
         passwordHash: '',
-        seasons: [],
+        seasons: [{ id: 202, isClosed: false } as TipSeason],
         users: [],
         name: 'Tipgroup1',
         id: 1,
@@ -44,10 +46,11 @@ describe('TipgroupsController', () => {
       ];
     },
 
-    get tipgroupResponse(): TipgroupEntryResponseDto {
+    get tipgroupResponse(): TipgroupOverviewResponseDto {
       return {
         name: 'Tipgroup1',
         id: 1,
+        currentSeasonId: 202,
       };
     },
 
@@ -75,7 +78,10 @@ describe('TipgroupsController', () => {
           useValue: createMock<ApiService>(),
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(IsTipgroupMemberGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<TipgroupsController>(TipgroupsController);
     tipgroupService = module.get(TipgroupsService);
@@ -109,21 +115,40 @@ describe('TipgroupsController', () => {
     const tipgroup1 = new Tipgroup();
     tipgroup1.id = 101;
     tipgroup1.name = 'Group1';
+    tipgroup1.seasons = [];
 
     const tipgroup2 = new Tipgroup();
     tipgroup2.id = 102;
     tipgroup2.name = 'Group2';
+    tipgroup2.seasons = [{ id: 1, isClosed: false } as TipSeason];
 
     const req = { user: { id: 1 } };
 
-    tipgroupService.getTipGroupsByUserId.mockResolvedValue([tipgroup1, tipgroup2]);
+    tipgroupService.getTipgroupsByUserId.mockResolvedValue([tipgroup1, tipgroup2]);
     const result = await controller.getTipgroups(req);
 
-    expect(tipgroupService.getTipGroupsByUserId).toHaveBeenCalledTimes(1);
-    expect(tipgroupService.getTipGroupsByUserId).toHaveBeenCalledWith(req.user.id);
+    expect(tipgroupService.getTipgroupsByUserId).toHaveBeenCalledTimes(1);
+    expect(tipgroupService.getTipgroupsByUserId).toHaveBeenCalledWith(req.user.id);
     expect(result).toEqual([
-      { name: tipgroup1.name, id: tipgroup1.id },
-      { name: tipgroup2.name, id: tipgroup2.id },
+      { name: tipgroup1.name, id: tipgroup1.id, currentSeasonId: null },
+      { name: tipgroup2.name, id: tipgroup2.id, currentSeasonId: 1 },
     ]);
+  });
+
+  it('should return tipgroup details for the given tipgroupId', async () => {
+    const tipgroupId = 2;
+    const req = { params: { tipgroupId } };
+
+    const tipgroup = new Tipgroup();
+    tipgroup.id = tipgroupId;
+    tipgroup.name = 'Group1';
+    tipgroup.seasons = [{ id: 5, isClosed: false } as TipSeason];
+
+    tipgroupService.getTipgroupById.mockResolvedValueOnce(tipgroup);
+
+    return controller.getTipgroupDetails(req).then((result) => {
+      expect(tipgroupService.getTipgroupById).toHaveBeenCalledWith(tipgroupId);
+      expect(result).toEqual({ id: tipgroup.id, name: tipgroup.name, currentSeasonId: 5 });
+    });
   });
 });

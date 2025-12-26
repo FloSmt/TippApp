@@ -1,6 +1,6 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupEntryResponseDto } from '@tippapp/shared/data-access';
+import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupOverviewResponseDto } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -25,7 +25,7 @@ type TipgroupState = {
     isLoading: boolean;
   };
   availableTipgroupsState: {
-    data: TipgroupEntryResponseDto[] | null;
+    data: TipgroupOverviewResponseDto[] | null;
     loadingState: LoadingState;
   };
 };
@@ -63,7 +63,7 @@ export const TipgroupStore = signalStore(
   })),
 
   withMethods((store, notificationService = inject(NotificationService)) => ({
-    loadAvailableTipgroupsSuccess: (availableGroups: TipgroupEntryResponseDto[]) => {
+    loadAvailableTipgroupsSuccess: (availableGroups: TipgroupOverviewResponseDto[]) => {
       patchState(store, {
         availableTipgroupsState: {
           ...store.availableTipgroupsState(),
@@ -102,7 +102,7 @@ export const TipgroupStore = signalStore(
       });
     },
 
-    createTipgroupSuccess: (newTipgroup: TipgroupEntryResponseDto) => {
+    createTipgroupSuccess: (newTipgroup: TipgroupOverviewResponseDto) => {
       const currentTipgroups = store.availableTipgroupsState.data() || [];
       notificationService.showTypeMessage(
         {
@@ -147,7 +147,7 @@ export const TipgroupStore = signalStore(
         ),
         switchMap(() => {
           return tipgroupService.getAvailableTipgroups().pipe(
-            tap((response: TipgroupEntryResponseDto[]) => store.loadAvailableTipgroupsSuccess(response)),
+            tap((response: TipgroupOverviewResponseDto[]) => store.loadAvailableTipgroupsSuccess(response)),
             catchError(() => {
               store.loadAvailableTipgroupsFailure();
               return EMPTY;
@@ -194,7 +194,7 @@ export const TipgroupStore = signalStore(
         ),
         switchMap(({ createTipgroupDto }) =>
           tipgroupService.createTipgroup(createTipgroupDto).pipe(
-            tap((tipgroupResponse: TipgroupEntryResponseDto) => {
+            tap((tipgroupResponse: TipgroupOverviewResponseDto) => {
               store.createTipgroupSuccess(tipgroupResponse);
             }),
             catchError((error: HttpErrorResponse) => {
