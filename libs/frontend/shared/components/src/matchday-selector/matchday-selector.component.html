@@ -1,19 +1,29 @@
 <div class="arrow-container left">
-  <div class="arrow" [class.disabled]="isFirstEntrySelected()">
+  <div class="arrow" tabindex="0" aria-modal="true" role="button"
+       [class.disabled]="isFirstSelected() || disableSelection()"
+       (click)="selectPreviousEntry()">
     <ion-icon name="caret-back"></ion-icon>
   </div>
 </div>
-<div class="selection-container" tabindex="0" aria-modal="true" role="button" (click)="openSelectionDialog()">
+<div class="selection-container" tabindex="1" aria-modal="true" role="button" (click)="openSelectionDialog()">
   <div class="selection">
-    <p class="selection-league truncate-one-line-text">{{ currentMatchday().league.leagueName }}</p>
-    <p class="selection-name">{{ currentMatchday().name }}</p>
+    <p class="selection-league truncate-one-line-text">
+      @if (currentMatchday()) {
+        {{ currentMatchday()!.league.leagueName }}
+      } @else {
+        <ion-skeleton-text [animated]="true" style="width: 150px; height: 1em"></ion-skeleton-text>
+      }
+    </p>
+    <p class="selection-name">{{ getMatchdayName() }}</p>
   </div>
   <div>
     <ion-icon name="caret-down"></ion-icon>
   </div>
 </div>
 <div class="arrow-container right">
-  <div class="arrow" [class.disabled]="isLastEntrySelected()">
+  <div class="arrow" tabindex="2" aria-modal="true" role="button"
+       [class.disabled]="isLastSelected() || disableSelection()"
+       (click)="selectNextEntry()">
     <ion-icon name="caret-forward"></ion-icon>
   </div>
 </div>

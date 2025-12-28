@@ -27,8 +27,16 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--ion-border-radius-s);
+  transition: all 1s ease-in-out;
+  cursor: pointer;
+
+  &:active {
+    background: var(--ion-color-primary-gradient);
+    color: var(--ion-color-primary-contrast);
+  }
 
   &.disabled {
+    pointer-events: none;
     opacity: 0.5;
     cursor: not-allowed;
   }

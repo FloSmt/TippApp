@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TipgroupDetailsStore } from '@tippapp/frontend/utils';
 import { IonContent, IonSpinner } from '@ionic/angular/standalone';
-import { MatchdaySelectorComponent } from '@tippapp/frontend/shared-components';
+import { MatchCardComponent, MatchdaySelectorComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-overview.page',
-  imports: [IonSpinner, IonContent, MatchdaySelectorComponent],
+  imports: [IonSpinner, IonContent, MatchdaySelectorComponent, MatchCardComponent],
   templateUrl: './overview.page.component.html',
   styleUrl: './overview.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,13 +13,13 @@ import { MatchdaySelectorComponent } from '@tippapp/frontend/shared-components';
 export class OverviewPageComponent {
   private readonly tipgroupDetailsStore = inject(TipgroupDetailsStore);
 
-  isLoadingDetails = this.tipgroupDetailsStore.isLoading().tipgroupDetails;
-  isLoadingMatchdayData = this.tipgroupDetailsStore.isLoading().matchdayData;
+  isLoading = this.tipgroupDetailsStore.isLoading();
 
-  currentMatchday = this.tipgroupDetailsStore.getCurrentMatchday();
+  currentMatchday = this.tipgroupDetailsStore.getCurrentMatchday;
+  currentMatchdayId = this.tipgroupDetailsStore.getSelectedMatchdayId();
   matchdayOverview = this.tipgroupDetailsStore.getMatchdayOverview();
 
-  handleMatchdayChange(newMatchdayId: number) {
-    console.log('handleMatchdayChange', newMatchdayId);
+  handleMatchdayIdChange(id: number | null) {
+    this.tipgroupDetailsStore.loadMatchdayDetails(id);
   }
 }

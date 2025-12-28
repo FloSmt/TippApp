@@ -4,3 +4,15 @@
   align-items: center;
   height: 100%;
 }
+
+.match-section {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .matches-container {
+    width: 20cm;
+  }
+}

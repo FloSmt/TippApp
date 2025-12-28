@@ -84,9 +84,9 @@ describe('MatchdayService', () => {
       expect(result.league.leagueName).toBe(MatchResponseMock[0].leagueName);
       expect(result.league.leagueSeason).toBe(matchdayFromDb.matchday.api_leagueSeason);
       expect(result.league.leagueShortcut).toBe(matchdayFromDb.matchday.api_leagueShortcut);
-      expect(result.matches.length).toBe(2);
-      expect(result.matches[0]).toStrictEqual(expect.objectContaining({ matchId: 1 }));
-      expect(result.matches[1]).toStrictEqual(expect.objectContaining({ matchId: 2 }));
+      expect(result.matchList.length).toBe(2);
+      expect(result.matchList[0]).toStrictEqual(expect.objectContaining({ matchId: 1 }));
+      expect(result.matchList[1]).toStrictEqual(expect.objectContaining({ matchId: 2 }));
     });
   });
 });

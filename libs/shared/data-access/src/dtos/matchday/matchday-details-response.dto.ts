@@ -8,5 +8,5 @@ export class MatchdayDetailsResponseDto extends MatchdayOverviewResponseDto {
   league: LeagueOverviewResponseDto;
 
   @ApiProperty({ type: () => [MatchResponseDto] })
-  matches: MatchResponseDto[];
+  matchList: MatchResponseDto[];
 }

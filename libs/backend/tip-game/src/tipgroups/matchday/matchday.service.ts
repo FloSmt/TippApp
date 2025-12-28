@@ -44,14 +44,14 @@ export class MatchdayService {
       orderId: matchdayFromDb?.matchday.orderId || 0,
       name: matchdayFromDb?.matchday.name || '',
       matchCount: matchdayFromDb?.matchday.matches.length || 0,
-      matchdayId: matchdayId,
+      matchdayId: Number(matchdayId),
       league: {
         leagueId: matchData[0]?.leagueId || 0,
         leagueName: matchData[0]?.leagueName || '',
         leagueSeason: matchdayFromDb?.matchday.api_leagueSeason || 0,
         leagueShortcut: matchdayFromDb?.matchday.api_leagueShortcut || '',
       },
-      matches: mapApiMatchResponsesToMatchDayResponseDto(filteredMatchData),
+      matchList: mapApiMatchResponsesToMatchDayResponseDto(filteredMatchData),
     } satisfies MatchdayDetailsResponseDto;
   }
 }

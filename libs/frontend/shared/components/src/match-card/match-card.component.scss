@@ -1,0 +1,107 @@
+.match-card {
+  width: 100%;
+  margin-bottom: var(--ion-space-xl);
+
+  .match-info {
+    border-radius: var(--ion-border-radius-m);
+    background-color: var(--ion-background-color-step-50);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: var(--ion-space-xl);
+    padding: var(--ion-space-xl);
+    margin-right: var(--ion-space-s);
+
+    .match-score {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      .main {
+        background-color: var(--ion-background-color-step-150);
+        max-width: 5rem;
+        width: 100%;
+        padding: var(--ion-space-s) var(--ion-space-l);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        border-radius: var(--ion-border-radius-s) var(--ion-border-radius-s) 0 0;
+      }
+
+      .sub {
+        background: var(--ion-color-primary-gradient);
+        max-width: 5rem;
+        color: var(--ion-color-primary-contrast);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: var(--ion-space-s);
+        font-size: 1.25rem;
+        font-weight: bold;
+        border-radius: 0 0 var(--ion-border-radius-s) var(--ion-border-radius-s);
+
+
+      }
+    }
+
+    .team {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      grid-gap: var(--ion-space-xl);
+
+      .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          max-width: 3em;
+          max-height: 3em;
+        }
+      }
+
+      .name {
+        display: flex;
+        align-items: start;
+        justify-content: center;
+        text-align: center;
+
+        p {
+          margin: 0;
+          max-width: 100%;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+
+  }
+
+  .side-area {
+    background: var(--ion-color-primary-gradient);
+    border-radius: 0 var(--ion-border-radius-m) var(--ion-border-radius-m) 0;
+  }
+}
+
+@media (min-width: 600px) {
+  .match-info {
+    grid-template-columns: 1fr 0.25fr 1fr;
+  }
+  .team {
+    grid-gap: 1.5em !important;
+
+    &.home {
+      flex-direction: row-reverse !important;
+      justify-content: end !important;
+    }
+
+    &.away {
+      justify-content: start !important;
+      flex-direction: row !important;
+    }
+  }
+}

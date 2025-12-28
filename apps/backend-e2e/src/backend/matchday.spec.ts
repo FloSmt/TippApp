@@ -43,9 +43,9 @@ describe('MatchdayController (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body.matches).toBeDefined();
+      expect(response.body.matchList).toBeDefined();
       expect(response.body.matchdayId).toStrictEqual(matchdayId.toString());
-      expect(Array.isArray(response.body.matches)).toBe(true);
+      expect(Array.isArray(response.body.matchList)).toBe(true);
     });
 
     it('should return 404 when matchday not found', async () => {

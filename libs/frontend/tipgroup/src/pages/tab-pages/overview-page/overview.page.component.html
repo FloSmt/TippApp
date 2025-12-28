@@ -1,16 +1,26 @@
 <ion-content class="ion-padding">
-  @if (isLoadingDetails()) {
+  @if (isLoading().initial || isLoading().tipgroupDetails) {
     <div class="loading-container">
       <ion-spinner></ion-spinner>
     </div>
-  } @else if (isLoadingMatchdayData()) {
-    
   } @else {
-    @let matchdayOverview = this.matchdayOverview()!;
-    @let currentMatchday = this.currentMatchday!;
+    <lib-matchday-selector [allMatchdays]="matchdayOverview()"
+                           [currentMatchday]="currentMatchday()"
+                           [currentMatchdayId]="currentMatchdayId()"
+                           [disableSelection]="isLoading().matchday"
+                           (currentMatchdayIdChange)="handleMatchdayIdChange($event)">
+    </lib-matchday-selector>
 
-    <lib-matchday-selector [allMatchdays]="matchdayOverview"
-                           [currentMatchday]="currentMatchday"
-                           (selectedMatchdayId)="handleMatchdayChange($event)"></lib-matchday-selector>
+    @if (isLoading().matchday || !this.currentMatchday()) {
+      <p>Loading Matches</p>
+    } @else {
+      <section class="match-section">
+        <div class="matches-container">
+          @for (match of this.currentMatchday()!.matchList; track match.matchId) {
+            <lib-match-card [match]="match"></lib-match-card>
+          }
+        </div>
+      </section>
+    }
   }
 </ion-content>

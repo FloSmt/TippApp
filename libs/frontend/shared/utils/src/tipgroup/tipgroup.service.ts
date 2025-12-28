@@ -38,6 +38,12 @@ export class TipgroupService {
     );
   }
 
+  getCurrentMatchdayDetails(tipgroupId: number, seasonId: number): Observable<MatchdayDetailsResponseDto> {
+    return this.httpClient.get<MatchdayDetailsResponseDto>(
+      this.BACKEND_URL + `tipgroups/${tipgroupId}/seasons/${seasonId}/getCurrentMatchday`
+    );
+  }
+
   getMatchdayOverview(tipgroupId: number, seasonId: number): Observable<MatchdayOverviewResponseDto[]> {
     return this.httpClient.get<MatchdayOverviewResponseDto[]>(
       this.BACKEND_URL + `tipgroups/${tipgroupId}/seasons/${seasonId}/getAllMatchdays`

@@ -1,43 +1,91 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model } from '@angular/core';
 import { addIcons } from 'ionicons';
 import { caretBack, caretDown, caretForward } from 'ionicons/icons';
-import { IonIcon, ModalController } from '@ionic/angular/standalone';
+import { IonIcon, IonSkeletonText, ModalController } from '@ionic/angular/standalone';
 import { MatchdayDetailsResponseDto, MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
 import { SelectMatchdayDialogComponent } from './select-dialog/select-matchday.dialog.component';
 
 @Component({
   selector: 'lib-matchday-selector',
-  imports: [IonIcon],
+  imports: [IonIcon, IonSkeletonText],
   templateUrl: './matchday-selector.component.html',
   styleUrl: './matchday-selector.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatchdaySelectorComponent implements OnInit {
+export class MatchdaySelectorComponent {
   readonly modalController = inject(ModalController);
 
-  allMatchdays = input.required<MatchdayOverviewResponseDto[]>();
-  currentMatchday = input.required<MatchdayDetailsResponseDto>();
-  selectedMatchdayId = output<number>();
+  allMatchdays = input<MatchdayOverviewResponseDto[] | null>(null);
+  currentMatchday = input<MatchdayDetailsResponseDto | null>(null);
+  currentMatchdayId = model<number | null>(null);
+  disableSelection = input<boolean>(false);
 
   sortedMatchdays: MatchdayOverviewResponseDto[] = [];
 
+  isFirstSelected = computed(() => {
+    if (this.sortedMatchdays.length === 0) {
+      return true;
+    }
+
+    return this.currentMatchdayId() === this.sortedMatchdays[0].matchdayId;
+  });
+
+  isLastSelected = computed(() => {
+    if (this.sortedMatchdays.length === 0) {
+      return true;
+    }
+
+    return this.currentMatchdayId() === this.sortedMatchdays[this.sortedMatchdays.length - 1].matchdayId;
+  });
+
+  getMatchdayName = computed(() => {
+    const matchdayObject = this.sortedMatchdays.find(
+      (matchday) => matchday.matchdayId.toString() === this.currentMatchdayId()?.toString()
+    );
+    return matchdayObject?.name;
+  });
+
   constructor() {
     addIcons({ caretForward, caretBack, caretDown });
+    effect(() => {
+      if (this.allMatchdays() !== null) {
+        this.sortedMatchdays = this.allMatchdays()!.sort((a, b) => a.orderId - b.orderId);
+      }
+    });
   }
 
-  ngOnInit() {
-    this.sortMatchdays();
+  async selectNextEntry() {
+    if (this.isLastSelected() || this.sortedMatchdays.length === 0) {
+      return;
+    }
+
+    const currentIndex = this.sortedMatchdays.findIndex(
+      (t) => t.matchdayId.toString() === this.currentMatchdayId()?.toString()
+    );
+    const nextId = this.sortedMatchdays[currentIndex + 1].matchdayId;
+    this.currentMatchdayId.set(nextId);
   }
 
-  sortMatchdays() {
-    this.sortedMatchdays = this.allMatchdays().sort((a, b) => a.orderId - b.orderId);
+  async selectPreviousEntry() {
+    if (this.isFirstSelected() || this.sortedMatchdays.length === 0) {
+      return;
+    }
+
+    const currentIndex = this.sortedMatchdays.findIndex(
+      (t) => t.matchdayId.toString() === this.currentMatchdayId()?.toString()
+    );
+    this.currentMatchdayId.set(this.sortedMatchdays[currentIndex - 1].matchdayId);
   }
 
   async openSelectionDialog() {
+    if (this.disableSelection()) {
+      return;
+    }
+
     const modal = await this.modalController.create({
       component: SelectMatchdayDialogComponent,
-      componentProps: { allMatchdays: this.sortedMatchdays, currentSelectedId: this.currentMatchday().matchdayId },
-      breakpoints: [0.75, 1],
+      componentProps: { allMatchdays: this.sortedMatchdays, currentSelectedId: this.currentMatchdayId() },
+      breakpoints: [0, 0.75, 1],
       initialBreakpoint: 0.75,
     });
 
@@ -46,23 +94,7 @@ export class MatchdaySelectorComponent implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'selected') {
-      this.selectedMatchdayId.emit(data.selectedMatchdayId);
+      this.currentMatchdayId.set(data.selectedMatchdayId);
     }
-  }
-
-  isFirstEntrySelected(): boolean {
-    if (this.allMatchdays().length === 0) {
-      return true;
-    }
-
-    return this.currentMatchday().matchdayId === this.sortedMatchdays[0].matchdayId;
-  }
-
-  isLastEntrySelected(): boolean {
-    if (this.allMatchdays().length === 0) {
-      return true;
-    }
-
-    return this.currentMatchday().matchdayId === this.sortedMatchdays[this.sortedMatchdays.length - 1].matchdayId;
   }
 }

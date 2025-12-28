@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import {
   MatchdayDetailsResponseDto,
@@ -6,13 +6,26 @@ import {
   TipgroupDetailsResponseDto,
 } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, EMPTY, forkJoin, pipe, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  EMPTY,
+  filter,
+  forkJoin,
+  of,
+  pipe,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { TipgroupService } from '../tipgroup.service';
 
 export interface MatchdayCache {
   data: MatchdayDetailsResponseDto;
   ttl: number;
 }
+
+const CACHE_EXPIRATION = 1000 * 60 * 30; // 30 Sekunden
 
 type TipgroupDetailsState = {
   _selectedTipgroupId: number | null;
@@ -24,6 +37,7 @@ type TipgroupDetailsState = {
   _hasError: boolean;
   _isLoading: {
     tipgroupDetails: boolean;
+    initial: boolean;
     matchday: boolean;
   };
 };
@@ -38,6 +52,7 @@ const initialState: TipgroupDetailsState = {
   _hasError: false,
   _isLoading: {
     tipgroupDetails: false,
+    initial: false,
     matchday: false,
   },
 };
@@ -46,26 +61,24 @@ export const TipgroupDetailsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => ({
-    getCurrentMatchday: () => {
-      if (store._selectedMatchdayId() !== null) {
-        const loadedCache = store._loadedMatchdays().get(store._selectedMatchdayId()!);
+    getCurrentMatchday: computed(() => {
+      const id = store._selectedMatchdayId();
+      const cache = store._loadedMatchdays();
+      console.log(cache);
+
+      if (id !== null) {
+        const loadedCache = cache.get(id);
+        console.log('loaded', loadedCache);
         return loadedCache ? loadedCache.data : null;
       }
 
       return null;
-    },
+    }),
 
-    getTipgroupDetails: () => {
-      return store._tipgroupDetails;
-    },
-
-    getMatchdayOverview: () => {
-      return store._matchdayOverview;
-    },
-
-    isLoading: () => {
-      return { tipgroupDetails: store._isLoading.tipgroupDetails, matchdayData: store._isLoading.matchday };
-    },
+    getSelectedMatchdayId: computed(() => store._selectedMatchdayId),
+    getTipgroupDetails: computed(() => store._tipgroupDetails),
+    getMatchdayOverview: computed(() => store._matchdayOverview),
+    isLoading: computed(() => store._isLoading),
   })),
 
   withMethods((store) => ({
@@ -88,23 +101,38 @@ export const TipgroupDetailsStore = signalStore(
       });
     },
 
+    getMatchdaySuccess: (data: MatchdayDetailsResponseDto) => {
+      patchState(store, {
+        _loadedMatchdays: new Map(store._loadedMatchdays()).set(data.matchdayId, { data: data, ttl: Date.now() }),
+        _isLoading: { ...store._isLoading(), matchday: false },
+      });
+    },
+
+    getMatchdayFailure: () => {
+      patchState(store, {
+        _isLoading: { ...store._isLoading(), matchday: false },
+        _hasError: true,
+      });
+    },
+
     loadInitialDataSuccess: (
       currentMatchday: MatchdayDetailsResponseDto,
       allMatchdays: MatchdayOverviewResponseDto[]
     ) => {
       patchState(store, {
-        _loadedMatchdays: store
-          ._loadedMatchdays()
-          .set(currentMatchday.matchdayId, { data: currentMatchday, ttl: Date.now() }),
+        _loadedMatchdays: new Map(store._loadedMatchdays()).set(currentMatchday.matchdayId, {
+          data: currentMatchday,
+          ttl: Date.now(),
+        }),
         _matchdayOverview: allMatchdays,
         _selectedMatchdayId: currentMatchday.matchdayId,
-        _isLoading: { ...store._isLoading(), matchday: false },
+        _isLoading: { ...store._isLoading(), initial: false },
       });
     },
 
     loadInitialDataFailure: (error: any) => {
       patchState(store, {
-        _isLoading: { ...store._isLoading(), matchday: false },
+        _isLoading: { ...store._isLoading(), initial: false },
         _hasError: true,
       });
     },
@@ -115,8 +143,8 @@ export const TipgroupDetailsStore = signalStore(
       pipe(
         tap(({ tipgroupId }) => {
           patchState(store, {
-            _isLoading: { ...store._isLoading(), tipgroupDetails: true, matchday: true },
-            _selectedTipgroupId: tipgroupId,
+            _isLoading: { ...store._isLoading(), tipgroupDetails: true, initial: true },
+            _selectedTipgroupId: Number(tipgroupId),
           });
         }),
         switchMap(({ tipgroupId }) => {
@@ -132,7 +160,10 @@ export const TipgroupDetailsStore = signalStore(
         }),
         switchMap((tipgroupDetails) =>
           forkJoin({
-            current: tipgroupService.getMatchdayDetails(tipgroupDetails.id, tipgroupDetails.currentSeasonId || 0, 1),
+            current: tipgroupService.getCurrentMatchdayDetails(
+              tipgroupDetails.id,
+              tipgroupDetails.currentSeasonId || 0
+            ),
             overview: tipgroupService.getMatchdayOverview(tipgroupDetails.id, tipgroupDetails.currentSeasonId || 0),
           }).pipe(
             tap(({ current, overview }) => store.loadInitialDataSuccess(current, overview)),
@@ -142,6 +173,42 @@ export const TipgroupDetailsStore = signalStore(
             })
           )
         )
+      )
+    ),
+
+    loadMatchdayDetails: rxMethod<number | null>(
+      pipe(
+        distinctUntilChanged(),
+        filter((id) => id !== null),
+        debounceTime(500),
+        tap((id) => {
+          const cachedMatchday = store._loadedMatchdays().get(id);
+          if (cachedMatchday) {
+            // show cached data directly to the user
+            patchState(store, { _isLoading: { ...store._isLoading(), matchday: false }, _selectedMatchdayId: id });
+          } else {
+            patchState(store, { _isLoading: { ...store._isLoading(), matchday: true }, _selectedMatchdayId: id });
+          }
+        }),
+        switchMap((id) => {
+          const cachedMatchday = store._loadedMatchdays().get(id);
+          const now = Date.now();
+
+          if (cachedMatchday && cachedMatchday.ttl) {
+            const lastUpdated = new Date(cachedMatchday.ttl).getTime();
+            if (now - lastUpdated < CACHE_EXPIRATION) {
+              console.log('USE CACHED DATA');
+              return of(null);
+            }
+          }
+          return tipgroupService.getMatchdayDetails(store._selectedTipgroupId()!, store._selectedSeasonId()!, id).pipe(
+            tap((data) => store.getMatchdaySuccess(data)),
+            catchError(() => {
+              store.getMatchdayFailure();
+              return EMPTY;
+            })
+          );
+        })
       )
     ),
   }))
