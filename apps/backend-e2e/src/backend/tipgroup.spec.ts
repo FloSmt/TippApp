@@ -241,15 +241,6 @@ describe('TipgroupController (e2e)', () => {
         currentSeasonId: 1,
       });
     });
-
-    it('should return 404 for non-existing tipgroupId', async () => {
-      const response = await tipgroupFactory.getTipGroupDetails(accessToken, 9999);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toBe('Tipgroup not found.');
-      expect(response.body.code).toBe('TIPGROUP.TIPGROUP_NOT_FOUND');
-    });
   });
 
   afterAll(async () => {

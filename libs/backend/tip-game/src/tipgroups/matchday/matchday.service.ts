@@ -8,9 +8,9 @@ import { mapApiMatchResponsesToMatchDayResponseDto } from '../../helper/response
 @Injectable()
 export class MatchdayService {
   constructor(
-    private apiService: ApiService,
-    private errorManager: ErrorManagerService,
-    private matchdayRepository: MatchdayRepository
+    private readonly apiService: ApiService,
+    private readonly errorManager: ErrorManagerService,
+    private readonly matchdayRepository: MatchdayRepository
   ) {}
 
   public async getMatchdayDetails(

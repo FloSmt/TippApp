@@ -6,6 +6,8 @@ export const API_ROUTES = {
     SEASON: {
       GET_ALL_MATCHDAYS: (tipgroupId: number, seasonId: number) =>
         `/tipgroups/${tipgroupId}/seasons/${seasonId}/getAllMatchdays`,
+      GET_CURRENT_MATCHDAY: (tipgroupId: number, seasonId: number) =>
+        `/tipgroups/${tipgroupId}/seasons/${seasonId}/getCurrentMatchday`,
     },
     MATCHDAY: {
       GET_DETAILS: (tipgroupId: number, seasonId: number, matchdayId: number) =>

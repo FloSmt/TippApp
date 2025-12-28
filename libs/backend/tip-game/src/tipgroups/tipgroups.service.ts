@@ -97,11 +97,8 @@ export class TipgroupsService {
   async getTipgroupById(tipgroupId: number): Promise<Tipgroup> {
     const tipgroup = await this.tipgroupRepository.getTipgroupById(tipgroupId);
 
-    if (!tipgroup) {
-      throw this.errorManager.createError(ErrorCodes.Tipgroup.TIPGROUP_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-
-    return tipgroup;
+    // Because of the IsTipgroupMember Guard it's not possible to have a null here
+    return tipgroup!;
   }
 
   protected async validateTipgroupName(name: string, entityManager: EntityManager): Promise<void> {

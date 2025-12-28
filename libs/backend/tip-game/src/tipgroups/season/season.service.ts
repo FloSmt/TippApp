@@ -5,18 +5,21 @@ import {
   Match,
   MatchApiResponse,
   Matchday,
+  MatchdayDetailsResponseDto,
   MatchdayOverviewResponseDto,
   TipSeason,
 } from '@tippapp/shared/data-access';
 import { EntityManager } from 'typeorm';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { SeasonRepository } from '@tippapp/backend/shared';
+import { MatchdayService } from '../matchday/matchday.service';
 
 @Injectable()
 export class SeasonService {
   constructor(
     private readonly seasonRepository: SeasonRepository,
-    private readonly errorManager: ErrorManagerService
+    private readonly errorManager: ErrorManagerService,
+    private readonly matchdayService: MatchdayService
   ) {}
 
   /**
@@ -73,5 +76,19 @@ export class SeasonService {
     }
 
     return this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
+  }
+
+  async getCurrentMatchday(
+    tipgroupId: number,
+    seasonId: number | null | undefined
+  ): Promise<MatchdayDetailsResponseDto> {
+    if (!seasonId || !Number.isInteger(Number(seasonId))) {
+      throw this.errorManager.createError(ErrorCodes.Tipgroup.SEASON_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    // Now it returns the first Matchday. Later it will be returning a calculated Matchday.
+    const allMatchdays = await this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
+
+    return this.matchdayService.getMatchdayDetails(tipgroupId, seasonId, allMatchdays[0].matchdayId);
   }
 }

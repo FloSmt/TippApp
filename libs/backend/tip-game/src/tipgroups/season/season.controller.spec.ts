@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
+import { MatchdayDetailsResponseDto, MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
 import { SeasonController } from './season.controller';
 import { SeasonService } from './season.service';
 import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.service';
@@ -44,5 +44,17 @@ describe('SeasonController', () => {
       { matchdayId: 1, matches: [] },
       { matchdayId: 2, matches: [] },
     ]);
+  });
+
+  it('should response the current matchday', async () => {
+    seasonService.getCurrentMatchday.mockResolvedValue({
+      matchdayId: 1,
+      matches: [],
+    } as unknown as MatchdayDetailsResponseDto);
+
+    const params = { tipgroupId: 1, seasonId: 1 };
+    const result = await controller.getCurrentMatchday(params);
+    expect(seasonService.getCurrentMatchday).toHaveBeenCalledWith(1, 1);
+    expect(result).toEqual({ matchdayId: 1, matches: [] });
   });
 });

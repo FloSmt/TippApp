@@ -5,10 +5,15 @@ import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SeasonService } from './season.service';
+import { MatchdayService } from '../matchday/matchday.service';
 
 describe('SeasonService', () => {
   let service: SeasonService;
   let errorManagerServiceMock: DeepMocked<ErrorManagerService>;
+
+  const matchdayServiceMock = {
+    getMatchdayDetails: jest.fn(),
+  };
 
   const seasonRepositoryMock = {
     getAllMatchdays: jest.fn(),
@@ -21,6 +26,10 @@ describe('SeasonService', () => {
         {
           provide: SeasonRepository,
           useValue: seasonRepositoryMock,
+        },
+        {
+          provide: MatchdayService,
+          useValue: matchdayServiceMock,
         },
         {
           provide: ErrorManagerService,
@@ -108,6 +117,37 @@ describe('SeasonService', () => {
       expect(result).toEqual(mockMatchdays);
       expect(seasonRepositoryMock.getAllMatchdays).toHaveBeenCalledWith(1, 10);
       expect(errorManagerServiceMock.createError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getCurrentMatchday', () => {
+    it('should throw an error if seasonId is null, undefined or not an integer', async () => {
+      const invalidIds = [null, undefined, 'abc', 1.5];
+
+      for (const id of invalidIds) {
+        await expect(service.getCurrentMatchday(1, id as any)).rejects.toThrow(HttpException);
+        expect(errorManagerServiceMock.createError).toHaveBeenCalledWith(
+          ErrorCodes.Tipgroup.SEASON_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        );
+      }
+    });
+    it('should return the current Matchday of the Season', async () => {
+      const mockMatchdays = [
+        { matchdayId: 1, name: 'Spieltag 1' },
+        { matchdayId: 2, name: 'Spieltag 2' },
+      ];
+
+      const resolvedMatchday = { matchdayId: 1, name: 'Spieltag 1', orderId: 1 };
+
+      seasonRepositoryMock.getAllMatchdays.mockResolvedValue(mockMatchdays);
+      matchdayServiceMock.getMatchdayDetails.mockResolvedValue(resolvedMatchday);
+
+      const result = await service.getCurrentMatchday(1, 1);
+
+      expect(result).toBe(resolvedMatchday);
+      expect(seasonRepositoryMock.getAllMatchdays).toHaveBeenCalledWith(1, 1);
+      expect(matchdayServiceMock.getMatchdayDetails).toHaveBeenCalledWith(1, 1, mockMatchdays[0].matchdayId);
     });
   });
 

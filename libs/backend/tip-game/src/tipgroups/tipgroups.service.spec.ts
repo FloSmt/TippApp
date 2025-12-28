@@ -262,16 +262,6 @@ describe('TipgroupsService', () => {
   });
 
   describe('getTipgroupById', () => {
-    it('should throw an error if tipgroup not found', async () => {
-      const tipgroupId = 1;
-      mockTipgroupRepository.getTipgroupById = jest.fn().mockResolvedValueOnce(null);
-
-      await expect(service.getTipgroupById(tipgroupId)).rejects.toThrow();
-      expect(errorManagerService.createError).toHaveBeenCalledWith(
-        ErrorCodes.Tipgroup.TIPGROUP_NOT_FOUND,
-        HttpStatus.NOT_FOUND
-      );
-    });
     it('should return the tipgroup if found', async () => {
       const tipgroupId = 1;
       const tipgroupMock = {

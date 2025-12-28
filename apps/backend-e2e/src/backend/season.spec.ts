@@ -58,6 +58,34 @@ describe('SeasonController (e2e)', () => {
     });
   });
 
+  describe('GET /tipgroups/:tipgroupId/seasons/:seasonId/getCurrentMatchday', () => {
+    it('should return 200 and the current matchday', async () => {
+      const response = await request(app.getHttpServer())
+        .get(API_ROUTES.TIPGROUP.SEASON.GET_CURRENT_MATCHDAY(tipgroupId, 1))
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+      expect(response.body).toHaveProperty('matchdayId');
+      expect(response.body).toHaveProperty('name');
+      expect(response.body).toHaveProperty('orderId');
+      expect(response.body).toHaveProperty('matchCount');
+      expect(response.body.matches).toBeDefined();
+      expect(response.body.matchdayId).toStrictEqual(1);
+      expect(Array.isArray(response.body.matches)).toBe(true);
+    });
+
+    it('should return 404 when given parameters are missing', async () => {
+      const response = await request(app.getHttpServer())
+        .get(API_ROUTES.TIPGROUP.SEASON.GET_CURRENT_MATCHDAY(tipgroupId, 'xx' as any))
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toBeDefined();
+      expect(response.body.code).toBe('TIPGROUP.SEASON_NOT_FOUND');
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

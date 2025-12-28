@@ -79,7 +79,6 @@ export class TipgroupsController {
     endpointSummary: 'returns the tipgroup details for the given tipgroup id',
     responseType: TipgroupDetailsResponseDto,
   })
-  @ErrorResponse(HttpStatus.NOT_FOUND, ErrorCodes.Tipgroup.TIPGROUP_NOT_FOUND)
   async getTipgroupDetails(@Request() req: any): Promise<TipgroupDetailsResponseDto> {
     const tipgroupId = req.params.tipgroupId;
 
