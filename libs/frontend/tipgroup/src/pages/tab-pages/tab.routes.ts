@@ -47,7 +47,7 @@ export const tabRoutes: Routes = [
       },
 
       {
-        path: 'settings',
+        path: 'statistics',
         children: [
           {
             path: '',

@@ -1,23 +1,46 @@
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="overview">
-      <ion-icon name="albums"></ion-icon>
-      <ion-label>Übersicht</ion-label>
-    </ion-tab-button>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <div>
+        Übersicht
+        <p class="subtitle">
+          @if (isLoadingDetails()) {
+            <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+          } @else {
+            {{ tipgroupDetails()?.name }}
+          }
+        </p>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end" id="profile-button">
+      <ion-button fill="clear" color="black">
+        <ion-icon name="person"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="overview">
+        <ion-icon name="albums"></ion-icon>
+        <ion-label>Übersicht</ion-label>
+      </ion-tab-button>
 
-    <ion-tab-button tab="tips">
-      <ion-icon name="dice"></ion-icon>
-      <ion-label>Tipps</ion-label>
-    </ion-tab-button>
+      <ion-tab-button tab="tips">
+        <ion-icon name="dice"></ion-icon>
+        <ion-label>Tipps</ion-label>
+      </ion-tab-button>
 
-    <ion-tab-button tab="table">
-      <ion-icon name="podium"></ion-icon>
-      <ion-label>Tabelle</ion-label>
-    </ion-tab-button>
+      <ion-tab-button tab="table">
+        <ion-icon name="podium"></ion-icon>
+        <ion-label>Tabelle</ion-label>
+      </ion-tab-button>
 
-    <ion-tab-button tab="settings">
-      <ion-icon name="menu"></ion-icon>
-      <ion-label>Weiteres</ion-label>
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-tabs>
+      <ion-tab-button tab="statistics">
+        <ion-icon name="bar-chart"></ion-icon>
+        <ion-label>Statistik</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</ion-content>

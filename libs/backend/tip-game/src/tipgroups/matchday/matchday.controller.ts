@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
-import { ErrorCodes, MatchdayResponseDto } from '@tippapp/shared/data-access';
+import { ErrorCodes, MatchdayDetailsResponseDto } from '@tippapp/shared/data-access';
 import { ErrorResponse } from '@tippapp/backend/error-handling';
 import { DefaultResponse } from '@tippapp/backend/shared';
 import { MatchdayService } from './matchday.service';
@@ -31,7 +31,7 @@ export class MatchdayController {
   @DefaultResponse({
     httpStatus: HttpStatus.OK,
     endpointSummary: 'Gets details of a specific matchday including all matches',
-    responseType: MatchdayResponseDto,
+    responseType: MatchdayDetailsResponseDto,
   })
   @ErrorResponse(HttpStatus.NOT_FOUND, ErrorCodes.Tipgroup.MATCHDAY_DETAILS_NOT_FOUND)
   public async getMatchday(@Param() params: { tipgroupId: number; seasonId: number; matchdayId: number }) {

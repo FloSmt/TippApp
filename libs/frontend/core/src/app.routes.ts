@@ -13,7 +13,7 @@ export const routes: Routes = [
     loadChildren: () => import('@tippapp/frontend/auth').then((m) => m.routes),
   },
   {
-    path: 'tipgroup/:tippgroupId',
+    path: 'tipgroup/:tipgroupId',
     canActivate: [authGuard],
     loadChildren: () => import('@tippapp/frontend/tipgroup').then((m) => m.tabRoutes),
   },

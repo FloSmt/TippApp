@@ -1,7 +1,7 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
 :root {
-  --ion-color-primary: #edb608; // #edb608
+  --ion-color-primary: #edb608;
   --ion-color-primary-rgb: 255, 196, 9;
   --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0, 0, 0;
@@ -425,8 +425,7 @@ ion-header {
     font-size: 15px;
     font-weight: 400;
     color: var(--ion-text-color-step-50);
-    margin-top: 0;
-    margin-bottom: var(--ion-space-xl);
+    margin: 3px 0 0;
   }
 
   &.header-collapse-condense {

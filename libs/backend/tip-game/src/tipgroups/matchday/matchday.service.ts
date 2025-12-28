@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ErrorCodes, MatchApiResponse, MatchdayResponseDto } from '@tippapp/shared/data-access';
+import { ErrorCodes, MatchApiResponse, MatchdayDetailsResponseDto } from '@tippapp/shared/data-access';
 import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { MatchdayRepository } from '@tippapp/backend/shared';
@@ -17,7 +17,7 @@ export class MatchdayService {
     tipgroupId: number,
     seasonId: number,
     matchdayId: number
-  ): Promise<MatchdayResponseDto> {
+  ): Promise<MatchdayDetailsResponseDto> {
     const matchdayFromDb = await this.matchdayRepository.getMatchdayFromDb(tipgroupId, seasonId, matchdayId);
 
     if (
@@ -52,6 +52,6 @@ export class MatchdayService {
         leagueShortcut: matchdayFromDb?.matchday.api_leagueShortcut || '',
       },
       matches: mapApiMatchResponsesToMatchDayResponseDto(filteredMatchData),
-    } satisfies MatchdayResponseDto;
+    } satisfies MatchdayDetailsResponseDto;
   }
 }

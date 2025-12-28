@@ -1,0 +1,10 @@
+<ion-content class="ion-padding">
+  <ion-item-group class="item-group">
+    @for (matchday of allMatchdays; track matchday.matchdayId) {
+      <ion-item [class.current]="matchday.matchdayId === currentSelectedId"
+                (click)="handleSelection(matchday.matchdayId)">
+        <h3>{{ matchday.name }}</h3>
+      </ion-item>
+    }
+  </ion-item-group>
+</ion-content>

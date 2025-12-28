@@ -1,1 +1,16 @@
-<p>overview.page works!</p>
+<ion-content class="ion-padding">
+  @if (isLoadingDetails()) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+    </div>
+  } @else if (isLoadingMatchdayData()) {
+    
+  } @else {
+    @let matchdayOverview = this.matchdayOverview()!;
+    @let currentMatchday = this.currentMatchday!;
+
+    <lib-matchday-selector [allMatchdays]="matchdayOverview"
+                           [currentMatchday]="currentMatchday"
+                           (selectedMatchdayId)="handleMatchdayChange($event)"></lib-matchday-selector>
+  }
+</ion-content>

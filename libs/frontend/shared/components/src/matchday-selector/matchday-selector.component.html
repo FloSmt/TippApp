@@ -1,0 +1,19 @@
+<div class="arrow-container left">
+  <div class="arrow" [class.disabled]="isFirstEntrySelected()">
+    <ion-icon name="caret-back"></ion-icon>
+  </div>
+</div>
+<div class="selection-container" tabindex="0" aria-modal="true" role="button" (click)="openSelectionDialog()">
+  <div class="selection">
+    <p class="selection-league truncate-one-line-text">{{ currentMatchday().league.leagueName }}</p>
+    <p class="selection-name">{{ currentMatchday().name }}</p>
+  </div>
+  <div>
+    <ion-icon name="caret-down"></ion-icon>
+  </div>
+</div>
+<div class="arrow-container right">
+  <div class="arrow" [class.disabled]="isLastEntrySelected()">
+    <ion-icon name="caret-forward"></ion-icon>
+  </div>
+</div>

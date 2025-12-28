@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MatchdayResponseDto } from '@tippapp/shared/data-access';
+import { MatchdayDetailsResponseDto } from '@tippapp/shared/data-access';
 import { MatchdayController } from './matchday.controller';
 import { MatchdayService } from './matchday.service';
 import { IsTipgroupMemberGuard } from '../../guards/is-tipgroup-member.guard.service';
@@ -35,7 +35,7 @@ describe('MatchdayController', () => {
     matchdayServiceMock.getMatchdayDetails.mockResolvedValue({
       matchdayId: 1,
       matches: [],
-    } as unknown as MatchdayResponseDto);
+    } as unknown as MatchdayDetailsResponseDto);
 
     const params = { tipgroupId: 1, seasonId: 2024, matchdayId: 1 };
     const result = await controller.getMatchday(params);

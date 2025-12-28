@@ -1,0 +1,9 @@
+.item-group {
+  margin-top: 1rem;
+
+  .current {
+    --background: var(--ion-color-primary-gradient);
+    --color: var(--ion-color-primary-contrast);
+  }
+
+}
