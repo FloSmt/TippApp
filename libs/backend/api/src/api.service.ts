@@ -28,7 +28,10 @@ export class ApiService {
   private readonly allowedLeagues = ['bl1', 'bl2', 'pl', 'sa', 'pd', 'fl1', 'ded'];
 
   // Cache for match data with a key based on leagueShortcut, season, and groupId
-  private matchDataCache: { [key: string]: { data: MatchApiResponse[]; lastUpdate: Date } } = {};
+  // data - contains the response of the api
+  // lastUpdate - Date when the source was updated
+  // lastCheck - Date when, the cache data was updated last time
+  private matchDataCache: { [key: string]: { data: MatchApiResponse[]; lastUpdate: Date; lastCheck: Date } } = {};
 
   /**
    * Gets match data for a specific league, season, and group. If the data is cached and up-to-date, it returns the cached data.
@@ -43,13 +46,12 @@ export class ApiService {
 
     // Check if data is in cache
     if (this.matchDataCache[cacheKey]) {
-      console.log('Found cached match data');
       const cachedData = this.matchDataCache[cacheKey];
       const timeout = 1000 * 60 * 3; // 3 minutes
       const now = Date.now();
 
       // If cached data is recent enough, return it
-      if (now - cachedData.lastUpdate.getTime() < timeout) {
+      if (now - cachedData.lastCheck.getTime() < timeout) {
         console.log('Returning recently cached match data');
         return cachedData.data;
       }
@@ -59,7 +61,7 @@ export class ApiService {
       // If the last updated date matches, return cached data
       if (cachedData.lastUpdate.getTime() === lastUpdatedDate.getTime()) {
         console.log('Returning cached match data');
-        this.matchDataCache[cacheKey] = { data: cachedData.data, lastUpdate: lastUpdatedDate };
+        this.matchDataCache[cacheKey] = { data: cachedData.data, lastUpdate: lastUpdatedDate, lastCheck: new Date() };
         return cachedData.data;
       }
     }
@@ -73,6 +75,7 @@ export class ApiService {
     this.matchDataCache[cacheKey] = {
       data: matchData,
       lastUpdate: new Date(lastUpdatedDate),
+      lastCheck: new Date(),
     };
 
     return matchData;

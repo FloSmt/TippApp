@@ -1,5 +1,10 @@
-<div class="match-card">
-  <div class="match-info">
+<div class="match-card" [class]="{
+'is-live': matchState === MatchState.LIVE,
+'is-upcoming-far': matchState === MatchState.UPCOMING_FAR,
+'is-upcoming-soon': matchState === MatchState.UPCOMING_SOON,
+'is-finished': matchState === MatchState.FINISHED
+}">
+  <div class="match-infos">
     <div class="team home">
       <div class="logo">
         <img [src]="match().homeTeam.logoUrl" alt="">
@@ -9,8 +14,11 @@
       </div>
     </div>
     <div class="match-score">
-      <div class="main">{{ match().scores.homeTeamScore }}:{{ match().scores.awayTeamScore }}</div>
-      <div class="sub">-:-</div>
+      <div class="main">{{ currentSubString() }}</div>
+      <div class="sub">{{ getScoreSubContent() }}</div>
+      @if (matchState === MatchState.LIVE) {
+        <div class="live-icon"><span class="dot"></span>LIVE</div>
+      }
     </div>
     <div class="team away">
       <div class="logo">

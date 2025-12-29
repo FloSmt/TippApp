@@ -12,6 +12,19 @@
   justify-content: center;
   align-items: center;
 
+  .date-text {
+    margin-bottom: var(--ion-space-l);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    color: var(--ion-text-subtile-color);
+
+    ion-icon {
+      margin-right: var(--ion-space-m);
+      color: var(--ion-color-primary-shade)
+    }
+  }
+
   .matches-container {
     width: 20cm;
   }

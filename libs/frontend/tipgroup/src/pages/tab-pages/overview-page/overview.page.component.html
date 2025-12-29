@@ -16,9 +16,30 @@
     } @else {
       <section class="match-section">
         <div class="matches-container">
-          @for (match of this.currentMatchday()!.matchList; track match.matchId) {
-            <lib-match-card [match]="match"></lib-match-card>
+          @for (liveMatch of this.groupedMatchdays.live; track liveMatch.matchId) {
+            <lib-match-card [match]="liveMatch"></lib-match-card>
           }
+
+          @for (upcomingMatchGroup of this.groupedMatchdays.upcoming; track upcomingMatchGroup.dateLabel) {
+            <p class="date-text">
+              <ion-icon class="icon" name="today"></ion-icon>
+              {{ upcomingMatchGroup.dateLabel }}
+            </p>
+            @for (upcomingMatch of upcomingMatchGroup.matchList; track upcomingMatch.matchId) {
+              <lib-match-card [match]="upcomingMatch"></lib-match-card>
+            }
+          }
+
+          @for (finishedMatchGroup of this.groupedMatchdays.finished; track finishedMatchGroup.dateLabel) {
+            <p class="date-text">
+              <ion-icon class="icon" name="today"></ion-icon>
+              {{ finishedMatchGroup.dateLabel }}
+            </p>
+            @for (upcomingMatch of finishedMatchGroup.matchList; track upcomingMatch.matchId) {
+              <lib-match-card [match]="upcomingMatch"></lib-match-card>
+            }
+          }
+
         </div>
       </section>
     }

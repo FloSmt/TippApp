@@ -13,6 +13,9 @@ export class MatchResponseDto {
   scheduledDateTime: string;
 
   @ApiProperty()
+  isFinished: boolean;
+
+  @ApiProperty()
   homeTeam: TeamDto;
 
   @ApiProperty()

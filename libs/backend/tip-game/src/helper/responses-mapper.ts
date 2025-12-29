@@ -5,6 +5,7 @@ export function mapApiMatchResponsesToMatchDayResponseDto(apiMatch: MatchApiResp
     matchId: match.matchId,
     lastUpdatedDateTime: match.lastUpdatedDateTime,
     scheduledDateTime: match.matchDateTime,
+    isFinished: match.matchIsFinished,
     homeTeam: {
       teamId: match.team1.teamId,
       name: match.team1.teamName,

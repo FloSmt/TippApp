@@ -70,7 +70,7 @@ describe('ApiService', () => {
 
   describe('getMatchData', () => {
     it('should return cached data if the last fetch was within the cache duration', async () => {
-      jest.spyOn(Date, 'now').mockReturnValueOnce(new Date('2024-06-01T12:00:00Z').getTime());
+      jest.spyOn(Date, 'now').mockReturnValueOnce(new Date('2024-07-01T12:00:00Z').getTime());
       const getLastUpdatedMachdayDateMock = jest.spyOn(service as any, 'getLastUpdatedMatchdayDate');
       const getMatchDataFromApiSpy = jest.spyOn(service as any, 'getMatchDataFromApi');
 
@@ -78,6 +78,7 @@ describe('ApiService', () => {
         bl1_2024_1: {
           data: MatchResponseMock,
           lastUpdate: new Date('2024-06-01T11:59:00Z'),
+          lastCheck: new Date('2024-07-01T11:59:00Z'),
         },
       };
 
@@ -90,12 +91,13 @@ describe('ApiService', () => {
     });
 
     it('should return cached data if the api last updated date matches the cached last update date', async () => {
-      jest.spyOn(Date, 'now').mockReturnValueOnce(new Date('2024-06-01T12:00:00Z').getTime());
+      jest.spyOn(Date, 'now').mockReturnValueOnce(new Date('2024-07-01T12:03:00Z').getTime());
 
       service['matchDataCache'] = {
         bl1_2024_1: {
           data: MatchResponseMock,
           lastUpdate: new Date('2024-05-31T10:00:00Z'),
+          lastCheck: new Date('2024-07-01T11:59:00Z'),
         },
       };
 
@@ -112,12 +114,13 @@ describe('ApiService', () => {
     });
 
     it('should fetch new data if the api last updated date is different', async () => {
-      jest.spyOn(Date, 'now').mockReturnValueOnce(new Date('2024-06-01T12:00:00Z').getTime());
+      jest.spyOn(Date, 'now').mockReturnValueOnce(new Date('2024-07-01T12:03:00Z').getTime());
 
       service['matchDataCache'] = {
         bl1_2024_1: {
           data: MatchResponseMock,
           lastUpdate: new Date('2024-05-30T10:00:00Z'),
+          lastCheck: new Date('2024-07-01T11:59:00Z'),
         },
       };
 
