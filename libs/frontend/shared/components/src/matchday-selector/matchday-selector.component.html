@@ -7,14 +7,14 @@
 </div>
 <div class="selection-container" tabindex="1" aria-modal="true" role="button" (click)="openSelectionDialog()">
   <div class="selection">
-    <p class="selection-league truncate-one-line-text">
+    <h3 class="selection-league truncate-one-line-text">
       @if (currentMatchday()) {
         {{ currentMatchday()!.league.leagueName }}
       } @else {
         <ion-skeleton-text [animated]="true" style="width: 150px; height: 1em"></ion-skeleton-text>
       }
-    </p>
-    <p class="selection-name">{{ getMatchdayName() }}</p>
+    </h3>
+    <p class="selection-name text-small">{{ getMatchdayName() }}</p>
   </div>
   <div>
     <ion-icon name="caret-down"></ion-icon>

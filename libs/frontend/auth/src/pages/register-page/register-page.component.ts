@@ -1,31 +1,13 @@
 import { Component, effect, inject } from '@angular/core';
 
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { mail } from 'ionicons/icons';
-import {
-  AuthStore,
-  confirmPasswordValidator,
-  ErrorManagementService,
-} from '@tippapp/frontend/utils';
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonInputPasswordToggle,
-  IonLabel,
-  IonSpinner,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+import { AuthStore, confirmPasswordValidator, ErrorManagementService } from '@tippapp/frontend/utils';
+import { IonButton, IonContent, IonLabel, IonSpinner } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
+import { CustomInputComponent, CustromHeaderComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-register-page',
@@ -35,12 +17,10 @@ import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
     IonLabel,
     IonSpinner,
     IonButton,
-    IonInputPasswordToggle,
-    IonInput,
     IonContent,
-    IonHeader,
-    IonToolbar
-],
+    CustomInputComponent,
+    CustromHeaderComponent,
+  ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
 })
@@ -50,19 +30,10 @@ export class RegisterPageComponent {
   readonly router = inject(Router);
 
   registerForm = new FormGroup({
-    username: new FormControl('', [
-      Validators.required,
-      Validators.minLength(3),
-    ]),
+    username: new FormControl('', [Validators.required, Validators.minLength(3)]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-    ]),
-    confirmPassword: new FormControl('', [
-      Validators.required,
-      confirmPasswordValidator('password'),
-    ]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    confirmPassword: new FormControl('', [Validators.required, confirmPasswordValidator('password')]),
   });
 
   isLoading = this.authStore.isLoading;
@@ -75,8 +46,7 @@ export class RegisterPageComponent {
       }
 
       if (this.authStore.hasError()) {
-        const errorMessages: ApiValidationErrorMessage[] | null =
-          this.authStore.error();
+        const errorMessages: ApiValidationErrorMessage[] | null = this.authStore.error();
         if (errorMessages) {
           errorMessages.forEach((error) => {
             const control = this.registerForm.get(error.property);

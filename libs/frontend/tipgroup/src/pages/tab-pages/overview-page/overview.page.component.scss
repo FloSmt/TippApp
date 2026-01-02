@@ -1,3 +1,7 @@
+ion-content {
+  --padding-top: var(--ion-space-xxxl) !important;
+}
+
 .loading-container {
   display: flex;
   justify-content: center;
@@ -6,22 +10,25 @@
 }
 
 .match-section {
-  margin-top: 2rem;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 
   .date-text {
-    margin-bottom: var(--ion-space-l);
-    font-size: 0.9rem;
+    margin-bottom: var(--ion-space-s);
+    margin-top: var(--ion-space-xl);
     display: flex;
     align-items: center;
-    color: var(--ion-text-subtile-color);
+    padding-inline-start: var(--ion-space-m);
 
-    ion-icon {
+
+    .line {
+      height: 12px;
+      width: 3px;
+      border-radius: var(--ion-border-radius-m);
+      background-color: var(--ion-color-primary);
       margin-right: var(--ion-space-m);
-      color: var(--ion-color-primary-shade)
     }
   }
 

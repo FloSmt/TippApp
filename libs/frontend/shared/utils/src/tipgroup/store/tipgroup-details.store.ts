@@ -3,7 +3,6 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import {
   MatchdayDetailsResponseDto,
   MatchdayOverviewResponseDto,
-  MatchResponseDto,
   TipgroupDetailsResponseDto,
 } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -118,129 +117,9 @@ export const TipgroupDetailsStore = signalStore(
       currentMatchday: MatchdayDetailsResponseDto,
       allMatchdays: MatchdayOverviewResponseDto[]
     ) => {
-      const dummyMatches: MatchResponseDto[] = [
-        {
-          matchId: 77256,
-          scheduledDateTime: '2025-08-22T20:30:00',
-          lastUpdatedDateTime: '2025-08-22T20:30:00',
-          isFinished: true,
-          homeTeam: {
-            teamId: 40,
-            name: 'FC Bayern München',
-            shortName: 'Bayern',
-            logoUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_FC_Bayern_M%C3%BCnchen_%282002%E2%80%932017%29.svg',
-          },
-          awayTeam: {
-            teamId: 1635,
-            name: 'RB Leipzig',
-            shortName: 'Leipzig',
-            logoUrl: 'https://i.imgur.com/Rpwsjz1.png',
-          },
-          scores: {
-            homeTeamScore: 6,
-            awayTeamScore: 0,
-          },
-        },
-        {
-          matchId: 77256,
-          scheduledDateTime: '2025-12-31T20:30:00',
-          lastUpdatedDateTime: '2025-12-31T20:30:00',
-          isFinished: false,
-          homeTeam: {
-            teamId: 40,
-            name: 'FC Bayern München',
-            shortName: 'Bayern',
-            logoUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_FC_Bayern_M%C3%BCnchen_%282002%E2%80%932017%29.svg',
-          },
-          awayTeam: {
-            teamId: 1635,
-            name: 'RB Leipzig',
-            shortName: 'Leipzig',
-            logoUrl: 'https://i.imgur.com/Rpwsjz1.png',
-          },
-          scores: {
-            homeTeamScore: 0,
-            awayTeamScore: 2,
-          },
-        },
-        {
-          matchId: 77256,
-          scheduledDateTime: '2025-12-29T23:09:00',
-          lastUpdatedDateTime: '2025-12-29T23:09:00',
-          isFinished: false,
-          homeTeam: {
-            teamId: 40,
-            name: 'FC Bayern München',
-            shortName: 'Bayern',
-            logoUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_FC_Bayern_M%C3%BCnchen_%282002%E2%80%932017%29.svg',
-          },
-          awayTeam: {
-            teamId: 1635,
-            name: 'RB Leipzig',
-            shortName: 'Leipzig',
-            logoUrl: 'https://i.imgur.com/Rpwsjz1.png',
-          },
-          scores: {
-            homeTeamScore: 6,
-            awayTeamScore: 0,
-          },
-        },
-        {
-          matchId: 77256,
-          scheduledDateTime: '2025-12-29T18:30:00',
-          lastUpdatedDateTime: '2025-08-22T20:30:00',
-          isFinished: false,
-          homeTeam: {
-            teamId: 40,
-            name: 'FC Bayern München',
-            shortName: 'Bayern',
-            logoUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_FC_Bayern_M%C3%BCnchen_%282002%E2%80%932017%29.svg',
-          },
-          awayTeam: {
-            teamId: 1635,
-            name: 'RB Leipzig',
-            shortName: 'Leipzig',
-            logoUrl: 'https://i.imgur.com/Rpwsjz1.png',
-          },
-          scores: {
-            homeTeamScore: 0,
-            awayTeamScore: 0,
-          },
-        },
-        {
-          matchId: 77256,
-          scheduledDateTime: '2025-12-29T19:30:00',
-          lastUpdatedDateTime: '2025-08-22T20:30:00',
-          isFinished: false,
-          homeTeam: {
-            teamId: 40,
-            name: 'FC Bayern München',
-            shortName: 'Bayern',
-            logoUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_FC_Bayern_M%C3%BCnchen_%282002%E2%80%932017%29.svg',
-          },
-          awayTeam: {
-            teamId: 1635,
-            name: 'RB Leipzig',
-            shortName: 'Leipzig',
-            logoUrl: 'https://i.imgur.com/Rpwsjz1.png',
-          },
-          scores: {
-            homeTeamScore: 0,
-            awayTeamScore: 0,
-          },
-        },
-      ];
-      const dummyMatchday = currentMatchday;
-      dummyMatchday.matchList = dummyMatches;
       patchState(store, {
         _loadedMatchdays: new Map(store._loadedMatchdays()).set(currentMatchday.matchdayId, {
-          // data: currentMatchday,
-          data: dummyMatchday,
+          data: currentMatchday,
           ttl: Date.now(),
         }),
         _matchdayOverview: allMatchdays,

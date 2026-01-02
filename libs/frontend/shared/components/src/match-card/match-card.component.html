@@ -14,11 +14,14 @@
       </div>
     </div>
     <div class="match-score">
-      <div class="main">{{ currentSubString() }}</div>
-      <div class="sub">{{ getScoreSubContent() }}</div>
       @if (matchState === MatchState.LIVE) {
-        <div class="live-icon"><span class="dot"></span>LIVE</div>
+        <ion-badge color="danger"><span class="dot"></span>LIVE</ion-badge>
+      } @else if (matchState !== MatchState.UPCOMING_FAR) {
+        <ion-badge
+          [attr.color]="matchState === MatchState.FINISHED? 'secondary' : 'primary'">{{ currentBatchContent() }}
+        </ion-badge>
       }
+      <div class="main score-text">{{ getScoreContent() }}</div>
     </div>
     <div class="team away">
       <div class="logo">
@@ -28,5 +31,9 @@
         <p class="truncate-one-line-text">{{ match().awayTeam.shortName }}</p>
       </div>
     </div>
+  </div>
+  <div class="divider"></div>
+  <div class="tip-section">
+    <p class="text-small">Dein Tipp: <span class="text-small">2:2</span></p>
   </div>
 </div>

@@ -5,9 +5,8 @@ import { interval, map, Observable, shareReplay } from 'rxjs';
   providedIn: 'root',
 })
 export class TimerService {
-  public minuteTick$: Observable<number> = interval(5000).pipe(
+  public halfMinuteTick$: Observable<number> = interval(30000).pipe(
     map(() => {
-      console.log('JETZT');
       return Date.now();
     }),
     shareReplay(1)

@@ -1,16 +1,20 @@
-<ion-content class="ion-padding">
-  @if (isLoading().initial || isLoading().tipgroupDetails) {
-    <div class="loading-container">
-      <ion-spinner></ion-spinner>
-    </div>
-  } @else {
-    <lib-matchday-selector [allMatchdays]="matchdayOverview()"
+<custom-header title="Übersicht" [subTitle]="tipgroupDetails()?.name" [scrollEvent]="scrollData"
+               [enableQuickReveal]="true" [enableSubContent]="true">
+  @if (!isLoading().initial) {
+    <lib-matchday-selector class="matchday-selector" [allMatchdays]="matchdayOverview()"
                            [currentMatchday]="currentMatchday()"
                            [currentMatchdayId]="currentMatchdayId()"
                            [disableSelection]="isLoading().matchday"
                            (currentMatchdayIdChange)="handleMatchdayIdChange($event)">
     </lib-matchday-selector>
-
+  }
+</custom-header>
+<ion-content [fullscreen]="true" class="ion-padding" [scrollEvents]="true" (ionScroll)="scrollData = $event">
+  @if (isLoading().initial || isLoading().tipgroupDetails) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+    </div>
+  } @else {
     @if (isLoading().matchday || !this.currentMatchday()) {
       <p>Loading Matches</p>
     } @else {
@@ -21,8 +25,8 @@
           }
 
           @for (upcomingMatchGroup of this.groupedMatchdays.upcoming; track upcomingMatchGroup.dateLabel) {
-            <p class="date-text">
-              <ion-icon class="icon" name="today"></ion-icon>
+            <p class="date-text overline">
+              <span class="line"></span>
               {{ upcomingMatchGroup.dateLabel }}
             </p>
             @for (upcomingMatch of upcomingMatchGroup.matchList; track upcomingMatch.matchId) {
@@ -31,15 +35,14 @@
           }
 
           @for (finishedMatchGroup of this.groupedMatchdays.finished; track finishedMatchGroup.dateLabel) {
-            <p class="date-text">
-              <ion-icon class="icon" name="today"></ion-icon>
+            <p class="date-text overline">
+              <span class="line"></span>
               {{ finishedMatchGroup.dateLabel }}
             </p>
             @for (upcomingMatch of finishedMatchGroup.matchList; track upcomingMatch.matchId) {
               <lib-match-card [match]="upcomingMatch"></lib-match-card>
             }
           }
-
         </div>
       </section>
     }

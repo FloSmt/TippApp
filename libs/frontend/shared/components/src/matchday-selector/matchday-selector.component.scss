@@ -20,19 +20,19 @@
 
 .arrow {
   text-align: center;
-  background-color: var(--ion-background-color-step-50);
+  background-color: var(--ion-border-color);
+  color: var(--ion-text-color);
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--ion-border-radius-s);
+  border-radius: var(--ion-border-radius-m);
   transition: all 1s ease-in-out;
   cursor: pointer;
 
   &:active {
-    background: var(--ion-color-primary-gradient);
-    color: var(--ion-color-primary-contrast);
+    background-color: var(--ion-background-color-step-150);
   }
 
   &.disabled {
@@ -60,12 +60,5 @@
 
   .selection-league {
     max-width: 50vw;
-    margin: 0 0 0.5rem;
-    font-size: 1.25em;
-    font-weight: bold;
-  }
-
-  .selection-name {
-    margin: 0;
   }
 }

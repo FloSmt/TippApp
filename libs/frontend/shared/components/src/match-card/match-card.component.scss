@@ -1,8 +1,10 @@
 .match-card {
   width: 100%;
-  margin-bottom: var(--ion-space-xl);
+  margin-bottom: var(--ion-space-xxl);
   border-radius: var(--ion-border-radius-m);
-  background-color: var(--ion-background-color-step-50);
+  background-color: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  box-shadow: var(--app-card-shadow);
   padding: var(--ion-space-xl);
   margin-right: var(--ion-space-s);
 
@@ -20,33 +22,9 @@
 
     .main {
       text-align: center;
-      background-color: var(--ion-background-color-step-150);
-      max-width: 5rem;
-      width: 100%;
-      padding: var(--ion-space-s) var(--ion-space-l);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      border-radius: var(--ion-border-radius-s) var(--ion-border-radius-s) 0 0;
-    }
-
-    .sub {
-      background: var(--ion-color-primary-gradient);
-      max-width: 5rem;
-      min-height: 1.5rem;
-      color: var(--ion-color-primary-contrast);
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: var(--ion-space-s);
-      font-size: 1.25rem;
-      font-weight: bold;
-      border-radius: 0 0 var(--ion-border-radius-s) var(--ion-border-radius-s);
-
-
     }
   }
 
@@ -83,29 +61,26 @@
   }
 }
 
-.is-upcoming-far {
-  .sub {
-    display: none !important;
-  }
-
-  .main {
-    font-weight: normal !important;
-    border-radius: var(--ion-border-radius-s) !important;
-  }
+.tip-section {
+  width: 100%;
+  background-color: var(--ion-background-color);
+  border-radius: var(--ion-border-radius-s);
+  text-align: center;
+  font-weight: var(--font-weight-semibold) !important;
+  padding: var(--ion-space-m) var(--ion-space-l);
 }
 
-.is-upcoming-soon {
-  .sub {
-    background: var(--ion-background-color-step-250) !important;
-    font-weight: normal !important;
-    color: var(--ion-text-color) !important;
-    font-size: 1rem !important;
+.is-upcoming-far, .is-upcoming-soon {
+  .main {
+    background-color: var(--ion-background-color);
+    padding: var(--ion-space-m) var(--ion-space-xl);
+    border-radius: var(--ion-border-radius-s);
   }
 }
 
 .is-live {
   .main {
-    color: var(--ion-color-primary) !important;
+    color: var(--ion-color-danger) !important;
   }
 
   .live-icon {
@@ -116,29 +91,35 @@
     font-size: 0.75rem;
     justify-content: center;
     align-items: center;
-
-    .dot {
-      height: 8px;
-      width: 8px;
-      background-color: var(--ion-color-primary);
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: var(--ion-space-l);
-      position: relative;
-    }
-
-    .dot::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background-color: var(--ion-color-primary);
-      animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
-    }
   }
+}
+
+.is-finished {
+  .main {
+    color: var(--ion-color-secondary) !important
+  }
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  background-color: var(--ion-color-danger);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: var(--ion-space-l);
+  position: relative;
+}
+
+.dot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--ion-color-danger);
+  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
 }
 
 @keyframes pulse-ring {

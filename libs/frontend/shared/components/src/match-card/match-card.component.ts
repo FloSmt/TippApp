@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, sign
 import { MatchResponseDto } from '@tippapp/shared/data-access';
 import { TimerService } from '@tippapp/frontend/utils';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { IonBadge } from '@ionic/angular/standalone';
+import { DatePipe } from '@angular/common';
 
 enum MatchState {
   LIVE,
@@ -12,32 +14,37 @@ enum MatchState {
 
 @Component({
   selector: 'lib-match-card',
-  imports: [],
+  imports: [IonBadge],
   templateUrl: './match-card.component.html',
   styleUrl: './match-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DatePipe],
 })
 export class MatchCardComponent implements OnInit {
   private readonly timerService = inject(TimerService);
+  private readonly datePipe = inject(DatePipe);
 
   match = input.required<MatchResponseDto>();
   matchState: MatchState;
 
-  updateImpuls = toSignal(this.timerService.minuteTick$);
-  currentSubString = signal<string>('');
+  updateImpuls = toSignal(this.timerService.halfMinuteTick$);
+  currentBatchContent = signal<string>('');
+  currentScoreContent = signal<string>('');
 
   constructor() {
     effect(() => {
       if (this.updateImpuls()) {
         this.matchState = this.calculateMatchState();
-        this.currentSubString.set(this.getScoreContent());
+        this.currentBatchContent.set(this.getBatchContent());
+        this.currentScoreContent.set(this.getScoreContent());
       }
     });
   }
 
   ngOnInit() {
     this.matchState = this.calculateMatchState();
-    this.currentSubString.set(this.getScoreContent());
+    this.currentBatchContent.set(this.getBatchContent());
+    this.currentScoreContent.set(this.getScoreContent());
   }
 
   calculateMatchState() {
@@ -56,33 +63,35 @@ export class MatchCardComponent implements OnInit {
   getScoreContent() {
     const kickOfTime = new Date(this.match().scheduledDateTime);
     switch (this.matchState) {
-      case MatchState.UPCOMING_FAR:
-        return `${kickOfTime.getHours()}:${kickOfTime.getMinutes()}`;
       case MatchState.UPCOMING_SOON:
-        return this.getLiveCountdown(kickOfTime);
+      case MatchState.UPCOMING_FAR:
+        return this.datePipe.transform(kickOfTime, 'HH:mm') || '';
+
       case MatchState.LIVE:
       case MatchState.FINISHED:
         return `${this.match().scores.homeTeamScore}:${this.match().scores.awayTeamScore}`;
     }
   }
 
-  getScoreSubContent() {
+  getBatchContent() {
     switch (this.matchState) {
       case MatchState.LIVE:
+        return 'Live';
       case MatchState.FINISHED:
-        return '0:3';
+        return 'Beendet';
 
-      case MatchState.UPCOMING_SOON:
-        return 'Minuten';
+      case MatchState.UPCOMING_SOON: {
+        const kickOfTime = new Date(this.match().scheduledDateTime);
+        return `In ${this.getLiveCountdown(kickOfTime)} min`;
+      }
 
       default:
         return '';
     }
   }
 
-  getLiveCountdown(targetDate: Date): string {
-    const diffMins = Math.ceil((targetDate.getTime() - Date.now()) / 60000);
-    return `${diffMins}`;
+  getLiveCountdown(targetDate: Date): number {
+    return Math.ceil((targetDate.getTime() - Date.now()) / 60000);
   }
 
   MatchState = MatchState;

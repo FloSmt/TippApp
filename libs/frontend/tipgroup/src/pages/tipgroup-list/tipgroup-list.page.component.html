@@ -1,13 +1,10 @@
-<ion-header [translucent]="false" class="page-title" mode="ios">
-  <ion-toolbar>
-    <h1 data-testid="header">Deine Tippgruppen</h1>
-    <p class="subtile">Wähle eine Tippgruppe aus oder erstelle eine neue.</p>
-  </ion-toolbar>
-</ion-header>
+<custom-header title="Deine Tippgruppen" subTitle="Wähle eine Tippgruppe aus"></custom-header>
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-refresher (ionRefresh)="refreshTipgroups($event)" slot="fixed">
     <ion-refresher-content data-testid="refresher-content"></ion-refresher-content>
   </ion-refresher>
+  <custom-header-content-condense title="Deine Tippgruppen"
+                                  subTitle="Wähle eine Tippgruppe aus"></custom-header-content-condense>
   <ion-item-group class="tipgroup-list" data-testid="item-group">
     @if (initialLoading()) {
       <ng-container *ngTemplateOutlet="skweletonTemplate"></ng-container>
@@ -21,13 +18,11 @@
       <ng-container *ngTemplateOutlet="emptyListTemplate"></ng-container>
     } @else {
       @for (tipgroup of availableTipgroups(); track tipgroup) {
-        <ion-item href="/tipgroup/{{ tipgroup.id }}" lines="full" data-testid="tipgroup-item">
+        <ion-item href="/tipgroup/{{ tipgroup.id }}" [detail]="true" data-testid="tipgroup-item">
           <ion-label class="tipgroup-item">
             <div class="information truncate-one-line-text">
               <h2>{{ tipgroup.name }}</h2>
-            </div>
-            <div class="icon">
-              <ion-icon name="chevron-forward-outline"></ion-icon>
+              <p class="text-small">Saison 2025/2026</p>
             </div>
           </ion-label>
         </ion-item>

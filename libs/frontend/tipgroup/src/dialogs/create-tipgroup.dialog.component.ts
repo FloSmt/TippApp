@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 
 import {
   IonButton,
@@ -6,11 +6,8 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonInput,
-  IonInputPasswordToggle,
+  IonItem,
   IonLabel,
-  IonSelect,
-  IonSelectOption,
   IonSpinner,
   IonTitle,
   IonToolbar,
@@ -19,9 +16,14 @@ import {
 import { addIcons } from 'ionicons';
 import { close, closeCircle, informationCircleOutline, shieldCheckmark, textOutline, trophy } from 'ionicons/icons';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { confirmPasswordValidator, TipgroupManagementStore, TransformLeagueNamePipe } from '@tippapp/frontend/utils';
-import { CreateTipgroupDto, LeagueOverviewResponseDto } from '@tippapp/shared/data-access';
-import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
+import { confirmPasswordValidator, TipgroupManagementStore } from '@tippapp/frontend/utils';
+import { CreateTipgroupDto } from '@tippapp/shared/data-access';
+import {
+  CustomInputComponent,
+  CustomSelectComponent,
+  ErrorCardTemplateComponent,
+  SelectOption,
+} from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-create-matchday.dialog',
@@ -32,20 +34,19 @@ import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components'
     IonButton,
     IonTitle,
     IonContent,
-    IonInput,
     IonIcon,
     FormsModule,
-    IonSelect,
-    IonSelectOption,
-    IonInputPasswordToggle,
     ReactiveFormsModule,
     IonLabel,
     IonSpinner,
     ErrorCardTemplateComponent,
-    TransformLeagueNamePipe,
+    CustomInputComponent,
+    CustomSelectComponent,
+    IonItem,
   ],
   templateUrl: './create-tipgroup.dialog.component.html',
   styleUrl: './create-tipgroup.dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateTipgroupDialogComponent {
   readonly modalController = inject(ModalController);
@@ -119,32 +120,22 @@ export class CreateTipgroupDialogComponent {
     }
   }
 
+  getSelectOptions(): SelectOption[] {
+    if (this.availableLeagues && this.availableLeagues.data()) {
+      const leagues =
+        this.availableLeagues.data()?.filter((league) => Number(league.leagueSeason) >= new Date().getFullYear() - 1) ||
+        [];
+      return leagues.map((data) => ({ label: data.leagueName, value: data.leagueId } satisfies SelectOption));
+    }
+
+    return [];
+  }
+
   getSelectedLeague(): { shortcut: string; season: number } | null {
     const leagueId = Number(this.createForm.value.selectedLeague);
 
     const league = this.availableLeagues.data()?.find((league) => league.leagueId === leagueId);
     return league ? { shortcut: league.leagueShortcut, season: Number(league.leagueSeason) } : null;
-  }
-
-  getLeagueSeasonGroups(): LeagueSeasonGroup[] {
-    const leagues =
-      this.availableLeagues.data()?.filter((league) => Number(league.leagueSeason) >= new Date().getFullYear() - 1) ||
-      [];
-    const seasonGroups: { [key: number]: LeagueOverviewResponseDto[] } = {};
-
-    leagues.forEach((league) => {
-      if (!seasonGroups[league.leagueSeason]) {
-        seasonGroups[league.leagueSeason] = [];
-      }
-      seasonGroups[league.leagueSeason].push(league);
-    });
-
-    return Object.keys(seasonGroups)
-      .map((season) => ({
-        season: Number(season),
-        leagues: seasonGroups[Number(season)].sort((a, b) => a.leagueName.localeCompare(b.leagueName)),
-      }))
-      .sort((a, b) => b.season - a.season); // Sort seasons in descending order
   }
 
   getErrorMessage(controlName: string): string {
@@ -173,9 +164,4 @@ export class CreateTipgroupDialogComponent {
 
     return '';
   }
-}
-
-export interface LeagueSeasonGroup {
-  season: number;
-  leagues: LeagueOverviewResponseDto[];
 }

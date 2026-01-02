@@ -1,18 +1,16 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonButton,
   IonContent,
   IonFooter,
-  IonHeader,
   IonIcon,
   IonItem,
   IonItemGroup,
   IonLabel,
   IonRefresher,
   IonRefresherContent,
-  IonToolbar,
-  ModalController,
+  ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { banOutline, chevronForwardOutline, closeCircleOutline, people } from 'ionicons/icons';
@@ -21,7 +19,11 @@ import { LoadingState, TipgroupManagementStore } from '@tippapp/frontend/utils';
 import { NgTemplateOutlet } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, pairwise, take } from 'rxjs';
-import { ErrorCardTemplateComponent } from '@tippapp/frontend/shared-components';
+import {
+  CustromHeaderComponent,
+  ErrorCardTemplateComponent,
+  HeaderContentCondenseComponent
+} from '@tippapp/frontend/shared-components';
 import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dialog.component';
 
 @Component({
@@ -37,13 +39,14 @@ import { CreateTipgroupDialogComponent } from '../../dialogs/create-tipgroup.dia
     IonFooter,
     IonRefresher,
     IonRefresherContent,
-    IonHeader,
-    IonToolbar,
     NgTemplateOutlet,
     ErrorCardTemplateComponent,
+    CustromHeaderComponent,
+    HeaderContentCondenseComponent,
   ],
   templateUrl: './tipgroup-list.page.component.html',
   styleUrl: './tipgroup-list.page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TipgroupListPageComponent implements OnInit {
   readonly router = inject(Router);
@@ -79,10 +82,14 @@ export class TipgroupListPageComponent implements OnInit {
   }
 
   async openCreateTipgroupDialog() {
-    const modal = await this.modalController.create({
-      component: CreateTipgroupDialogComponent,
-    });
+    try {
+      const modal = await this.modalController.create({
+        component: CreateTipgroupDialogComponent,
+      });
 
-    await modal.present();
+      await modal.present();
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

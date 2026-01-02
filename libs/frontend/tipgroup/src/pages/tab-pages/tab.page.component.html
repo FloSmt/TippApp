@@ -1,25 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      <div>
-        Übersicht
-        <p class="subtitle">
-          @if (isLoadingDetails()) {
-            <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
-          } @else {
-            {{ tipgroupDetails()?.name }}
-          }
-        </p>
-      </div>
-    </ion-title>
-    <ion-buttons slot="end" id="profile-button">
-      <ion-button fill="clear" color="black">
-        <ion-icon name="person"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content>
+<ion-content [fullscreen]="true">
   <ion-tabs>
     <ion-tab-bar slot="bottom">
       <ion-tab-button tab="overview">
