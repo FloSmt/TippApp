@@ -10,15 +10,21 @@
   }
 </custom-header>
 <ion-content [fullscreen]="true" class="ion-padding" [scrollEvents]="true" (ionScroll)="scrollData = $event">
-  @if (isLoading().initial || isLoading().tipgroupDetails) {
+  <ion-refresher (ionRefresh)="refreshMatchday($event)" slot="fixed">
+    <ion-refresher-content data-testid="refresher-content"></ion-refresher-content>
+  </ion-refresher>
+  @if (hasError()) {
+    <lib-error-card title="Fehler"
+                    message="Beim abrufen der Spieltagsinformationen ist ein Fehler aufgetreten."></lib-error-card>
+  } @else if (isLoading().initial || isLoading().tipgroupDetails) {
     <div class="loading-container">
       <ion-spinner></ion-spinner>
     </div>
   } @else {
-    @if (isLoading().matchday || !this.currentMatchday()) {
-      <p>Loading Matches</p>
-    } @else {
-      <section class="match-section">
+    <section class="match-section">
+      @if (isLoading().matchday || !this.currentMatchday()) {
+        <ng-container *ngTemplateOutlet="skeletonMatchList"></ng-container>
+      } @else {
         <div class="matches-container">
           @for (liveMatch of this.groupedMatchdays.live; track liveMatch.matchId) {
             <lib-match-card [match]="liveMatch"></lib-match-card>
@@ -44,7 +50,20 @@
             }
           }
         </div>
-      </section>
-    }
+      }
+    </section>
   }
 </ion-content>
+
+<ng-template #skeletonMatchList>
+  <div class="skeleton-container">
+    <ion-skeleton-text style="width: 4rem"></ion-skeleton-text>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <ion-skeleton-text style="width: 4rem"></ion-skeleton-text>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+
+</ng-template>

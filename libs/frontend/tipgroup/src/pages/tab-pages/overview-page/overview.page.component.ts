@@ -1,15 +1,18 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { TipgroupDetailsStore } from '@tippapp/frontend/utils';
-import { IonContent, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonRefresher, IonRefresherContent, IonSkeletonText, IonSpinner } from '@ionic/angular/standalone';
 import {
   CustromHeaderComponent,
+  ErrorCardTemplateComponent,
   MatchCardComponent,
-  MatchdaySelectorComponent
+  MatchdaySelectorComponent,
 } from '@tippapp/frontend/shared-components';
 import { MatchResponseDto } from '@tippapp/shared/data-access';
 import { addIcons } from 'ionicons';
 import { today } from 'ionicons/icons';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, pairwise, take } from 'rxjs';
 
 interface DateGroup {
   dateLabel: string;
@@ -18,7 +21,18 @@ interface DateGroup {
 
 @Component({
   selector: 'lib-overview.page',
-  imports: [IonSpinner, IonContent, MatchdaySelectorComponent, MatchCardComponent, CustromHeaderComponent],
+  imports: [
+    IonSpinner,
+    IonContent,
+    MatchdaySelectorComponent,
+    MatchCardComponent,
+    CustromHeaderComponent,
+    NgTemplateOutlet,
+    IonSkeletonText,
+    ErrorCardTemplateComponent,
+    IonRefresher,
+    IonRefresherContent,
+  ],
   templateUrl: './overview.page.component.html',
   styleUrl: './overview.page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +45,9 @@ export class OverviewPageComponent {
   isLoading = this.tipgroupDetailsStore.isLoading();
 
   currentMatchday = this.tipgroupDetailsStore.getCurrentMatchday;
-  tipgroupDetails = this.tipgroupDetailsStore.getTipgroupDetails();
+  hasError = this.tipgroupDetailsStore.hasError;
+  isReloadingMatchday$ = toObservable(this.tipgroupDetailsStore.isReloadingMatchday);
+  tipgroupDetails = this.tipgroupDetailsStore.getTipgroupDetails;
   currentMatchdayId = this.tipgroupDetailsStore.getSelectedMatchdayId();
   matchdayOverview = this.tipgroupDetailsStore.getMatchdayOverview();
 
@@ -41,7 +57,7 @@ export class OverviewPageComponent {
   scrollData: any;
 
   handleMatchdayIdChange(id: number | null) {
-    this.tipgroupDetailsStore.loadMatchdayDetails(id);
+    this.tipgroupDetailsStore.loadMatchdayDetails({ matchdayId: id, reload: false });
   }
 
   constructor() {
@@ -51,6 +67,20 @@ export class OverviewPageComponent {
         this.groupedMatchdays = this.groupMatches(this.currentMatchday()!.matchList);
       }
     });
+  }
+
+  refreshMatchday(event: any) {
+    this.tipgroupDetailsStore.loadMatchdayDetails({ matchdayId: this.currentMatchdayId(), reload: true });
+
+    this.isReloadingMatchday$
+      .pipe(
+        pairwise(),
+        filter(([previous, current]) => previous === true && current === false),
+        take(1)
+      )
+      .subscribe(() => {
+        event.target.complete();
+      });
   }
 
   groupMatches(matches: MatchResponseDto[]) {

@@ -5,6 +5,7 @@ import {
   ElementRef,
   Input,
   input,
+  OnDestroy,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -17,7 +18,7 @@ import { IonAvatar, IonButtons, IonHeader, IonTitle, IonToolbar } from '@ionic/a
   styleUrl: './custrom-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustromHeaderComponent implements AfterViewInit {
+export class CustromHeaderComponent implements AfterViewInit, OnDestroy {
   @ViewChild('headerContainer', { read: ElementRef }) headerElement!: ElementRef;
 
   title = input<string>();
@@ -27,15 +28,22 @@ export class CustromHeaderComponent implements AfterViewInit {
   enableQuickReveal = input<boolean>(false);
   enableSubContent = input<boolean>(false);
 
+  private resizeObserver: ResizeObserver | null = null;
   private _lastScrollTop = 0;
   transform = 'translateY(0)';
   headerHeight = signal<number>(80);
 
   ngAfterViewInit() {
-    setTimeout(() => {
+    this.resizeObserver = new ResizeObserver(() => {
       const el = this.headerElement.nativeElement;
       this.headerHeight.set(el.offsetHeight);
-    }, 100);
+    });
+
+    this.resizeObserver.observe(this.headerElement.nativeElement);
+  }
+
+  ngOnDestroy() {
+    this.resizeObserver?.disconnect();
   }
 
   @Input() set scrollEvent(event: any) {

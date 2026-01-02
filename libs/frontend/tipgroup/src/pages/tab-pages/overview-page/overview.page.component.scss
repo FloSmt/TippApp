@@ -14,6 +14,21 @@ ion-content {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: row;
+
+  .skeleton-container {
+    width: 100%;
+
+    ion-skeleton-text {
+      margin-top: var(--ion-space-xl);
+    }
+
+    .skeleton {
+      width: 100%;
+      height: 8rem;
+      margin-bottom: var(--ion-space-l);
+    }
+  }
 
   .date-text {
     margin-bottom: var(--ion-space-s);
