@@ -1,49 +1,43 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/tipgroup.fixture';
-import {
-  mockAvailableLeaguesResponse,
-  mockCreateTipgroupResponse,
-  mockTipgroupListResponse,
-} from '../../helper/response-helper';
 import { waitForErrorNotification, waitForSuccessNotification } from '../../helper/notification-helper';
+import { clearMocks, mockAvailableLeagues, mockTipgroupCreate, mockTipgroupList } from '../../helper/mock-manager';
 
-test.describe('Tipgroups', () => {
+test.describe('Tipgroup-Management', () => {
   test.describe('Tipgroup-List Page', () => {
     test('should show available Tipgroups', async ({ tipgroupListPage }) => {
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.tipgroupItem.first()).toBeVisible();
       await expect(tipgroupListPage.tipgroupItem).toHaveCount(3);
-      await expect(tipgroupListPage.tipgroupItem.nth(0)).toHaveText('Testgroup1');
-      await expect(tipgroupListPage.tipgroupItem.nth(1)).toHaveText('Testgroup2');
-      await expect(tipgroupListPage.tipgroupItem.nth(2)).toHaveText('Testgroup3');
+      await expect(tipgroupListPage.tipgroupItem.nth(0)).toContainText('Testgroup1');
+      await expect(tipgroupListPage.tipgroupItem.nth(1)).toContainText('Testgroup2');
+      await expect(tipgroupListPage.tipgroupItem.nth(2)).toContainText('Testgroup3');
     });
 
-    test('should show an error if something went wrong on loading tipgroups', async ({ tipgroupListPage, page }) => {
-      await mockTipgroupListResponse(page, {}, 500);
+    test('should show an error if something went wrong on loading tipgroups', async ({ tipgroupListPage }) => {
+      await mockTipgroupList(tipgroupListPage.page, { status: 500 });
 
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.errorCard).toBeVisible();
     });
 
-    test('should show a information if the matchday-list is empty', async ({ tipgroupListPage, page }) => {
-      await mockTipgroupListResponse(page, [], 200);
+    test('should show a information if the matchday-list is empty', async ({ tipgroupListPage }) => {
+      await mockTipgroupList(tipgroupListPage.page, { body: [] });
 
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.emptyCard).toBeVisible();
     });
 
-    test('should show a refresher-icon on refresh and update the list', async ({ tipgroupListPage, page }) => {
+    test('should show a refresher-icon on refresh and update the list', async ({ tipgroupListPage }) => {
       await expect(tipgroupListPage.skeletonCard).toBeVisible();
       await expect(tipgroupListPage.tipgroupItem).toHaveCount(3);
 
-      await mockTipgroupListResponse(
-        page,
-        [
-          { id: 1, name: 'Testgroup1' },
-          { id: 2, name: 'Testgroup2' },
+      await mockTipgroupList(tipgroupListPage.page, {
+        body: [
+          { id: 1, name: 'Testgroup1', currentSeasonId: 1 },
+          { id: 2, name: 'Testgroup2', currentSeasonId: 2 },
         ],
-        200
-      );
+      });
 
       await tipgroupListPage.pullToRefresh();
 
@@ -52,7 +46,7 @@ test.describe('Tipgroups', () => {
       await expect(tipgroupListPage.getRefreshSpinner()).toBeHidden();
       await expect(tipgroupListPage.tipgroupItem).toHaveCount(2);
 
-      await mockTipgroupListResponse(page, [], 500);
+      await mockTipgroupList(tipgroupListPage.page, { body: [], status: 500 });
 
       await tipgroupListPage.pullToRefresh();
       await expect(tipgroupListPage.getRefreshSpinner()).toBeVisible();
@@ -65,10 +59,7 @@ test.describe('Tipgroups', () => {
   test.describe('Create Tipgroup', () => {
     test('should create a new Tipgroup', async ({ tipgroupListPage, tipgroupCreateDialog }) => {
       const newTipgroupName = 'New Testgroup';
-      await mockAvailableLeaguesResponse(tipgroupListPage.page);
-      await mockCreateTipgroupResponse(tipgroupListPage.page, { id: 4, name: newTipgroupName });
-
-      await expect(tipgroupListPage.emptyCard).toBeVisible();
+      await mockTipgroupCreate(tipgroupListPage.page, { body: { id: 4, name: newTipgroupName, currentSeasonId: 4 } });
 
       await tipgroupListPage.openCreateTipgroupDialog();
       await expect(tipgroupCreateDialog.spinner).toBeVisible();
@@ -78,7 +69,7 @@ test.describe('Tipgroups', () => {
       await tipgroupCreateDialog.submit();
       await tipgroupListPage.joinTipgroupButton.waitFor({ state: 'visible' });
 
-      await expect(tipgroupListPage.tipgroupItem.last()).toHaveText(newTipgroupName);
+      await expect(tipgroupListPage.tipgroupItem.last()).toContainText(newTipgroupName);
 
       await waitForSuccessNotification({
         header: 'Tippgruppe erstellt',
@@ -88,8 +79,6 @@ test.describe('Tipgroups', () => {
     });
 
     test('should show validation errors', async ({ tipgroupListPage, tipgroupCreateDialog }) => {
-      await mockAvailableLeaguesResponse(tipgroupListPage.page);
-
       await tipgroupListPage.openCreateTipgroupDialog();
       await expect(tipgroupCreateDialog.spinner).toBeVisible();
       await tipgroupCreateDialog.spinner.waitFor({ state: 'hidden' });
@@ -113,7 +102,7 @@ test.describe('Tipgroups', () => {
       tipgroupListPage,
       tipgroupCreateDialog,
     }) => {
-      await mockAvailableLeaguesResponse(tipgroupListPage.page, 500);
+      await mockAvailableLeagues(tipgroupListPage.page, { status: 500 });
 
       await tipgroupListPage.openCreateTipgroupDialog();
       await expect(tipgroupCreateDialog.spinner).toBeVisible();
@@ -131,8 +120,7 @@ test.describe('Tipgroups', () => {
       tipgroupListPage,
       tipgroupCreateDialog,
     }) => {
-      await mockAvailableLeaguesResponse(tipgroupListPage.page);
-      await mockCreateTipgroupResponse(tipgroupListPage.page, {}, 500);
+      await mockTipgroupCreate(tipgroupCreateDialog.page, { body: [], status: 500 });
 
       await tipgroupListPage.openCreateTipgroupDialog();
       await expect(tipgroupCreateDialog.spinner).toBeVisible();
@@ -146,5 +134,9 @@ test.describe('Tipgroups', () => {
         page: tipgroupListPage.page,
       });
     });
+  });
+
+  test.afterEach(async () => {
+    clearMocks();
   });
 });

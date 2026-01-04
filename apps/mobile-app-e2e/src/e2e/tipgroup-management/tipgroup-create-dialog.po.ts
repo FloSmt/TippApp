@@ -13,11 +13,11 @@ export class TipgroupCreateDialog {
 
   constructor(page: Page) {
     this.page = page;
-    this.tipgroupNameInput = this.page.getByTestId('matchday-name-input');
-    this.leagueSelection = this.page.getByTestId('matchday-league-select');
+    this.tipgroupNameInput = this.page.getByTestId('tipgroup-name-input');
+    this.leagueSelection = this.page.getByTestId('tipgroup-league-select');
     this.passwordInput = this.page.getByTestId('password-input');
     this.passwordConfirmInput = this.page.getByTestId('password-confirm-input');
-    this.createButton = this.page.getByTestId('create-matchday-submit-button');
+    this.createButton = this.page.getByTestId('create-tipgroup-submit-button');
     this.errorCard = this.page.getByTestId('error-card');
     this.spinner = this.page.getByTestId('spinner');
   }
@@ -31,12 +31,13 @@ export class TipgroupCreateDialog {
     await this.passwordInput.locator('input').fill(password);
     await this.passwordConfirmInput.click();
     await this.passwordConfirmInput.locator('input').fill(password);
+    await this.tipgroupNameInput.click();
   }
 
   private async selectLeague(nthRow: number) {
     await this.leagueSelection.click();
-    await this.page.locator('ion-popover ion-list').waitFor({ state: 'visible' });
-    await this.page.locator('ion-list ion-item').nth(nthRow).click();
+    await this.page.locator('.options-container').waitFor({ state: 'visible' });
+    await this.page.locator('.options-container .option-item').nth(nthRow).click();
   }
 
   async submit() {
@@ -46,6 +47,6 @@ export class TipgroupCreateDialog {
   }
 
   inputErrorText(inputObject: Locator) {
-    return inputObject.locator('.error-text');
+    return inputObject.locator('.input-error-message');
   }
 }

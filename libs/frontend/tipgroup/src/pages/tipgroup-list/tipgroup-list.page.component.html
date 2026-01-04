@@ -1,4 +1,5 @@
-<custom-header title="Deine Tippgruppen" subTitle="Wähle eine Tippgruppe aus"></custom-header>
+<custom-header title="Deine Tippgruppen" subTitle="Wähle eine Tippgruppe aus"
+               data-testid="tipgroup-list-header"></custom-header>
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-refresher (ionRefresh)="refreshTipgroups($event)" slot="fixed">
     <ion-refresher-content data-testid="refresher-content"></ion-refresher-content>

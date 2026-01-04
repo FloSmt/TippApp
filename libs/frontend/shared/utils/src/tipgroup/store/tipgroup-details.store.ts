@@ -6,7 +6,7 @@ import {
   TipgroupDetailsResponseDto,
 } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, debounceTime, EMPTY, filter, forkJoin, of, pipe, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, filter, forkJoin, of, pipe, switchMap, tap } from 'rxjs';
 import { TipgroupService } from '../tipgroup.service';
 
 export interface MatchdayCache {
@@ -180,7 +180,6 @@ export const TipgroupDetailsStore = signalStore(
     loadMatchdayDetails: rxMethod<{ matchdayId: number | null; reload: boolean }>(
       pipe(
         filter((data) => data !== null && data.matchdayId !== null),
-        debounceTime(500),
         tap((data) => {
           const cachedMatchday = store._loadedMatchdays().get(data.matchdayId!);
           if (!cachedMatchday) {
