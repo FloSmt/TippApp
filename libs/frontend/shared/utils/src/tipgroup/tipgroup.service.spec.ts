@@ -47,7 +47,7 @@ describe('TipgroupService', () => {
       expect(response).toEqual(mockResponse);
     });
 
-    const req = httpTesting.expectOne(`${service.BACKEND_URL}user/tipgroups`);
+    const req = httpTesting.expectOne(`${service.BACKEND_URL}/tipgroups`);
     expect(req.request.method).toBe('GET');
 
     req.flush(mockResponse);

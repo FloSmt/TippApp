@@ -2,9 +2,9 @@ import {
   LeagueOverviewResponseDto,
   MatchdayDetailsResponseDto,
   MatchResponseDto,
+  MatchScoreDto,
   TeamDto,
 } from '@tippapp/shared/data-access';
-import { MatchScoreDto } from '../../../../libs/shared/data-access/src/dtos/match/match-score.dto';
 
 export const availableLeaguesMockResponse: LeagueOverviewResponseDto[] = [
   {
