@@ -1,11 +1,12 @@
 <div class="arrow-container left">
   <div class="arrow" tabindex="0" aria-modal="true" role="button"
        [class.disabled]="isFirstSelected() || disableSelection()"
-       (click)="selectPreviousEntry()">
+       (click)="selectPreviousEntry()" data-testid="previous-matchday-button">
     <ion-icon name="caret-back"></ion-icon>
   </div>
 </div>
-<div class="selection-container" tabindex="1" aria-modal="true" role="button" (click)="openSelectionDialog()">
+<div class="selection-container" tabindex="1" aria-modal="true" role="button" (click)="openSelectionDialog()"
+     data-testid="matchday-selector">
   <div class="selection">
     <h3 class="selection-league truncate-one-line-text">
       @if (currentMatchday()) {
@@ -23,7 +24,7 @@
 <div class="arrow-container right">
   <div class="arrow" tabindex="2" aria-modal="true" role="button"
        [class.disabled]="isLastSelected() || disableSelection()"
-       (click)="selectNextEntry()">
+       (click)="selectNextEntry()" data-testid="next-matchday-button">
     <ion-icon name="caret-forward"></ion-icon>
   </div>
 </div>

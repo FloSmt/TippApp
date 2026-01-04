@@ -18,7 +18,7 @@
                     message="Beim abrufen der Spieltagsinformationen ist ein Fehler aufgetreten."></lib-error-card>
   } @else if (isLoading().initial || isLoading().tipgroupDetails) {
     <div class="loading-container">
-      <ion-spinner></ion-spinner>
+      <ion-spinner data-testid="spinner"></ion-spinner>
     </div>
   } @else {
     <section class="match-section">
@@ -56,7 +56,7 @@
 </ion-content>
 
 <ng-template #skeletonMatchList>
-  <div class="skeleton-container">
+  <div class="skeleton-container" data-testid="skeletons">
     <ion-skeleton-text style="width: 4rem"></ion-skeleton-text>
     <div class="skeleton"></div>
     <div class="skeleton"></div>

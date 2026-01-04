@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/auth.fixture';
 import { waitForErrorNotification, waitForSuccessNotification } from '../../helper/notification-helper';
-import { setLoginContent } from '../../helper/login-helper';
+import { navigateToTipgroupList } from '../../helper/navigation-helper';
 import { clearMocks, mockLoginUser, mockRefreshUser, mockRegisterUser } from '../../helper/mock-manager';
 import { TipgroupListPage } from '../tipgroup-management/tipgroup-list.po';
 
@@ -245,7 +245,7 @@ test.describe('Authentication', () => {
   test('should redirect to home page if already logged in and try to access login or register page', async ({
     page,
   }) => {
-    await setLoginContent(page);
+    await navigateToTipgroupList(page);
     await mockRefreshUser(page);
 
     const tipgroupListPage = new TipgroupListPage(page);

@@ -1,6 +1,11 @@
 import { Page } from '@playwright/test';
-import { AuthResponseDto, TipgroupOverviewResponseDto } from '@tippapp/shared/data-access';
-import { availableLeaguesMockResponse } from './responses';
+import {
+  AuthResponseDto,
+  MatchdayOverviewResponseDto,
+  TipgroupDetailsResponseDto,
+  TipgroupOverviewResponseDto,
+} from '@tippapp/shared/data-access';
+import { availableLeaguesMockResponse, matchdayDetailsMockResponse } from './responses';
 
 type Method = 'POST' | 'GET' | 'PATCH' | 'DELETE' | 'PUT';
 
@@ -60,6 +65,40 @@ export const DEFAULT_RESPONSES = {
       { id: 3, name: 'Testgroup3', currentSeasonId: 3 },
     ] satisfies TipgroupOverviewResponseDto[],
   },
+  tipgroupDetailsResponseSuccess: {
+    status: 200,
+    body: {
+      id: 0,
+      currentSeasonId: 0,
+      name: 'Test Tipgroup',
+    } satisfies TipgroupDetailsResponseDto,
+  },
+  getAllMatchdaysResponseSuccess: {
+    status: 200,
+    body: [
+      {
+        matchdayId: 1,
+        name: '1. Spieltag',
+        orderId: 1,
+        matchCount: 9,
+      },
+      {
+        matchdayId: 2,
+        name: '2. Spieltag',
+        orderId: 2,
+        matchCount: 9,
+      },
+    ] satisfies MatchdayOverviewResponseDto[],
+  },
+  getCurrentMatchdayResponseSuccess: {
+    status: 200,
+    body: matchdayDetailsMockResponse[0],
+  },
+
+  getMatchdayResponseSuccess: {
+    status: 200,
+    body: matchdayDetailsMockResponse[1],
+  },
 };
 
 export async function mockRegisterUser(page: Page, overrides?: Partial<MockConfig>) {
@@ -100,6 +139,34 @@ export async function mockTipgroupList(page: Page, overrides?: Partial<MockConfi
 export async function mockTipgroupCreate(page: Page, overrides?: Partial<MockConfig>) {
   await mockResponse(page, 'POST', 'api/tipgroups', {
     ...DEFAULT_RESPONSES.tipgroupOverviewResponseSuccess[0],
+    ...overrides,
+  });
+}
+
+export async function mockTipgroupDetails(page: Page, overrides?: Partial<MockConfig>) {
+  await mockResponse(page, 'GET', 'api/tipgroups/*', {
+    ...DEFAULT_RESPONSES.tipgroupDetailsResponseSuccess,
+    ...overrides,
+  });
+}
+
+export async function mockGetAllMatchdays(page: Page, overrides?: Partial<MockConfig>) {
+  await mockResponse(page, 'GET', 'api/tipgroups/*/seasons/*/getAllMatchdays', {
+    ...DEFAULT_RESPONSES.getAllMatchdaysResponseSuccess,
+    ...overrides,
+  });
+}
+
+export async function mockGetCurrentMatchday(page: Page, overrides?: Partial<MockConfig>) {
+  await mockResponse(page, 'GET', 'api/tipgroups/*/seasons/*/getCurrentMatchday', {
+    ...DEFAULT_RESPONSES.getCurrentMatchdayResponseSuccess,
+    ...overrides,
+  });
+}
+
+export async function mockGetMatchday(page: Page, overrides?: Partial<MockConfig>) {
+  await mockResponse(page, 'GET', 'api/tipgroups/*/seasons/*/matchdays/*', {
+    ...DEFAULT_RESPONSES.getMatchdayResponseSuccess,
     ...overrides,
   });
 }

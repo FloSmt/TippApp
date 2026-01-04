@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from '../../fixtures/tipgroup.fixture';
+import { test } from '../../fixtures/tipgroup-management.fixture';
 import { waitForErrorNotification, waitForSuccessNotification } from '../../helper/notification-helper';
 import { clearMocks, mockAvailableLeagues, mockTipgroupCreate, mockTipgroupList } from '../../helper/mock-manager';
 
