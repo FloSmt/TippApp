@@ -32,90 +32,75 @@
     </lib-error-card>
   } @else {
     <form [formGroup]="createForm">
-      <ion-input fill="outline"
-                 formControlName="name"
-                 [maxlength]="nameMaxLength"
-                 label-placement="floating"
-                 label="Name der Tippgruppe"
-                 type="text"
-                 data-testid="tipgroup-name-input"
-                 [errorText]="getErrorMessage('name')">
-        <ion-icon name="text-outline" slot="start"></ion-icon>
-      </ion-input>
+      <custom-input name="tipgroup-name-input" type="text"
+                    formControlName="name"
+                    autocomplete="username"
+                    label="Name der Tippgruppe"
+                    data-testid="tipgroup-name-input" placeholder="Beispiel-Tippspiel" [maxLength]="nameMaxLength"
+                    [errorMessage]="getErrorMessage('name')"></custom-input>
 
-      <ion-select label="Wettbewerb" formControlName="selectedLeague" label-placement="floating"
-                  fill="outline"
-                  data-testid="tipgroup-league-select"
-                  interface="popover">
-        <ion-icon name="trophy" slot="start"></ion-icon>
-        @for (group of getLeagueSeasonGroups(); track group.season) {
-          <div class="season-divider">
-            Saison {{ group.season }}
-          </div>
+      <custom-select label="Wettbewerb"
+                     data-testid="tipgroup-league-select" [options]="getSelectOptions()"
+                     [control]="this.createForm.controls.selectedLeague">
+      </custom-select>
 
-          @for (league of group.leagues; track league.leagueId) {
-            <ion-select-option [value]="league.leagueId" data-testid="league-option">
-              {{ league.leagueName | transformLeagueName }}
-            </ion-select-option>
-          }
-        }
-      </ion-select>
-
-      <ion-input fill="outline"
-                 formControlName="password"
-                 label-placement="floating"
-                 label="Password"
-                 type="password"
-                 data-testid="password-input"
-                 [errorText]="getErrorMessage('password')">
-        <ion-icon name="shield-checkmark" slot="start"></ion-icon>
-        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-      </ion-input>
-      <ion-input fill="outline"
-                 formControlName="passwordConfirm"
-                 label-placement="floating"
-                 label="Password wiederholen"
-                 type="password"
-                 data-testid="password-confirm-input"
-                 [errorText]="getErrorMessage('passwordConfirm')">
-        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-      </ion-input>
+      <custom-input
+        formControlName="password"
+        label="Password"
+        type="password"
+        autocomplete="new-password"
+        [enablePasswordToggle]="true"
+        data-testid="password-input"
+        [errorMessage]="getErrorMessage('password')">
+      </custom-input>
+      <custom-input
+        formControlName="passwordConfirm"
+        label="Password wiederholen"
+        type="password"
+        autocomplete="new-password"
+        [enablePasswordToggle]="true"
+        data-testid="password-confirm-input"
+        [errorMessage]="getErrorMessage('passwordConfirm')">
+      </custom-input>
     </form>
 
     <div class="info-cards">
-      <div class="info-card">
-        <div>
+      <ion-item class="info-card">
+        <div slot="start" class="icon-container">
           <ion-icon name="text-outline"></ion-icon>
         </div>
-        <div>
+        <ion-label>
           <h3>Name der Tippgruppe</h3>
           <p>Mit diesem Namen können andere Spieler deine Tippgruppe finden und ihr beitreten. Der Name sollte aus
             diesem
             Grund einzigartig sein</p>
-        </div>
-      </div>
-      <div class="info-card">
-        <div>
+        </ion-label>
+      </ion-item>
+      <ion-item class="info-card">
+        <div slot="start" class="icon-container">
           <ion-icon name="trophy"></ion-icon>
         </div>
-        <div>
+
+        <ion-label>
           <h3>Wettbewerb</h3>
           <p>Der Wettbewerb bestimmt, welche Spiele automatisch in deine Tippgruppe übernommen werden. Die Spieltage
             können
             später individuell angepasst und mit Spielen aus anderen Wettbewerben erweitert werden.</p>
-        </div>
-      </div>
-      <div class="info-card">
-        <div>
+        </ion-label>
+      </ion-item>
+
+      <ion-item class="info-card">
+        <div slot="start" class="icon-container">
           <ion-icon name="shield-checkmark"></ion-icon>
         </div>
-        <div>
+
+        <ion-label>
           <h3>Password</h3>
           <p>Mit diesem Password können andere Spieler deiner Tippgruppe beitreten. Du kannst es später in den
             Einstellungen
             ändern.</p>
-        </div>
-      </div>
+        </ion-label>
+      </ion-item>
     </div>
   }
 </ion-content>

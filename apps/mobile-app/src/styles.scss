@@ -8,3 +8,399 @@
  * For more information on global stylesheets, visit the documentation:
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--ion-background-color);
+}
+
+ion-content {
+  --background: var(--ion-background-color);
+  --padding-top: 0px !important;
+}
+
+/********
+TYPO
+*********/
+h1, .score-text {
+  font-size: var(--text-3xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--lh-tight) !important;
+  letter-spacing: -0.02em !important;
+  color: var(--ion-text-color) !important;
+  margin-top: var(--ion-space-l) !important;
+  margin-bottom: var(--ion-space-s) !important;
+}
+
+h2 {
+  font-size: var(--text-2xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--lh-tight) !important;
+  letter-spacing: -0.01em !important;
+  margin-top: 0;
+  margin-bottom: var(--ion-space-m) !important;
+}
+
+h3 {
+  font-size: var(--text-xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  margin-top: 0;
+  margin-bottom: var(--ion-space-s) !important;
+}
+
+p, div, span {
+  font-size: var(--text-base) !important;
+  line-height: var(--lh-normal) !important;
+}
+
+p {
+  margin: 0;
+}
+
+/* Spezifische Ionic Optimierungen */
+ion-label {
+  &[position="stacked"] {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--text-sm);
+    color: var(--ion-color-secondary);
+    margin-bottom: var(--ion-space-l);
+  }
+}
+
+.text-small {
+  margin: 0 !important;
+  font-size: var(--text-sm) !important;
+  color: var(--ion-text-color-step-400) !important;
+}
+
+.input-error-message {
+  font-size: var(--text-xs) !important;
+  color: var(--ion-color-danger) !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+.overline {
+  font-size: var(--text-xs) !important;
+  font-weight: var(--font-weight-bold) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em !important;
+  color: var(--ion-color-secondary);
+}
+
+.truncate-one-line-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  margin: var(--ion-space-l) 0;
+  background: var(--ion-border-color);
+}
+
+
+/********
+SKELETON
+**********/
+
+.skeleton {
+  width: 100%;
+  height: 5rem;
+  border-radius: var(--ion-border-radius-m);
+  animation: skeleton-background-animation 1s linear infinite alternate;
+}
+
+@keyframes skeleton-background-animation {
+  0% {
+    background-color: var(--ion-background-color-step-100);
+  }
+  100% {
+    background-color: var(--ion-background-color-step-50);
+  }
+}
+
+/********
+PAGE-HEADER
+**********/
+
+ion-header {
+  -webkit-box-shadow: none;
+  box-shadow: none !important;
+
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --border-width: 0;
+
+    &::part(background) {
+      border: none;
+    }
+  }
+
+  &.header-collapse-condense {
+    .title {
+      margin-top: 0;
+    }
+  }
+
+  ion-title {
+    .title {
+      margin-bottom: var(--ion-space-s);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: var(--text-sm);
+      color: var(--ion-text-color-step-400);
+    }
+  }
+}
+
+ion-app.md .header-collapse-condense {
+  display: block;
+}
+
+
+/********
+BUTTONS
+**********/
+ion-button {
+  --border-radius: var(--ion-border-radius-m) !important;
+  text-transform: none;
+  --box-shadow: none;
+  transition: transform 0.1s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.button-solid {
+    --background: var(--gradient-primary) !important;
+    --box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);
+  }
+
+  &.button-clear::part(native) {
+    --background: var(--gradient-primary) !important;
+    --color: var(--ion-color-primary) !important;
+    background-clip: text !important;
+  }
+}
+
+/* FAB */
+ion-fab-button {
+  --border-radius: var(--ion-border-radius-m);
+  --background: var(--gradient-primary);
+}
+
+/********
+FOOTER TAB-BAR
+**********/
+ion-tab-bar {
+  --border: 0;
+  height: 90px;
+  --background: var(--ion-background-color-step-50);
+
+  ion-tab-button {
+    --padding-end: var(--ion-space-xl);
+    --ripple-color: transparent;
+    font-size: var(--text-sm);
+    color: var(--ion-text-color-step-100);
+
+
+    ion-icon {
+      margin-bottom: var(--ion-space-l);
+      padding-top: var(--ion-space-s);
+      padding-bottom: var(--ion-space-s);
+      border-radius: var(--ion-border-radius-l);
+      transition: all 0.1s ease-in-out;
+    }
+
+    &.tab-selected {
+      ion-icon {
+        background: var(--gradient-primary);
+        color: var(--ion-color-primary-contrast);
+        padding-right: var(--ion-space-xxl);
+        padding-left: var(--ion-space-xxl);
+      }
+    }
+  }
+}
+
+
+/********
+SEGMENT SWITCH
+**********/
+ion-segment {
+  background: var(--ion-border-color);
+  padding: var(--ion-space-s);
+  border-radius: var(--ion-border-radius-m);
+  display: flex;
+  gap: var(--ion-space-s);
+
+  ion-label {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+
+  .segment-button-checked::part(native) {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: var(--ion-text-color);
+    background: var(--ion-card-background);
+    border-radius: var(--ion-border-radius-s);
+  }
+
+  ion-segment-button {
+    flex: 1;
+    text-align: center;
+    padding: var(--ion-space-xs) var(--ion-space-m);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    --indicator-color: transparent !important;
+    --color: var(--ion-text-muted);
+    --ripple-color: transparent;
+    --border-radius: var(--ion-border-radius-s);
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+/********
+INPUT
+**********/
+ion-item, ion-card {
+  .input-wrapper {
+    background: var(--ion-background-color);
+  }
+}
+
+
+/********
+ITEMS
+**********/
+ion-item-group {
+  .skeleton-item {
+    border-radius: var(--ion-border-radius-m);
+    background-color: var(--ion-background-color-step-50);
+    height: 6rem;
+    margin-bottom: 5px;
+  }
+}
+
+ion-item {
+  --border-style: none;
+  --border-width: 0;
+  --highlight-color-focused: var(--ion-color-primary);
+  margin-bottom: 5px;
+  border-radius: var(--ion-border-radius-m);
+  border: 1px solid var(--ion-border-color);
+  box-shadow: var(--app-card-shadow);
+
+  &::part(native) {
+    background: var(--ion-item-background);
+    border-style: none;
+    border-width: 0;
+  }
+
+  &::part(detail-icon) {
+    color: var(--ion-color-primary);;
+    opacity: 1;
+    margin-right: var(--ion-space-s);
+  }
+
+  &.active {
+    border-color: var(--ion-color-primary);
+
+    &::part(native) {
+      background: rgba(var(--ion-color-primary-rgb), 0.1);
+    }
+  }
+}
+
+/********
+BADGE
+**********/
+ion-badge {
+  margin: 0;
+  border-radius: var(--ion-border-radius-m);
+  padding: var(--ion-space-s) var(--ion-space-l);
+  font-size: var(--text-xs) !important;
+  font-weight: var(--font-weight-bold) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em !important;
+  min-height: 0;
+  background: rgba(var(--ion-color-primary-rgb), 0.2);
+  color: var(--ion-color-primary);
+
+  &[color="primary"] {
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
+    color: var(--ion-color-primary);
+  }
+
+  &[color="danger"] {
+    background: rgba(var(--ion-color-danger-rgb), 0.2);
+    color: var(--ion-color-danger);
+  }
+
+  &[color="secondary"] {
+    background: rgba(var(--ion-color-secondary-rgb), 0.2);
+    color: var(--ion-color-secondary);
+  }
+
+  &[color="tertiary"] {
+    background: rgba(var(--ion-color-tertiary-rgb), 0.2);
+    color: var(--ion-color-tertiary);
+  }
+}
+
+/********
+TOAST NOTIFICATIONS
+**********/
+ion-toast {
+  --background: var(--ion-background-color-step-100);
+  --color: var(--ion-text-color);
+  --border-radius: var(--ion-border-radius-m);
+
+  &::part(container) {
+    border-radius: var(--ion-border-radius-m);
+    position: relative;
+  }
+
+  &::part(container):after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  &::part(icon) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &.toast-success {
+    &::part(icon) {
+      color: var(--ion-color-success);
+    }
+  }
+
+  &.toast-error {
+    &::part(icon) {
+      color: var(--ion-color-danger);
+    }
+  }
+
+  &.toast-info {
+    &::part(icon) {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+/********
+CARDS
+**********/
+ion-card {
+  --background: var(--ion-card-background);
+}

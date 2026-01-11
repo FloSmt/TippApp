@@ -1,10 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { TipgroupUser } from './tipgroupUser.entity';
 import { Tip } from './tip.entity';
@@ -15,11 +9,11 @@ export class User {
   @ApiProperty()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   @ApiProperty()
   email: string;
 
-  @Column()
+  @Column({ unique: true })
   @ApiProperty()
   username: string;
 

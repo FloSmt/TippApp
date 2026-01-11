@@ -1,0 +1,53 @@
+ion-content {
+  --padding-top: var(--ion-space-xxxl) !important;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.match-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+  .skeleton-container {
+    width: 100%;
+
+    ion-skeleton-text {
+      margin-top: var(--ion-space-xl);
+    }
+
+    .skeleton {
+      width: 100%;
+      height: 8rem;
+      margin-bottom: var(--ion-space-l);
+    }
+  }
+
+  .date-text {
+    margin-bottom: var(--ion-space-s);
+    margin-top: var(--ion-space-xl);
+    display: flex;
+    align-items: center;
+    padding-inline-start: var(--ion-space-m);
+
+
+    .line {
+      height: 12px;
+      width: 3px;
+      border-radius: var(--ion-border-radius-m);
+      background-color: var(--ion-color-primary);
+      margin-right: var(--ion-space-m);
+    }
+  }
+
+  .matches-container {
+    width: 20cm;
+  }
+}

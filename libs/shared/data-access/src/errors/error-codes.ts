@@ -48,7 +48,7 @@ export abstract class ErrorCodes {
   public static readonly CreateTipgroup = {
     TIPGROUP_NAME_TAKEN: {
       code: 'CREATE_TIPGROUP.TIPGROUP_NAME_TAKEN',
-      message: 'The tipgroup name is already taken.',
+      message: 'The matchday name is already taken.',
     },
     LEAGUE_NOT_FOUND: {
       code: 'CREATE_TIPGROUP.LEAGUE_NOT_FOUND',
@@ -57,6 +57,21 @@ export abstract class ErrorCodes {
     API_DATA_UNAVAILABLE: {
       code: 'CREATE_TIPGROUP.API_DATA_UNAVAILABLE',
       message: 'External API data is currently unavailable.',
+    },
+  };
+
+  public static readonly Tipgroup = {
+    MATCHDAY_DETAILS_NOT_FOUND: {
+      code: 'TIPGROUP.MATCHDAY_DETAILS_NOT_FOUND',
+      message: 'Matchday details not found for the given parameters.',
+    },
+    NOT_A_MEMBER: {
+      code: 'TIPGROUP.NOT_A_MEMBER',
+      message: 'User is not a member of the specified tipgroup.',
+    },
+    SEASON_NOT_FOUND: {
+      code: 'TIPGROUP.SEASON_NOT_FOUND',
+      message: 'Season not found for the given parameters.',
     },
   };
 }

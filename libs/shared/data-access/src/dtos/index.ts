@@ -4,6 +4,6 @@ export * from './auth/auth-response.dto';
 export * from './user/user-response.dto';
 export * from './tipgroup/index';
 export * from './tipseason/create-tip-season.dto';
-export * from './matchday/create-matchday.dto';
-export * from './match/create-match.dto';
+export * from './matchday/index';
+export * from './match/index';
 export * from './error/api-error.dto';

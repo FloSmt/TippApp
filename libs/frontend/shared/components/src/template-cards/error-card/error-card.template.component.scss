@@ -1,4 +1,9 @@
 .error-card-container {
+  ion-item {
+    border-color: var(--ion-color-danger);
+    box-shadow: var(--shadow-input-danger)
+  }
+
   .error-card {
     text-align: center;
     padding: 2rem;
@@ -13,14 +18,6 @@
       width: 4rem;
       height: 4rem;
       color: var(--ion-color-danger);
-    }
-  }
-
-  .information {
-    h2 {
-      font-weight: bold;
-      font-size: 1.5em;
-      margin-bottom: var(--ion-space-l);
     }
   }
 }

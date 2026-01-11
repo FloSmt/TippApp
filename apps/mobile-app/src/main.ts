@@ -3,12 +3,10 @@ import {
   PreloadAllModules,
   provideRouter,
   RouteReuseStrategy,
+  withComponentInputBinding,
   withPreloading,
 } from '@angular/router';
-import {
-  IonicRouteStrategy,
-  provideIonicAngular,
-} from '@ionic/angular/standalone';
+import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import {
   AppComponent,
   authHeaderInterceptor,
@@ -25,10 +23,8 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(
-      withInterceptors([authHeaderInterceptor, errorHandlerInterceptor])
-    ),
-    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideHttpClient(withInterceptors([authHeaderInterceptor, errorHandlerInterceptor])),
+    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
     { provide: ENVIRONMENT, useValue: environment },
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
   ],

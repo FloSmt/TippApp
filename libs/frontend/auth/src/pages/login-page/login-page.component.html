@@ -1,34 +1,27 @@
-<ion-header class="page-title">
-  <ion-toolbar>
-    <h1>Anmelden</h1>
-    <p class="subtile">Willkommen zurück! Melde dich an, um fortzufahren.</p>
-  </ion-toolbar>
-</ion-header>
 <ion-content class="ion-padding">
-  <form [formGroup]="loginForm" class="form-input">
-    <ion-input
-      [errorText]="getErrorMessage('email')"
-      autofocus="true"
+  <custom-header title="Anmelden" subTitle="Melde dich an, um zu Tippen" [showButtonSection]="false"
+                 [centerTitle]="true"></custom-header>
+  <form [formGroup]="loginForm" class="form-input" (ngSubmit)="onLogin()">
+    <custom-input
+      [errorMessage]="getErrorMessage('email')"
+      autocomplete="email"
       data-testid="input-email"
-      fill="outline"
       formControlName="email"
       label="Email"
-      label-placement="floating"
       type="email">
-    </ion-input>
-    <ion-input
-      [errorText]="getErrorMessage('password')"
+    </custom-input>
+    <custom-input
+      [errorMessage]="getErrorMessage('password')"
       data-testid="input-password"
-      fill="outline"
+      autocomplete="current-password"
       formControlName="password"
       label="Password"
-      label-placement="floating"
       type="password"
+      [enablePasswordToggle]="true"
     >
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
+    </custom-input>
     <ion-button
-      (click)="onLogin()"
+      type="submit"
       [disabled]="disableLogin()"
       color="primary"
       data-testid="login-button"
@@ -44,9 +37,8 @@
       </ion-label>
     </ion-button>
     <div class="link-to-register">
-      <ion-button (click)="navigateToRegisterPage()" data-testid="switch-to-register-button" fill="clear"
-                  size="size">
-        Account erstellen
+      <ion-button (click)="navigateToRegisterPage()" data-testid="switch-to-register-button" fill="clear">
+        Noch keinen Account?
       </ion-button>
     </div>
   </form>

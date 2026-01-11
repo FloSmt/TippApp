@@ -12,6 +12,7 @@ export class Factory {
   }
 
   public async clearDatabase() {
+    // Drops all tables and recreates them
     await this.dataSource.synchronize(true);
   }
 

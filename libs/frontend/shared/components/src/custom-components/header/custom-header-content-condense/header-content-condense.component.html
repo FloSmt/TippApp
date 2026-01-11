@@ -1,0 +1,12 @@
+<ion-header collapse="condense" mode="ios">
+  <ion-toolbar mode="md">
+    <ion-title>
+      @if (title()) {
+        <h1 class="title truncate-one-line-text">{{ title() }}</h1>
+      }
+      @if (subTitle()) {
+        <p class="subtitle truncate-one-line-text">{{ subTitle() }}</p>
+      }
+    </ion-title>
+  </ion-toolbar>
+</ion-header>

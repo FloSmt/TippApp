@@ -5,3 +5,5 @@ export * from './custom-validators';
 export * from './environments/environment.token';
 export * from './error-management/error-management.service';
 export * from './notifications/notification.service';
+export * from './services/timer.service';
+export * from './enums/MatchState';

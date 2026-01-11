@@ -1,54 +1,43 @@
-<ion-header class="page-title">
-  <ion-toolbar>
-    <h1>Account anlegen</h1>
-    <p class="subtile">Erstelle einen neuen Account, um zu starten.</p>
-  </ion-toolbar>
-</ion-header>
 <ion-content class="ion-padding">
-  <form [formGroup]="registerForm" class="form-input">
-    <ion-input
-      [errorText]="getErrorMessage('username')"
-      autofocus="true"
-      class="custom"
+  <custom-header title="Registrieren" subTitle="Erstelle einen neuen Account" [showButtonSection]="false"
+                 [centerTitle]="true"></custom-header>
+  <form [formGroup]="registerForm" class="form-input" (ngSubmit)="onRegister()">
+    <custom-input
+      [errorMessage]="getErrorMessage('username')"
       data-testid="input-username"
-      fill="outline"
       formControlName="username"
       label="Nutzername"
-      label-placement="floating"
-      required="true"
+      autocomplete="username"
       type="text">
-    </ion-input>
-    <ion-input
-      [errorText]="getErrorMessage('email')"
+    </custom-input>
+    <custom-input
+      [errorMessage]="getErrorMessage('email')"
       data-testid="input-email"
-      fill="outline"
       formControlName="email"
       label="Email"
-      label-placement="floating"
+      autocomplete="email"
       type="email">
-    </ion-input>
-    <ion-input
-      [errorText]="getErrorMessage('password')"
+    </custom-input>
+    <custom-input
+      [errorMessage]="getErrorMessage('password')"
       data-testid="input-password"
-      fill="outline"
       formControlName="password"
       label="Password"
-      label-placement="floating"
       type="password"
+      autocomplete="new-password"
+      [enablePasswordToggle]="true"
     >
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
-    <ion-input
-      [errorText]="getErrorMessage('confirmPassword')"
+    </custom-input>
+    <custom-input
+      [errorMessage]="getErrorMessage('confirmPassword')"
       data-testid="input-confirm-password"
-      fill="outline"
       formControlName="confirmPassword" label="Password wiederholen"
-      label-placement="floating"
-      type="password">
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
+      type="password"
+      autocomplete="new-password"
+      [enablePasswordToggle]="true">
+    </custom-input>
     <ion-button
-      (click)="onRegister()"
+      type="submit"
       [disabled]="disableRegistration()"
       color="primary"
       data-testid="register-button"
@@ -65,7 +54,7 @@
     </ion-button>
     <div class="link-to-login">
       <ion-button (click)="navigateToLoginPage()" data-testid="switch-to-login-button" fill="clear" size="size">Zur
-        Anmeldung
+        Bereits einen Account?
       </ion-button>
     </div>
   </form>
