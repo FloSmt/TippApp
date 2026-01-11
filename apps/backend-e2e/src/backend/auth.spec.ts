@@ -32,7 +32,7 @@ describe('AuthController (e2e)', () => {
     userFactory = new UserFactory(app, dataSource);
   });
 
-  describe('/register (POST)', () => {
+  describe('POST /auth/register', () => {
     it('should add a user into Database and response AuthResponse', async () => {
       const registerDto = mocks.registerData[0];
 
@@ -72,7 +72,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/login (POST)', () => {
+  describe('POST /auth/login', () => {
     const registerDto = mocks.registerData[0];
     let registeredUser: User;
 
@@ -135,7 +135,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/refresh (POST)', () => {
+  describe('POST /auth/refresh', () => {
     const registerDto = mocks.registerData[0];
     let registeredUser: User;
 

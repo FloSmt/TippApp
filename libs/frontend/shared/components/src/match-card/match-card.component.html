@@ -1,0 +1,39 @@
+<div class="match-card" [class]="{
+'is-live': matchState() === MatchState.LIVE,
+'is-upcoming-far': matchState() === MatchState.UPCOMING_FAR,
+'is-upcoming-soon': matchState() === MatchState.UPCOMING_SOON,
+'is-finished': matchState() === MatchState.FINISHED
+}" data-testid="match-card">
+  <div class="match-infos">
+    <div class="team home">
+      <div class="logo">
+        <img [src]="match().homeTeam.logoUrl" alt="">
+      </div>
+      <div class="name">
+        <p class="truncate-one-line-text">{{ match().homeTeam.shortName }}</p>
+      </div>
+    </div>
+    <div class="match-score">
+      @if (matchState() === MatchState.LIVE) {
+        <ion-badge color="danger"><span class="dot"></span>LIVE</ion-badge>
+      } @else if (matchState() !== MatchState.UPCOMING_FAR) {
+        <ion-badge
+          [attr.color]="matchState() === MatchState.FINISHED? 'secondary' : 'primary'">{{ currentBatchContent() }}
+        </ion-badge>
+      }
+      <div class="main score-text">{{ getScoreContent() }}</div>
+    </div>
+    <div class="team away">
+      <div class="logo">
+        <img [src]="match().awayTeam.logoUrl" alt="">
+      </div>
+      <div class="name">
+        <p class="truncate-one-line-text">{{ match().awayTeam.shortName }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="tip-section">
+    <p class="text-small">Dein Tipp: <span class="text-small">2:2</span></p>
+  </div>
+</div>

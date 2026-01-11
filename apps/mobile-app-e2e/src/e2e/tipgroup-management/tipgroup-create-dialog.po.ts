@@ -31,12 +31,13 @@ export class TipgroupCreateDialog {
     await this.passwordInput.locator('input').fill(password);
     await this.passwordConfirmInput.click();
     await this.passwordConfirmInput.locator('input').fill(password);
+    await this.tipgroupNameInput.click();
   }
 
   private async selectLeague(nthRow: number) {
     await this.leagueSelection.click();
-    await this.page.locator('ion-popover ion-list').waitFor({ state: 'visible' });
-    await this.page.locator('ion-list ion-item').nth(nthRow).click();
+    await this.page.locator('.options-container').waitFor({ state: 'visible' });
+    await this.page.locator('.options-container .option-item').nth(nthRow).click();
   }
 
   async submit() {
@@ -46,6 +47,6 @@ export class TipgroupCreateDialog {
   }
 
   inputErrorText(inputObject: Locator) {
-    return inputObject.locator('.error-text');
+    return inputObject.locator('.input-error-message');
   }
 }

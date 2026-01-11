@@ -5,6 +5,17 @@
   "projectType": "library",
   "tags": ["scope:backend", "type:lib"],
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/auth",
+        "main": "libs/backend/auth/src/index.ts",
+        "tsConfig": "libs/backend/auth/tsconfig.lib.json",
+        "assets": ["libs/backend/auth/*.md"],
+        "format": ["cjs"]
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

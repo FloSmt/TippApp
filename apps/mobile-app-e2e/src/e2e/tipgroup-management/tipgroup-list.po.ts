@@ -23,6 +23,7 @@ export class TipgroupListPage {
     this.itemGroup = this.page.getByTestId('item-group');
     this.tipgroupItem = this.page.getByTestId('tipgroup-item');
     this.refresherContent = this.page.getByTestId('refresher-content');
+    this.header = this.page.getByTestId('tipgroup-list-header');
   }
 
   async goto() {

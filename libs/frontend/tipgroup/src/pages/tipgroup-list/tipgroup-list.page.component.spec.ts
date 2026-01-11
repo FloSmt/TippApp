@@ -1,10 +1,5 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import { TipgroupStore } from '@tippapp/frontend/utils';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TipgroupManagementStore } from '@tippapp/frontend/utils';
 import { BehaviorSubject } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ModalController } from '@ionic/angular/standalone';
@@ -33,7 +28,7 @@ describe('TipgroupListPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TipgroupListPageComponent],
       providers: [
-        { provide: TipgroupStore, useValue: tipgroupStoreMock },
+        { provide: TipgroupManagementStore, useValue: tipgroupStoreMock },
         {
           provide: ModalController,
           useValue: modalControllerMock,
@@ -45,8 +40,7 @@ describe('TipgroupListPageComponent', () => {
 
     fixture = TestBed.createComponent(TipgroupListPageComponent);
     component = fixture.componentInstance;
-    component.isLoadingAfterRefresh$ =
-      isLoadingAfterRefreshSubject.asObservable();
+    component.isLoadingAfterRefresh$ = isLoadingAfterRefreshSubject.asObservable();
     fixture.detectChanges();
   });
 
@@ -63,7 +57,7 @@ describe('TipgroupListPageComponent', () => {
     expect(tipgroupStoreMock.loadAvailableTipgroups).toHaveBeenCalled();
   }));
 
-  it('should refresh the tipgroup-list', () => {
+  it('should refresh the matchday-list', () => {
     const event = { target: { complete: jest.fn() } };
     component.refreshTipgroups(event);
     expect(tipgroupStoreMock.loadAvailableTipgroups).toHaveBeenCalled();

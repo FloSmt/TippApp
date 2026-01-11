@@ -8,18 +8,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authStore = inject(AuthStore);
 
   if (authStore.isAuthenticated()) {
-    console.log('Login via AccessToken');
     return true;
   } else {
-    console.log('Login via RefreshToken');
     authStore.refreshAccessToken();
     return toObservable(authStore.isLoading).pipe(
       filter((isLoading) => !isLoading),
-      takeUntil(
-        toObservable(authStore.isLoading).pipe(
-          filter((isLoading) => !isLoading)
-        )
-      ),
+      takeUntil(toObservable(authStore.isLoading).pipe(filter((isLoading) => !isLoading))),
       map(() => {
         const authenticated = authStore.isAuthenticated();
         if (authenticated) {

@@ -1,38 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  RegisterDto,
-  Tipgroup,
-  TipgroupUser,
-  User,
-} from '@tippapp/shared/data-access';
+import { RegisterDto, User } from '@tippapp/shared/data-access';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserRepository } from '@tippapp/backend/shared';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
   let service: UserService;
-  let userRepository: DeepMocked<Repository<User>>;
-  let tipgroupUserRepository: DeepMocked<Repository<TipgroupUser>>;
+  let userRepository: DeepMocked<UserRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
         {
-          provide: getRepositoryToken(User),
-          useValue: createMock<Repository<User>>(),
-        },
-        {
-          provide: getRepositoryToken(TipgroupUser),
-          useValue: createMock<Repository<TipgroupUser>>(),
+          provide: UserRepository,
+          useValue: createMock<UserRepository>(),
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    userRepository = module.get(getRepositoryToken(User));
-    tipgroupUserRepository = module.get(getRepositoryToken(TipgroupUser));
+    userRepository = module.get(UserRepository);
   });
 
   it('should be defined', () => {
@@ -56,10 +44,7 @@ describe('UserService', () => {
       findOne: jest.fn().mockResolvedValue(user),
     };
 
-    const serviceWithManager = new UserService(
-      { manager: entityManager } as any,
-      tipgroupUserRepository
-    );
+    const serviceWithManager = new UserService({ manager: entityManager } as any);
 
     const result = await serviceWithManager.findById(2);
 
@@ -97,38 +82,5 @@ describe('UserService', () => {
     expect(userRepository.create).toHaveBeenCalledWith(registerDto);
     expect(userRepository.save).toHaveBeenCalledWith(user);
     expect(result).toEqual(user);
-  });
-
-  it('should return an array of tip groups for a given user ID', async () => {
-    const userId = 1;
-
-    const tipgroup1 = new Tipgroup();
-    tipgroup1.id = 101;
-    tipgroup1.name = 'Group1';
-
-    const tipgroup2 = new Tipgroup();
-    tipgroup2.id = 102;
-    tipgroup2.name = 'Group2';
-
-    const tipgroupUserEntry1 = new TipgroupUser();
-    tipgroupUserEntry1.userId = userId;
-    tipgroupUserEntry1.tipgroup = tipgroup1;
-
-    const tipgroupUserEntry2 = new TipgroupUser();
-    tipgroupUserEntry2.userId = userId;
-    tipgroupUserEntry2.tipgroup = tipgroup2;
-
-    tipgroupUserRepository.find.mockResolvedValue([
-      tipgroupUserEntry1,
-      tipgroupUserEntry2,
-    ]);
-
-    const result = await service.getTipGroupsByUserId(userId);
-
-    expect(result).toEqual([tipgroup1, tipgroup2]);
-    expect(tipgroupUserRepository.find).toHaveBeenCalledWith({
-      where: { userId: userId },
-      relations: ['tipgroup'],
-    });
   });
 });

@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiModule } from '@tippapp/backend/api';
 import { dbConfigDev, dbConfigProduction, dbConfigTest } from '@tippapp/backend/database';
 import { HttpModule } from '@nestjs/axios';
-import { TipgroupModule } from '@tippapp/backend/tip-game';
+import { TipgroupsModule } from '@tippapp/backend/tip-game';
 
 @Module({
   imports: [
@@ -29,15 +29,10 @@ import { TipgroupModule } from '@tippapp/backend/tip-game';
     UserModule,
     AuthModule,
     HttpModule,
-    TipgroupModule,
+    TipgroupsModule,
     ApiModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {
-  constructor() {
-    console.log('AppModule initialized');
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-  }
-}
+export class AppModule {}

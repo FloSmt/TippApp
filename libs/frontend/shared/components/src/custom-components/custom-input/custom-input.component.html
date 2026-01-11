@@ -1,0 +1,28 @@
+<div class="input-field">
+  <div class="input-wrapper" [class.invalid]="isInvalid()" [class.valid]="ngControl.valid">
+    <div>
+      <label [for]="ngControl.name">{{ label() }}</label>
+      <input [placeholder]="placeholder()" [value]="value"
+             [type]="passwordVisible? 'text' : type()"
+             (input)="onInputChange($event)"
+             (blur)="onTouched()" [disabled]="isDisabled" [attr.maxLength]="maxLength() ? maxLength() : null"
+             [attr.autocomplete]="autocomplete() ? autocomplete() : null">
+    </div>
+    @if (enablePasswordToggle()) {
+      <div class="toggle-visibility">
+        @if (passwordVisible) {
+          <ion-icon name="eye-off" (click)="togglePasswordVisibility(!passwordVisible)"></ion-icon>
+        } @else {
+          <ion-icon name="eye" (click)="togglePasswordVisibility(!passwordVisible)"></ion-icon>
+        }
+      </div>
+    }
+  </div>
+
+  @if (isInvalid() && errorMessage()) {
+    <span class="input-error-message" animate.enter="enter-animation" animate.leave="leave-animation">
+      <ion-icon name="close-circle"></ion-icon>
+      {{ errorMessage() }}
+    </span>
+  }
+</div>

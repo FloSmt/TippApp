@@ -1,0 +1,32 @@
+<ion-header #headerContainer [translucent]="false" mode="ios" [class.center]="centerTitle()"
+            [style.transform]="transform"
+            [class.quick-reveal]="enableQuickReveal()">
+  <ion-toolbar mode="md">
+    <ion-title>
+      @if (title()) {
+        <h1 class="title truncate-one-line-text">{{ title() }}</h1>
+      }
+      @if (subTitle()) {
+        <p class="subtitle truncate-one-line-text">{{ subTitle() }}</p>
+      }
+    </ion-title>
+    @if (showButtonSection()) {
+      <ion-buttons slot="end">
+        <ion-avatar class="profile-avatar">
+          <div class="no-avatar">
+            PB
+          </div>
+        </ion-avatar>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+  @if (enableSubContent()) {
+    <ion-toolbar class="sub-content">
+      <ng-content></ng-content>
+    </ion-toolbar>
+  }
+</ion-header>
+
+@if (enableQuickReveal()) {
+  <div class="header-spacer" [style.height.px]="headerHeight()"></div>
+}

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 import {
   IonButton,
@@ -10,7 +10,6 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
-  IonInput,
   IonItem,
   IonLabel,
   IonList,
@@ -26,9 +25,9 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import {addIcons} from 'ionicons';
-import {add, close, library, personCircle, playCircle, radio, search,} from 'ionicons/icons';
-import {ReactiveFormsModule} from '@angular/forms';
+import { addIcons } from 'ionicons';
+import { add, close, library, personCircle, playCircle, radio, search } from 'ionicons/icons';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'lib-theme-test-page',
@@ -45,7 +44,6 @@ import {ReactiveFormsModule} from '@angular/forms';
     IonLabel,
     IonFab,
     IonFabButton,
-    IonInput,
     IonSegment,
     IonSegmentButton,
     IonList,
@@ -57,14 +55,13 @@ import {ReactiveFormsModule} from '@angular/forms';
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonHeader
-],
+    IonHeader,
+  ],
   templateUrl: './theme-test-page.component.html',
   styleUrl: './theme-test-page.component.scss',
 })
 export class ThemeTestPageComponent {
-
   constructor() {
-    addIcons({playCircle, radio, library, search, close, add, personCircle});
+    addIcons({ playCircle, radio, library, search, close, add, personCircle });
   }
 }

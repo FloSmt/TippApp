@@ -3,12 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { HttpException } from '@nestjs/common';
-import {
-  ErrorCodes,
-  LoginDto,
-  RegisterDto,
-  User,
-} from '@tippapp/shared/data-access';
+import { ErrorCodes, LoginDto, RegisterDto, User } from '@tippapp/shared/data-access';
 import { UserService } from '@tippapp/backend/user';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HashService } from '@tippapp/backend/shared';
@@ -92,9 +87,7 @@ describe('AuthService', () => {
     errorManagerService = module.get(ErrorManagerService);
     hashService = module.get(HashService);
 
-    jest
-      .spyOn(errorManagerService, 'createError')
-      .mockReturnValue(new HttpException('Error', 404));
+    jest.spyOn(errorManagerService, 'createError').mockReturnValue(new HttpException('Error', 404));
   });
 
   afterEach(() => {
@@ -116,32 +109,20 @@ describe('AuthService', () => {
         const result = service.login(mocks.loginData[0]);
 
         await expect(result).rejects.toThrow(new HttpException('Error', 404));
-        expect(errorManagerService.createError).toHaveBeenCalledWith(
-          ErrorCodes.Auth.USER_NOT_FOUND,
-          404
-        );
+        expect(errorManagerService.createError).toHaveBeenCalledWith(ErrorCodes.Auth.USER_NOT_FOUND, 404);
 
-        expect(userService.findByEmail).toHaveBeenCalledWith(
-          mocks.loginData[0].email
-        );
+        expect(userService.findByEmail).toHaveBeenCalledWith(mocks.loginData[0].email);
       });
 
       it('should throw an UnauthorizedException if the passwords dont match', async () => {
-        jest
-          .spyOn(hashService, 'comparePasswords')
-          .mockResolvedValueOnce(false);
+        jest.spyOn(hashService, 'comparePasswords').mockResolvedValueOnce(false);
 
         const result = service.login(mocks.loginData[0]);
 
         await expect(result).rejects.toThrow(new HttpException('Error', 404));
-        expect(errorManagerService.createError).toHaveBeenCalledWith(
-          ErrorCodes.Auth.INVALID_CREDENTIALS,
-          401
-        );
+        expect(errorManagerService.createError).toHaveBeenCalledWith(ErrorCodes.Auth.INVALID_CREDENTIALS, 401);
 
-        expect(userService.findByEmail).toHaveBeenCalledWith(
-          mocks.loginData[0].email
-        );
+        expect(userService.findByEmail).toHaveBeenCalledWith(mocks.loginData[0].email);
       });
 
       it('should return refreshToken and accessToken', async () => {
@@ -153,10 +134,7 @@ describe('AuthService', () => {
           refreshToken: 'newRefreshToken',
         });
         expect(service.generateTokens).toHaveBeenCalled();
-        expect(userService.updateRefreshToken).toHaveBeenCalledWith(
-          mocks.userData.id,
-          'newRefreshToken'
-        );
+        expect(userService.updateRefreshToken).toHaveBeenCalledWith(mocks.userData.id, 'newRefreshToken');
       });
     });
 
@@ -167,20 +145,13 @@ describe('AuthService', () => {
         const result = service.register(mocks.registerData[0]);
 
         await expect(result).rejects.toThrow(new HttpException('Error', 404));
-        expect(errorManagerService.createError).toHaveBeenCalledWith(
-          ErrorCodes.Auth.EMAIL_ALREADY_EXISTS,
-          409
-        );
+        expect(errorManagerService.createError).toHaveBeenCalledWith(ErrorCodes.Auth.EMAIL_ALREADY_EXISTS, 409);
 
-        expect(userService.findByEmail).toHaveBeenCalledWith(
-          mocks.registerData[0].email
-        );
+        expect(userService.findByEmail).toHaveBeenCalledWith(mocks.registerData[0].email);
       });
 
       it('should create a new User with hashed Password', async () => {
-        jest
-          .spyOn(hashService, 'hashPassword')
-          .mockResolvedValueOnce('hashedPassword');
+        jest.spyOn(hashService, 'hashPassword').mockResolvedValueOnce('hashedPassword');
         userService.findByEmail.mockResolvedValueOnce(null);
         userService.create.mockResolvedValueOnce(mocks.userData);
 
@@ -195,10 +166,7 @@ describe('AuthService', () => {
         });
 
         expect(service.generateTokens).toHaveBeenCalled();
-        expect(userService.updateRefreshToken).toHaveBeenCalledWith(
-          mocks.userData.id,
-          'newRefreshToken'
-        );
+        expect(userService.updateRefreshToken).toHaveBeenCalledWith(mocks.userData.id, 'newRefreshToken');
       });
     });
 
@@ -212,14 +180,9 @@ describe('AuthService', () => {
       it('should throw an UnauthorizedException if token is could not verified', async () => {
         verifyTokenSpy.mockReturnValue(null);
 
-        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
-          new HttpException('Error', 404)
-        );
+        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(new HttpException('Error', 404));
 
-        expect(errorManagerService.createError).toHaveBeenCalledWith(
-          ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
-          401
-        );
+        expect(errorManagerService.createError).toHaveBeenCalledWith(ErrorCodes.Auth.INVALID_REFRESH_TOKEN, 401);
         expect(userService.findById).not.toHaveBeenCalled();
         expect(verifyTokenSpy).toHaveBeenCalledWith('invalidToken');
       });
@@ -228,13 +191,8 @@ describe('AuthService', () => {
         verifyTokenSpy.mockReturnValue({ id: 22, email: 'mock@email.de' });
         userService.findById.mockResolvedValueOnce(null);
 
-        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(
-          new HttpException('Error', 404)
-        );
-        expect(errorManagerService.createError).toHaveBeenCalledWith(
-          ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
-          401
-        );
+        await expect(service.refreshTokens('invalidToken')).rejects.toThrow(new HttpException('Error', 404));
+        expect(errorManagerService.createError).toHaveBeenCalledWith(ErrorCodes.Auth.INVALID_REFRESH_TOKEN, 401);
 
         expect(userService.findById).toHaveBeenCalledWith(22);
       });
@@ -246,13 +204,8 @@ describe('AuthService', () => {
           refreshToken: 'different',
         });
 
-        await expect(service.refreshTokens('refreshToken')).rejects.toThrow(
-          new HttpException('Error', 404)
-        );
-        expect(errorManagerService.createError).toHaveBeenCalledWith(
-          ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
-          401
-        );
+        await expect(service.refreshTokens('refreshToken')).rejects.toThrow(new HttpException('Error', 404));
+        expect(errorManagerService.createError).toHaveBeenCalledWith(ErrorCodes.Auth.INVALID_REFRESH_TOKEN, 401);
 
         expect(userService.findById).toHaveBeenCalledWith(22);
       });
@@ -261,7 +214,7 @@ describe('AuthService', () => {
         verifyTokenSpy.mockReturnValue({ id: 22, email: 'mock@email.de' });
         userService.findById.mockResolvedValueOnce(mocks.userData);
 
-        const result = await service.refreshTokens(mocks.userData.refreshToken);
+        const result = await service.refreshTokens(mocks.userData.refreshToken!);
 
         expect(result).toEqual({
           accessToken: 'newAccessToken',
@@ -272,22 +225,15 @@ describe('AuthService', () => {
           email: mocks.userData.email,
           id: mocks.userData.id,
         });
-        expect(verifyTokenSpy).toHaveBeenCalledWith(
-          mocks.userData.refreshToken
-        );
-        expect(userService.updateRefreshToken).toHaveBeenCalledWith(
-          mocks.userData.id,
-          'newRefreshToken'
-        );
+        expect(verifyTokenSpy).toHaveBeenCalledWith(mocks.userData.refreshToken);
+        expect(userService.updateRefreshToken).toHaveBeenCalledWith(mocks.userData.id, 'newRefreshToken');
       });
     });
   });
 
   describe('generateTokens', () => {
     it('should generate access and refresh tokens', () => {
-      jwtServiceMock.sign
-        .mockReturnValueOnce('accessToken')
-        .mockReturnValueOnce('refreshToken');
+      jwtServiceMock.sign.mockReturnValueOnce('accessToken').mockReturnValueOnce('refreshToken');
       const payload = { email: 'testEmail', id: 1 };
       const tokens = service.generateTokens(payload);
 

@@ -1,14 +1,11 @@
-import {Routes} from '@angular/router';
-import {authGuard, publicAuthGuard} from '@tippapp/frontend/utils';
+import { Routes } from '@angular/router';
+import { authGuard, publicAuthGuard } from '@tippapp/frontend/utils';
 
 export const routes: Routes = [
   {
     path: '',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('@tippapp/frontend/tipgroup').then(
-        (m) => m.TipgroupListPageComponent
-      ),
+    loadComponent: () => import('@tippapp/frontend/tipgroup').then((m) => m.TipgroupListPageComponent),
   },
   {
     path: 'auth',
@@ -16,8 +13,12 @@ export const routes: Routes = [
     loadChildren: () => import('@tippapp/frontend/auth').then((m) => m.routes),
   },
   {
+    path: 'tipgroup/:tipgroupId',
+    canActivate: [authGuard],
+    loadChildren: () => import('@tippapp/frontend/tipgroup').then((m) => m.tabRoutes),
+  },
+  {
     path: '**',
-    redirectTo: '/',
-    pathMatch: 'full',
+    redirectTo: '',
   },
 ];

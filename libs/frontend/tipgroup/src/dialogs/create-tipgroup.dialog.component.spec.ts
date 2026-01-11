@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { TipgroupStore } from '@tippapp/frontend/utils';
+import { TipgroupManagementStore } from '@tippapp/frontend/utils';
 import { CreateTipgroupDialogComponent } from './create-tipgroup.dialog.component';
 
 describe('CreateTipgroupDialogComponent', () => {
@@ -34,7 +34,7 @@ describe('CreateTipgroupDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CreateTipgroupDialogComponent],
       providers: [
-        { provide: TipgroupStore, useValue: tipgroupStoreMock },
+        { provide: TipgroupManagementStore, useValue: tipgroupStoreMock },
         {
           provide: ModalController,
           useValue: modalControllerMock,
