@@ -44,7 +44,7 @@ describe('MatchdayController (e2e)', () => {
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.matchList).toBeDefined();
-      expect(response.body.matchdayId).toStrictEqual(matchdayId.toString());
+      expect(response.body.matchdayId).toStrictEqual(matchdayId);
       expect(Array.isArray(response.body.matchList)).toBe(true);
     });
 

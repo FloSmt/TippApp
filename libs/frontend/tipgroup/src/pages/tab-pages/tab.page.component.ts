@@ -14,15 +14,11 @@ import { TipgroupDetailsStore } from '@tippapp/frontend/utils';
 export class TabPageComponent implements OnInit {
   private readonly tipgroupDetailsStore = inject(TipgroupDetailsStore);
 
-  scrollData: any;
   constructor() {
     addIcons({ albums, podium, dice, barChart, person });
   }
 
   @Input() tipgroupId!: number;
-
-  tipgroupDetails = this.tipgroupDetailsStore.getTipgroupDetails();
-  isLoadingDetails = this.tipgroupDetailsStore.isLoading().tipgroupDetails;
 
   ngOnInit(): void {
     this.tipgroupDetailsStore.loadInitialData({ tipgroupId: this.tipgroupId });

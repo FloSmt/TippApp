@@ -1,16 +1,9 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, model, OnInit, signal } from '@angular/core';
 import { MatchResponseDto } from '@tippapp/shared/data-access';
-import { TimerService } from '@tippapp/frontend/utils';
+import { MatchState, TimerService } from '@tippapp/frontend/utils';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { IonBadge } from '@ionic/angular/standalone';
 import { DatePipe } from '@angular/common';
-
-enum MatchState {
-  LIVE,
-  UPCOMING_FAR,
-  UPCOMING_SOON,
-  FINISHED,
-}
 
 @Component({
   selector: 'lib-match-card',
@@ -25,7 +18,7 @@ export class MatchCardComponent implements OnInit {
   private readonly datePipe = inject(DatePipe);
 
   match = input.required<MatchResponseDto>();
-  matchState: MatchState;
+  matchState = model<MatchState>(MatchState.UPCOMING_FAR);
 
   updateImpuls = toSignal(this.timerService.halfMinuteTick$);
   currentBatchContent = signal<string>('');
@@ -34,7 +27,7 @@ export class MatchCardComponent implements OnInit {
   constructor() {
     effect(() => {
       if (this.updateImpuls()) {
-        this.matchState = this.calculateMatchState();
+        this.matchState.set(this.calculateMatchState());
         this.currentBatchContent.set(this.getBatchContent());
         this.currentScoreContent.set(this.getScoreContent());
       }
@@ -42,7 +35,7 @@ export class MatchCardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.matchState = this.calculateMatchState();
+    this.matchState.set(this.calculateMatchState());
     this.currentBatchContent.set(this.getBatchContent());
     this.currentScoreContent.set(this.getScoreContent());
   }
@@ -51,20 +44,34 @@ export class MatchCardComponent implements OnInit {
     const kickOfTime = new Date(this.match().scheduledDateTime);
     if (kickOfTime.getTime() > Date.now() + 1000 * 60 * 60) {
       return MatchState.UPCOMING_FAR;
-    } else if (kickOfTime.getTime() > Date.now()) {
+    } else if (
+      kickOfTime.getTime() > Date.now() ||
+      (kickOfTime.getTime() > Date.now() - 1000 * 60 * 60 && this.match().scores.awayTeamScore === null)
+    ) {
       return MatchState.UPCOMING_SOON;
-    } else if (!this.match().isFinished) {
+    } else if (
+      !this.match().isFinished &&
+      this.match().scores.awayTeamScore !== null &&
+      this.match().scores.homeTeamScore !== null
+    ) {
       return MatchState.LIVE;
-    } else {
+    } else if (
+      this.match().isFinished &&
+      this.match().scores.awayTeamScore !== null &&
+      this.match().scores.homeTeamScore !== null
+    ) {
       return MatchState.FINISHED;
+    } else {
+      return MatchState.POSTPONED;
     }
   }
 
   getScoreContent() {
     const kickOfTime = new Date(this.match().scheduledDateTime);
-    switch (this.matchState) {
+    switch (this.matchState()) {
       case MatchState.UPCOMING_SOON:
       case MatchState.UPCOMING_FAR:
+      case MatchState.POSTPONED:
         return this.datePipe.transform(kickOfTime, 'HH:mm') || '';
 
       case MatchState.LIVE:
@@ -74,7 +81,7 @@ export class MatchCardComponent implements OnInit {
   }
 
   getBatchContent() {
-    switch (this.matchState) {
+    switch (this.matchState()) {
       case MatchState.LIVE:
         return 'Live';
       case MatchState.FINISHED:
@@ -85,13 +92,16 @@ export class MatchCardComponent implements OnInit {
         return `In ${this.getLiveCountdown(kickOfTime)} min`;
       }
 
+      case MatchState.POSTPONED:
+        return 'Verschoben';
+
       default:
         return '';
     }
   }
 
   getLiveCountdown(targetDate: Date): number {
-    return Math.ceil((targetDate.getTime() - Date.now()) / 60000);
+    return Math.max(0, Math.ceil((targetDate.getTime() - Date.now()) / (1000 * 60)));
   }
 
   MatchState = MatchState;

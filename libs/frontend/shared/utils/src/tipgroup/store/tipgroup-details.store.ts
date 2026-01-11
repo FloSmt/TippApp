@@ -64,12 +64,11 @@ export const TipgroupDetailsStore = signalStore(
       return null;
     }),
 
-    getSelectedMatchdayId: computed(() => store._selectedMatchdayId),
+    getSelectedMatchdayId: computed(() => store._selectedMatchdayId()),
     getTipgroupDetails: computed(() => store._tipgroupDetails()),
-    getMatchdayOverview: computed(() => store._matchdayOverview),
-    isLoading: computed(() => store._isLoading),
+    getMatchdayOverview: computed(() => store._matchdayOverview()),
+    isLoading: computed(() => store._isLoading()),
     isReloadingMatchday: computed(() => {
-      console.log(store._isReloading());
       return store._isReloading();
     }),
     hasError: computed(() => store._hasError()),
@@ -97,7 +96,6 @@ export const TipgroupDetailsStore = signalStore(
     },
 
     getMatchdaySuccess: (data?: MatchdayDetailsResponseDto) => {
-      console.log('MATCHDAY SUCCESS');
       patchState(store, {
         _loadedMatchdays: data
           ? new Map(store._loadedMatchdays()).set(data.matchdayId, { data: data, ttl: Date.now() })

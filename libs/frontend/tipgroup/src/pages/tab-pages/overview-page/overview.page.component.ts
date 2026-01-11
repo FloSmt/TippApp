@@ -42,14 +42,14 @@ export class OverviewPageComponent {
   private readonly tipgroupDetailsStore = inject(TipgroupDetailsStore);
   private readonly datePipe = inject(DatePipe);
 
-  isLoading = this.tipgroupDetailsStore.isLoading();
+  isLoading = this.tipgroupDetailsStore.isLoading;
 
   currentMatchday = this.tipgroupDetailsStore.getCurrentMatchday;
   hasError = this.tipgroupDetailsStore.hasError;
   isReloadingMatchday$ = toObservable(this.tipgroupDetailsStore.isReloadingMatchday);
   tipgroupDetails = this.tipgroupDetailsStore.getTipgroupDetails;
-  currentMatchdayId = this.tipgroupDetailsStore.getSelectedMatchdayId();
-  matchdayOverview = this.tipgroupDetailsStore.getMatchdayOverview();
+  currentMatchdayId = this.tipgroupDetailsStore.getSelectedMatchdayId;
+  matchdayOverview = this.tipgroupDetailsStore.getMatchdayOverview;
 
   groupedMatchdays: { live: MatchResponseDto[]; upcoming: DateGroup[]; finished: DateGroup[] };
 
@@ -86,13 +86,23 @@ export class OverviewPageComponent {
   groupMatches(matches: MatchResponseDto[]) {
     const now = new Date();
 
-    const live = matches.filter((g) => !g.isFinished && new Date(g.scheduledDateTime) <= now);
+    const live = matches.filter(
+      (g) =>
+        !g.isFinished &&
+        new Date(g.scheduledDateTime) <= now &&
+        g.scores.homeTeamScore !== null &&
+        g.scores.awayTeamScore !== null
+    );
     const upcoming = this.groupByDate(
-      matches.filter((g) => !g.isFinished && new Date(g.scheduledDateTime) > now),
+      matches.filter(
+        (g) =>
+          (!g.isFinished && new Date(g.scheduledDateTime) > now) ||
+          (g.scores.homeTeamScore === null && g.scores.awayTeamScore === null)
+      ),
       'asc'
     );
     const finished = this.groupByDate(
-      matches.filter((g) => g.isFinished),
+      matches.filter((g) => g.isFinished && g.scores.homeTeamScore !== null && g.scores.awayTeamScore !== null),
       'asc'
     );
 

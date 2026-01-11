@@ -1,8 +1,8 @@
 <div class="match-card" [class]="{
-'is-live': matchState === MatchState.LIVE,
-'is-upcoming-far': matchState === MatchState.UPCOMING_FAR,
-'is-upcoming-soon': matchState === MatchState.UPCOMING_SOON,
-'is-finished': matchState === MatchState.FINISHED
+'is-live': matchState() === MatchState.LIVE,
+'is-upcoming-far': matchState() === MatchState.UPCOMING_FAR,
+'is-upcoming-soon': matchState() === MatchState.UPCOMING_SOON,
+'is-finished': matchState() === MatchState.FINISHED
 }" data-testid="match-card">
   <div class="match-infos">
     <div class="team home">
@@ -14,11 +14,11 @@
       </div>
     </div>
     <div class="match-score">
-      @if (matchState === MatchState.LIVE) {
+      @if (matchState() === MatchState.LIVE) {
         <ion-badge color="danger"><span class="dot"></span>LIVE</ion-badge>
-      } @else if (matchState !== MatchState.UPCOMING_FAR) {
+      } @else if (matchState() !== MatchState.UPCOMING_FAR) {
         <ion-badge
-          [attr.color]="matchState === MatchState.FINISHED? 'secondary' : 'primary'">{{ currentBatchContent() }}
+          [attr.color]="matchState() === MatchState.FINISHED? 'secondary' : 'primary'">{{ currentBatchContent() }}
         </ion-badge>
       }
       <div class="main score-text">{{ getScoreContent() }}</div>
