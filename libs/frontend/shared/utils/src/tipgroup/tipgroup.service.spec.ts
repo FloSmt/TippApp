@@ -64,6 +64,17 @@ describe('TipgroupService', () => {
     req.flush('testResponse');
   });
 
+  it('should send a GET-Request to get a details of a tipgroup', () => {
+    service.getTipgroupDetails(1).subscribe((response) => {
+      expect(response).toEqual('testResponse');
+    });
+
+    const req = httpTesting.expectOne(`${service.BACKEND_URL}tipgroups/1`);
+    expect(req.request.method).toBe('GET');
+
+    req.flush('testResponse');
+  });
+
   it('should send a GET-Request to get matchday details of a matchday', () => {
     service.getMatchdayDetails(1, 1, 1).subscribe((response) => {
       expect(response).toEqual('testResponse');
