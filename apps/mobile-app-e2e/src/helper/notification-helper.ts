@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 
 export interface NotificationOptionsHelper {
-  message: string;
+  message?: string;
   header?: string;
   page: Page;
 }
@@ -10,7 +10,9 @@ export async function waitForSuccessNotification(notificationConfig: Notificatio
   const toastElement = notificationConfig.page.locator('ion-toast.toast-success').first();
   const containsHeader = notificationConfig.header || '';
   await expect(toastElement).toBeVisible();
-  await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+  if (notificationConfig.message) {
+    await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+  }
 }
 
 export async function waitForErrorNotification(notificationConfig: NotificationOptionsHelper) {
@@ -18,7 +20,9 @@ export async function waitForErrorNotification(notificationConfig: NotificationO
   const containsHeader = notificationConfig.header || '';
 
   await expect(toastElement).toBeVisible();
-  await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+  if (notificationConfig.message) {
+    await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+  }
 }
 
 export async function waitForInfoNotification(notificationConfig: NotificationOptionsHelper) {
@@ -26,5 +30,7 @@ export async function waitForInfoNotification(notificationConfig: NotificationOp
   const containsHeader = notificationConfig.header || '';
 
   await expect(toastElement).toBeVisible();
-  await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+  if (notificationConfig.message) {
+    await expect(toastElement).toHaveText(containsHeader + notificationConfig.message);
+  }
 }

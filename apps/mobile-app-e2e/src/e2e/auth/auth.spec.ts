@@ -1,13 +1,9 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/auth.fixture';
-import {
-  mockLoginUserResponse,
-  mockRefreshUserResponse,
-  mockRegisterUserResponse,
-  mockTipgroupListResponse,
-} from '../../helper/response-helper';
 import { waitForErrorNotification, waitForSuccessNotification } from '../../helper/notification-helper';
-import { setLoginContent } from '../../helper/login-helper';
+import { navigateToTipgroupList } from '../../helper/navigation-helper';
+import { clearMocks, mockLoginUser, mockRefreshUser, mockRegisterUser } from '../../helper/mock-manager';
+import { TipgroupListPage } from '../tipgroup-management/tipgroup-list.po';
 
 test.describe('Authentication', () => {
   test.describe('Login Page', () => {
@@ -30,6 +26,8 @@ test.describe('Authentication', () => {
     });
 
     test('login button should be enabled and redirect to home page on successful login', async ({ loginPage }) => {
+      await mockLoginUser(loginPage.page);
+
       // Fill inputs with valid data
       await loginPage.fillInputs('testEmail@email.de', '123456');
       await loginPage.emailInputContainer.click();
@@ -47,27 +45,27 @@ test.describe('Authentication', () => {
       await expect(loginPage.page).toHaveURL('/auth/register');
     });
 
-    test('should show error message below input-field if Backend throw Validation-Error', async ({
-      loginPage,
-      page,
-    }) => {
-      await mockLoginUserResponse(page, 422, {
+    test('should show error message below input-field if Backend throw Validation-Error', async ({ loginPage }) => {
+      await mockLoginUser(loginPage.page, {
         status: 422,
-        message: 'Validation failed.',
-        validationMessages: [
-          {
-            property: 'email',
-            constraints: {
-              isEmail: 'dummyMessage',
+        body: {
+          status: 422,
+          message: 'Validation failed.',
+          validationMessages: [
+            {
+              property: 'email',
+              constraints: {
+                isEmail: 'dummyMessage',
+              },
             },
-          },
-          {
-            property: 'password',
-            constraints: {
-              dummyKey: 'dummyMessage',
+            {
+              property: 'password',
+              constraints: {
+                dummyKey: 'dummyMessage',
+              },
             },
-          },
-        ],
+          ],
+        },
       });
 
       await loginPage.fillInputs('test@email.de', '123456');
@@ -106,8 +104,7 @@ test.describe('Authentication', () => {
     test('register button should be enabled and redirect to home page on successful registration', async ({
       registerPage,
     }) => {
-      // mock Tipgroups after Registration was successfully
-      await mockTipgroupListResponse(registerPage.page);
+      await mockRegisterUser(registerPage.page);
 
       // Fill inputs with valid data
       await registerPage.fillInputs('testUsername', 'testEmail@email.de', '123456', '123456');
@@ -130,7 +127,7 @@ test.describe('Authentication', () => {
     });
 
     test('should show an error-notification if register failed', async ({ registerPage }) => {
-      await mockRegisterUserResponse(registerPage.page, 500, {});
+      await mockRegisterUser(registerPage.page, { status: 500, body: {} });
 
       // Fill inputs with valid data
       await registerPage.fillInputs('testUsername', 'testEmail@email.de', '123456', '123456');
@@ -150,29 +147,32 @@ test.describe('Authentication', () => {
       registerPage,
       page,
     }) => {
-      await mockRegisterUserResponse(page, 422, {
+      await mockRegisterUser(page, {
         status: 422,
-        message: 'Validation failed.',
-        validationMessages: [
-          {
-            property: 'email',
-            constraints: {
-              isEmail: 'email must be an email',
+        body: {
+          status: 422,
+          message: 'Validation failed.',
+          validationMessages: [
+            {
+              property: 'email',
+              constraints: {
+                isEmail: 'email must be an email',
+              },
             },
-          },
-          {
-            property: 'password',
-            constraints: {
-              dummyKey: 'dummyMessage',
+            {
+              property: 'password',
+              constraints: {
+                dummyKey: 'dummyMessage',
+              },
             },
-          },
-          {
-            property: 'username',
-            constraints: {
-              dummyKey: 'dummyMessage',
+            {
+              property: 'username',
+              constraints: {
+                dummyKey: 'dummyMessage',
+              },
             },
-          },
-        ],
+          ],
+        },
       });
 
       await registerPage.fillInputs('testUser', 'test@email.de', '123456', '123456');
@@ -190,8 +190,11 @@ test.describe('Authentication', () => {
   test.describe('Refresh-Flow', () => {
     test('should redirect to login page when refresh token is invalid', async ({ page }) => {
       // Mock the response for an invalid refresh token
-      await mockRefreshUserResponse(page, 401, {
-        message: 'Refresh token is invalid',
+      await mockRefreshUser(page, {
+        status: 401,
+        body: {
+          message: 'Refresh token is invalid',
+        },
       });
 
       await page.goto('/');
@@ -205,10 +208,13 @@ test.describe('Authentication', () => {
       loginPage,
       page,
     }) => {
-      await mockLoginUserResponse(page, 401, {
+      await mockLoginUser(page, {
         status: 401,
-        message: 'dummyMessage',
-        code: 'AUTH.INVALID_CREDENTIALS',
+        body: {
+          status: 401,
+          message: 'dummyMessage',
+          code: 'AUTH.INVALID_CREDENTIALS',
+        },
       });
 
       await loginPage.fillInputs('test@email.de', '123456');
@@ -220,9 +226,12 @@ test.describe('Authentication', () => {
       loginPage,
       page,
     }) => {
-      await mockLoginUserResponse(page, 401, {
+      await mockLoginUser(page, {
         status: 401,
-        message: 'dummyMessage',
+        body: {
+          status: 401,
+          message: 'dummyMessage',
+        },
       });
 
       await loginPage.fillInputs('test@email.de', '123456');
@@ -236,15 +245,24 @@ test.describe('Authentication', () => {
   test('should redirect to home page if already logged in and try to access login or register page', async ({
     page,
   }) => {
-    await setLoginContent(page);
-    await mockRefreshUserResponse(page);
+    await navigateToTipgroupList(page);
+    await mockRefreshUser(page);
+
+    const tipgroupListPage = new TipgroupListPage(page);
+    await tipgroupListPage.header.waitFor({ state: 'visible' });
 
     await page.goto('/auth/login');
-    await page.waitForURL('/');
-    await expect(page).not.toHaveURL('/auth/login');
+    await page.waitForURL('');
+    await page.waitForLoadState('domcontentloaded');
+    await await expect(page).not.toHaveURL('/auth/login');
 
     await page.goto('/auth/register');
-    await page.waitForURL('/');
+    await page.waitForURL('');
+    await page.waitForLoadState('domcontentloaded');
     await expect(page).not.toHaveURL('/auth/register');
+  });
+
+  test.afterEach(async () => {
+    clearMocks();
   });
 });

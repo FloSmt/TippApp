@@ -1,0 +1,13 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (allMatchdays.length > 0) {
+    <ion-radio-group class="item-group" [value]="currentSelectedId">
+      @for (matchday of allMatchdays; track matchday.matchdayId) {
+        <ion-item [class.active]="matchday.matchdayId === currentSelectedId"
+                  (click)="handleSelection(matchday.matchdayId)" data-testid="matchday-select">
+          <ion-radio [value]="matchday.matchdayId" slot="start"></ion-radio>
+          <h3>{{ matchday.name }}</h3>
+        </ion-item>
+      }
+    </ion-radio-group>
+  }
+</ion-content>

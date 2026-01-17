@@ -10,12 +10,10 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.emailInputContainer = page.locator('ion-input[type="email"]');
-    this.passwordInputContainer = page.getByTestId('input-password');
+    this.emailInputContainer = page.locator('custom-input[type="email"]');
+    this.passwordInputContainer = page.locator('custom-input[type="password"]');
     this.loginButton = this.page.getByTestId('login-button');
-    this.switchToRegisterButton = this.page.getByTestId(
-      'switch-to-register-button'
-    );
+    this.switchToRegisterButton = this.page.getByTestId('switch-to-register-button');
   }
 
   async goto() {
@@ -25,14 +23,11 @@ export class LoginPage {
   async fillInputs(email: string, password: string) {
     await this.emailInputContainer.locator('input').fill(email);
     await this.passwordInputContainer.click();
-    await this.passwordInputContainer
-      .locator('.native-input')
-      .first()
-      .fill(password);
+    await this.passwordInputContainer.locator('input').fill(password);
   }
 
   inputErrorText(inputObject: Locator) {
-    return inputObject.locator('.error-text');
+    return inputObject.locator('.input-error-message');
   }
 
   toastNotification() {

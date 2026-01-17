@@ -1,0 +1,28 @@
+<div class="select-field">
+  <div class="select-wrapper" tabindex="0" aria-modal="true" role="button" [class.is-open]="isOpen"
+       (click)="openOptions()">
+    <div>
+      <label for="" class="input-label">{{ label() }}</label>
+
+      <div class="selected-value">
+        {{ selectedLabel || 'Bitte wählen...' }}
+      </div>
+    </div>
+
+    <div class="arrow-container">
+      <ion-icon name="chevron-down-outline"></ion-icon>
+    </div>
+
+    @if (isOpen) {
+      <div class="options-container">
+        @for (opt of options(); track opt.value) {
+          <div role="button" [class.active]="control().value === opt.value" tabindex="0" aria-modal="true"
+               class="option-item"
+               (click)="select(opt); $event.stopPropagation()">
+            {{ opt.label }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

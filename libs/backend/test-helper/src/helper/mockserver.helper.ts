@@ -5,12 +5,12 @@ export interface MockApiOptions {
   matchDataResponse?: any;
   availableGroupsResponse?: any;
   availableLeaguesResponse?: any;
+  lastChangeDateResponse?: any;
   errorCode?: number | undefined;
 }
 
 export const resetMockApi = async () => {
   const client = mockServerClient('localhost', 1080);
-  console.log('Resetting mock server...');
   await client.reset();
 };
 
@@ -19,6 +19,7 @@ export const setupMockApi = async (
     matchDataResponse: MATCHDATA_MOCK,
     availableGroupsResponse: AVAILABLE_GROUPS_MOCK,
     availableLeaguesResponse: AVAILABLE_LEAGUES_MOCK,
+    lastChangeDateResponse: '2024-01-01T00:00:00Z',
     errorCode: 200,
   }
 ) => {
@@ -26,11 +27,11 @@ export const setupMockApi = async (
     matchDataResponse: options.matchDataResponse || MATCHDATA_MOCK,
     availableGroupsResponse: options.availableGroupsResponse || AVAILABLE_GROUPS_MOCK,
     availableLeaguesResponse: options.availableLeaguesResponse || AVAILABLE_LEAGUES_MOCK,
+    lastChangeDateResponse: options.lastChangeDateResponse || '2024-01-01T00:00:00Z',
     errorCode: options.errorCode || 200,
   };
   const client = mockServerClient('localhost', 1080);
 
-  console.log('Setting up mock server...');
   await client.reset();
 
   await client.mockAnyResponse({
@@ -41,6 +42,18 @@ export const setupMockApi = async (
     httpResponse: {
       statusCode: optionsWithDefaults.errorCode,
       body: JSON.stringify(optionsWithDefaults.matchDataResponse),
+      headers: [{ name: 'Content-Type', values: ['application/json'] }],
+    },
+  });
+
+  await client.mockAnyResponse({
+    httpRequest: {
+      method: 'GET',
+      path: '/getlastchangedate/.*',
+    },
+    httpResponse: {
+      statusCode: optionsWithDefaults.errorCode,
+      body: JSON.stringify(optionsWithDefaults.lastChangeDateResponse),
       headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
@@ -68,6 +81,4 @@ export const setupMockApi = async (
       headers: [{ name: 'Content-Type', values: ['application/json'] }],
     },
   });
-
-  console.log('Mock server setup complete.');
 };

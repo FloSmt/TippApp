@@ -2,7 +2,7 @@
   <ion-tab tab="home">
     <ion-header [translucent]="false" mode="ios">
       <ion-toolbar mode="md">
-        <ion-title>Title</ion-title>
+        <ion-title><h1 class="title">Title</h1></ion-title>
         <ion-buttons slot="end">
           <ion-button>Button</ion-button>
         </ion-buttons>
@@ -10,7 +10,6 @@
     </ion-header>
 
     <ion-content [fullscreen]="true" class="ion-padding">
-      <h1 data-testid="test-header">Welcome</h1>
       <h2>Small</h2>
       <ion-button fill="clear" size="small">Clear</ion-button>
       <ion-button fill="outline" size="small">Outline</ion-button>
@@ -63,13 +62,22 @@
   </ion-tab>
   <ion-tab tab="radio">
     <ion-content [fullscreen]="true" class="ion-padding">
-      <ion-input fill="outline" label="Outline input" label-placement="floating" placeholder="Enter text"
-                 type="email"></ion-input>
-      <br>
-      <ion-input fill="solid" label="Outline input" label-placement="floating" placeholder="Enter text"></ion-input>
-      <br>
-      <ion-input label="Outline input" label-placement="floating" placeholder="Enter text"></ion-input>
-
+      <div class="input-wrapper">
+        <label class="input-label" for="email">Label</label>
+        <input type="email" name="email" required class="input-control" placeholder="max@email.de">
+      </div>
+      <span class="input-helper">Fehler in dem Input</span>
+      <ion-item>
+        <form action="">
+          <div>
+            <div class="input-wrapper">
+              <label class="input-label" for="email">Label</label>
+              <input type="email" name="email" required class="input-control" placeholder="max@email.de">
+            </div>
+            <span class="input-helper">Fehler in dem Input</span>
+          </div>
+        </form>
+      </ion-item>
       <h2>Checkbox</h2>
       <ion-checkbox labelPlacement="end">checkbox</ion-checkbox>
       <br>
@@ -103,7 +111,7 @@
         <ion-select-option value="orange">Orange</ion-select-option>
       </ion-select>
 
-      <br/>
+      <br />
 
       <ion-select fill="outline" label="Outline select" label-placement="floating">
         <ion-select-option value="apple">Apple</ion-select-option>
@@ -113,11 +121,11 @@
 
       <h2>Toggle</h2>
       <ion-toggle>Default Toggle</ion-toggle>
-      <br/><br/>
+      <br /><br />
       <ion-toggle [checked]="true">Checked Toggle</ion-toggle>
-      <br/><br/>
+      <br /><br />
       <ion-toggle [enableOnOffLabels]="true">On/Off Label Toggle</ion-toggle>
-      <br/><br/>
+      <br /><br />
       <ion-toggle [checked]="true" [disabled]="true">Disabled Checked Toggle</ion-toggle>
     </ion-content>
   </ion-tab>
@@ -138,7 +146,7 @@
     <ion-content [fullscreen]="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar mode="md">
-          <ion-title size="large">
+          <ion-title>
             <h1 class="title">Title</h1>
             <p class="subtitle">Subtitle</p>
           </ion-title>

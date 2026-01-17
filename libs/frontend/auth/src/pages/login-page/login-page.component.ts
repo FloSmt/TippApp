@@ -1,34 +1,24 @@
 import { Component, effect, inject } from '@angular/core';
 
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonInputPasswordToggle,
-  IonLabel,
-  IonSpinner,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonLabel, IonSpinner } from '@ionic/angular/standalone';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthStore, ErrorManagementService } from '@tippapp/frontend/utils';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { mail } from 'ionicons/icons';
 import { ApiValidationErrorMessage } from '@tippapp/shared/data-access';
+import { CustomInputComponent, CustromHeaderComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-login-page',
   imports: [
     IonButton,
     IonContent,
-    IonInput,
-    IonInputPasswordToggle,
     IonLabel,
     IonSpinner,
     ReactiveFormsModule,
-    IonHeader,
-    IonToolbar,
+    CustomInputComponent,
+    CustromHeaderComponent,
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',

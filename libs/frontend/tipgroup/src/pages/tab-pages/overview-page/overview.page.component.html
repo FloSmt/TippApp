@@ -1,0 +1,69 @@
+<custom-header title="Übersicht" [subTitle]="tipgroupDetails()?.name" [scrollEvent]="scrollData"
+               [enableQuickReveal]="true" [enableSubContent]="true">
+  @if (!isLoading().initial) {
+    <lib-matchday-selector class="matchday-selector" [allMatchdays]="matchdayOverview()"
+                           [currentMatchday]="currentMatchday()"
+                           [currentMatchdayId]="currentMatchdayId()"
+                           [disableSelection]="isLoading().matchday"
+                           (currentMatchdayIdChange)="handleMatchdayIdChange($event)">
+    </lib-matchday-selector>
+  }
+</custom-header>
+<ion-content [fullscreen]="true" class="ion-padding" [scrollEvents]="true" (ionScroll)="scrollData = $event">
+  <ion-refresher (ionRefresh)="refreshMatchday($event)" slot="fixed">
+    <ion-refresher-content data-testid="refresher-content"></ion-refresher-content>
+  </ion-refresher>
+  @if (hasError()) {
+    <lib-error-card title="Fehler"
+                    message="Beim abrufen der Spieltagsinformationen ist ein Fehler aufgetreten."></lib-error-card>
+  } @else if (isLoading().initial || isLoading().tipgroupDetails) {
+    <div class="loading-container">
+      <ion-spinner data-testid="spinner"></ion-spinner>
+    </div>
+  } @else {
+    <section class="match-section">
+      @if (isLoading().matchday || !this.currentMatchday()) {
+        <ng-container *ngTemplateOutlet="skeletonMatchList"></ng-container>
+      } @else {
+        <div class="matches-container">
+          @for (liveMatch of this.groupedMatchdays.live; track liveMatch.matchId) {
+            <lib-match-card [match]="liveMatch"></lib-match-card>
+          }
+
+          @for (upcomingMatchGroup of this.groupedMatchdays.upcoming; track upcomingMatchGroup.dateLabel) {
+            <p class="date-text overline">
+              <span class="line"></span>
+              {{ upcomingMatchGroup.dateLabel }}
+            </p>
+            @for (upcomingMatch of upcomingMatchGroup.matchList; track upcomingMatch.matchId) {
+              <lib-match-card [match]="upcomingMatch"></lib-match-card>
+            }
+          }
+
+          @for (finishedMatchGroup of this.groupedMatchdays.finished; track finishedMatchGroup.dateLabel) {
+            <p class="date-text overline">
+              <span class="line"></span>
+              {{ finishedMatchGroup.dateLabel }}
+            </p>
+            @for (upcomingMatch of finishedMatchGroup.matchList; track upcomingMatch.matchId) {
+              <lib-match-card [match]="upcomingMatch"></lib-match-card>
+            }
+          }
+        </div>
+      }
+    </section>
+  }
+</ion-content>
+
+<ng-template #skeletonMatchList>
+  <div class="skeleton-container" data-testid="skeletons">
+    <ion-skeleton-text style="width: 4rem"></ion-skeleton-text>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <ion-skeleton-text style="width: 4rem"></ion-skeleton-text>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+
+</ng-template>

@@ -1,71 +1,50 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiErrorDto, AuthResponseDto, ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
-import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { AuthResponseDto, ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
+import { ErrorManagerService, ErrorResponse } from '@tippapp/backend/error-handling';
+import { DefaultResponse } from '@tippapp/backend/shared';
 import { AuthService } from './auth.service';
 import { Public } from './guards/jwt-auth.guard';
 
 @Controller('auth')
+@Public()
 export class AuthController {
   constructor(private authService: AuthService, private errorManager: ErrorManagerService) {}
 
-  @Public()
   @Post('login')
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: AuthResponseDto })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid credentials',
-    type: ApiErrorDto,
-    example: ErrorCodes.Auth.INVALID_CREDENTIALS,
+  @DefaultResponse({
+    httpStatus: HttpStatus.OK,
+    endpointSummary: 'returns accessToken, refreshToken and userId for User login',
+    responseType: AuthResponseDto,
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'User not found',
-    type: ApiErrorDto,
-    example: ErrorCodes.Auth.USER_NOT_FOUND,
-  })
-  @ApiOperation({
-    summary: 'returns accessToken, refreshToken and userId for User login',
-  })
-  @ApiResponse({ status: 200, type: AuthResponseDto })
+  @ErrorResponse(HttpStatus.UNAUTHORIZED, ErrorCodes.Auth.INVALID_CREDENTIALS)
+  @ErrorResponse(HttpStatus.NOT_FOUND, ErrorCodes.Auth.USER_NOT_FOUND)
   async login(@Body() loginDto: LoginDto) {
     return await this.authService.login(loginDto);
   }
 
-  @Public()
   @Post('register')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'creates a User if email not exists' })
-  @ApiResponse({ status: 201, type: AuthResponseDto })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'Email already exists',
-    type: ApiErrorDto,
-    example: ErrorCodes.Auth.EMAIL_ALREADY_EXISTS,
+  @DefaultResponse({
+    httpStatus: HttpStatus.CREATED,
+    endpointSummary: 'creates a User if email not exists',
+    responseType: AuthResponseDto,
   })
+  @ErrorResponse(HttpStatus.CONFLICT, ErrorCodes.Auth.EMAIL_ALREADY_EXISTS)
   async register(@Body() registerDto: RegisterDto) {
     return await this.authService.register(registerDto);
   }
 
-  @Public()
   @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'generates a new accessToken with existing refreshToken',
+  @DefaultResponse({
+    httpStatus: HttpStatus.OK,
+    endpointSummary: 'generates a new accessToken with existing refreshToken',
+    responseType: AuthResponseDto,
   })
-  @ApiResponse({ status: 200, type: AuthResponseDto })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid refresh token',
-    type: ApiErrorDto,
-    example: ErrorCodes.Auth.INVALID_REFRESH_TOKEN,
-  })
+  @ErrorResponse(HttpStatus.UNAUTHORIZED, ErrorCodes.Auth.INVALID_REFRESH_TOKEN)
   async refresh(@Body() body: { refreshToken: string }) {
     if (!body || !body.refreshToken) {
       throw this.errorManager.createError(ErrorCodes.Auth.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
     }
-    
+
     return await this.authService.refreshTokens(body.refreshToken);
   }
 }
