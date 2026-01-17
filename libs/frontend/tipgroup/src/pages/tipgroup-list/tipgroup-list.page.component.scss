@@ -2,6 +2,10 @@ ion-item {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 
+  &:not(:last-child) {
+    margin-bottom: var(--ion-space-xl);
+  }
+
   &:hover > .tipgroup-item {
     border-radius: var(--ion-border-radius-l);
 

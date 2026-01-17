@@ -1,6 +1,6 @@
 <div class="match-card" [class]="{
 'is-live': matchState() === MatchState.LIVE,
-'is-upcoming-far': matchState() === MatchState.UPCOMING_FAR,
+'is-upcoming-far': matchState() === MatchState.UPCOMING_FAR || matchState() === MatchState.POSTPONED,
 'is-upcoming-soon': matchState() === MatchState.UPCOMING_SOON,
 'is-finished': matchState() === MatchState.FINISHED
 }" data-testid="match-card">
