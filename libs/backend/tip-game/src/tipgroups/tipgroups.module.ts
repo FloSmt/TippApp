@@ -7,6 +7,7 @@ import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import {
   HashService,
   MatchdayRepository,
+  MatchRepository,
   SeasonRepository,
   TipgroupRepository,
   TipgroupUserRepository,
@@ -37,6 +38,7 @@ import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.ser
     TipgroupRepository,
     TipgroupUserRepository,
     MatchdayRepository,
+    MatchRepository,
     SeasonRepository,
     IsTipgroupMemberGuard,
   ],

@@ -2,9 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ErrorCodes,
   GroupResponse,
-  Match,
   MatchApiResponse,
-  Matchday,
   MatchdayDetailsResponseDto,
   MatchdayOverviewResponseDto,
   TipSeason,
@@ -32,32 +30,23 @@ export class SeasonService {
    * @param entityManager - The TypeORM EntityManager for database operations.
    * @returns A TipSeason entity populated with Matchdays and Matches.
    */
-  createTipSeason(
+  async createTipSeason(
     season: number,
     leagueShortcut: string,
     matchDays: GroupResponse[],
     matches: MatchApiResponse[],
     entityManager: EntityManager
-  ): TipSeason {
-    return entityManager.create(TipSeason, {
-      api_LeagueSeason: season,
-      isClosed: false,
-      matchdays: matchDays.map((group) =>
-        entityManager.create(Matchday, {
-          name: group.groupName,
-          api_groupOrderId: group.groupOrderId,
-          orderId: group.groupOrderId,
-          api_leagueShortcut: leagueShortcut,
-          matches: matches
-            .filter((m) => m.group.groupId === group.groupId)
-            .map((match) =>
-              entityManager.create(Match, {
-                api_matchId: match.matchId,
-              })
-            ),
-        })
-      ),
-    });
+  ): Promise<TipSeason> {
+    const tipSeason: TipSeason = new TipSeason();
+    tipSeason.api_LeagueSeason = season;
+    tipSeason.isClosed = false;
+
+    tipSeason.matchdays = await Promise.all(
+      matchDays.map(
+        async (group) => await this.matchdayService.createMatchdayEntity(group, matches, leagueShortcut, entityManager)
+      )
+    );
+    return tipSeason;
   }
 
   /**

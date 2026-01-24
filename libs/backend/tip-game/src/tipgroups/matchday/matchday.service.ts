@@ -1,8 +1,16 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ErrorCodes, MatchApiResponse, MatchdayDetailsResponseDto } from '@tippapp/shared/data-access';
+import {
+  ErrorCodes,
+  GroupResponse,
+  Match,
+  MatchApiResponse,
+  Matchday,
+  MatchdayDetailsResponseDto,
+} from '@tippapp/shared/data-access';
 import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
-import { MatchdayRepository } from '@tippapp/backend/shared';
+import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
+import { EntityManager } from 'typeorm';
 import { mapApiMatchResponsesToMatchDayResponseDto } from '../../helper/responses-mapper';
 
 @Injectable()
@@ -10,7 +18,8 @@ export class MatchdayService {
   constructor(
     private readonly apiService: ApiService,
     private readonly errorManager: ErrorManagerService,
-    private readonly matchdayRepository: MatchdayRepository
+    private readonly matchdayRepository: MatchdayRepository,
+    private readonly matchRepository: MatchRepository
   ) {}
 
   public async getMatchdayDetails(
@@ -53,5 +62,38 @@ export class MatchdayService {
       },
       matchList: mapApiMatchResponsesToMatchDayResponseDto(filteredMatchData),
     } satisfies MatchdayDetailsResponseDto;
+  }
+
+  async createMatchdayEntity(
+    group: GroupResponse,
+    matchResponse: MatchApiResponse[],
+    leagueShortcut: string,
+    entityManager: EntityManager
+  ) {
+    const matchday = new Matchday();
+
+    matchday.name = group.groupName;
+    matchday.api_groupOrderId = group.groupOrderId;
+    matchday.orderId = group.groupOrderId;
+    matchday.api_leagueShortcut = leagueShortcut;
+
+    const matches: Match[] = matchResponse
+      .filter((m) => m.group.groupId === group.groupId)
+      .map((match) => {
+        const matchEntity: Match = new Match();
+        matchEntity.api_matchId = match.matchId;
+
+        return matchEntity;
+      });
+
+    await entityManager.upsert(Match, matches, { conflictPaths: ['api_matchId'] });
+    const savedMatches = await this.matchRepository.findAllByApiMatchId(
+      matches.map((m) => m.api_matchId),
+      entityManager
+    );
+
+    matchday.matches = savedMatches ?? [];
+
+    return matchday;
   }
 }

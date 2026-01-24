@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Matchday } from './matchday.entity';
 import { Tip } from './tip.entity';
 
@@ -14,15 +7,12 @@ export class Match {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index({ unique: true })
   @Column()
   api_matchId: number;
 
-  @ManyToOne(() => Matchday, (matchday) => matchday.matches, {onDelete: 'CASCADE'})
-  @JoinColumn( {name: 'matchdayId'})
-  matchday: Matchday;
-
-  @Column({nullable: true})
-  matchdayId: number;
+  @ManyToMany(() => Matchday, (matchday) => matchday.matches)
+  matchdays: Matchday[];
 
   @OneToMany(() => Tip, (tip) => tip.match)
   tips: Tip[];
