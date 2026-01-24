@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar class="dialog-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="onCancel()" class="close-button">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <custom-header [title]="title()" [isDialogHeader]="true" [showButtonSection]="false"></custom-header>
+    <ion-buttons slot="end">
+      <ng-content select="[slot='buttons']"></ng-content>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>

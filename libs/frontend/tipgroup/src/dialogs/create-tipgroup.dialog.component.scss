@@ -13,16 +13,6 @@ ion-input, ion-select {
   font-weight: bolder;
 }
 
-.dialog-toolbar {
-  .close-button ion-icon {
-    color: var(--ion-text-color-step-50)
-  }
-
-  ion-title {
-    padding-left: 10px;
-  }
-}
-
 .loading-container {
   display: flex;
   justify-content: center;
@@ -35,6 +25,8 @@ ion-input, ion-select {
 }
 
 .info-card {
+  margin-bottom: var(--ion-space-xl);
+
   .icon-container {
     padding: var(--ion-space-l);
     border-radius: var(--ion-border-radius-s);

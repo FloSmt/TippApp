@@ -19,7 +19,20 @@ ion-header {
   }
 
   ion-title {
-    margin-bottom: var(--ion-space-m);
+
+    h1 {
+      margin-bottom: var(--ion-space-m);
+    }
+
+    h2 {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  &.dialog-header {
+    ion-title {
+      padding-left: var(--ion-space-m);
+    }
   }
 
   &.center {

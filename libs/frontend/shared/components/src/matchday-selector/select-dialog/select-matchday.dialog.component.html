@@ -1,4 +1,7 @@
 <ion-content [fullscreen]="true" class="ion-padding">
+  <div class="title">
+    <h1>Spieltag auswählen</h1>
+  </div>
   @if (allMatchdays.length > 0) {
     <ion-radio-group class="item-group" [value]="currentSelectedId">
       @for (matchday of allMatchdays; track matchday.matchdayId) {

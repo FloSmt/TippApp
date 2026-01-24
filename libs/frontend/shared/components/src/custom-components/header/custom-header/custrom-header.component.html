@@ -1,10 +1,15 @@
 <ion-header #headerContainer [translucent]="false" mode="ios" [class.center]="centerTitle()"
+            [class.dialog-header]="isDialogHeader()"
             [style.transform]="transform"
             [class.quick-reveal]="enableQuickReveal()">
   <ion-toolbar mode="md">
     <ion-title>
       @if (title()) {
-        <h1 class="title truncate-one-line-text">{{ title() }}</h1>
+        @if (!isDialogHeader()) {
+          <h1 class="title truncate-one-line-text">{{ title() }}</h1>
+        } @else {
+          <h2 class="title truncate-one-line-text">{{ title() }}</h2>
+        }
       }
       @if (subTitle()) {
         <p class="subtitle truncate-one-line-text">{{ subTitle() }}</p>

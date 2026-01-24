@@ -27,6 +27,7 @@ export class CustromHeaderComponent implements AfterViewInit, OnDestroy {
   centerTitle = input<boolean>(false);
   enableQuickReveal = input<boolean>(false);
   enableSubContent = input<boolean>(false);
+  isDialogHeader = input<boolean>(false);
 
   private resizeObserver: ResizeObserver | null = null;
   private _lastScrollTop = 0;

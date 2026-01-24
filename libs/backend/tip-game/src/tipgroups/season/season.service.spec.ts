@@ -75,23 +75,10 @@ describe('SeasonService', () => {
 
       const tipSeason = await service.createTipSeason(season, leagueShortcut, matchDays, matches, mockEntityManager);
 
-      console.log(tipSeason);
       expect(tipSeason.api_LeagueSeason).toBe(season);
       expect(tipSeason.isClosed).toBe(false);
       expect(tipSeason.matchdays.length).toBe(2);
       expect(tipSeason.matchdays[0]).toBe('generated matchday');
-      // expect(tipSeason.matchdays[0].api_groupOrderId).toBe(1);
-      // expect(tipSeason.matchdays[0].orderId).toBe(1);
-      // expect(tipSeason.matchdays[0].api_leagueShortcut).toBe(leagueShortcut);
-      // expect(tipSeason.matchdays[0].matches.length).toBe(2);
-      // expect(tipSeason.matchdays[0].matches[0].api_matchId).toBe(101);
-      // expect(tipSeason.matchdays[0].matches[1].api_matchId).toBe(102);
-      // expect(tipSeason.matchdays[1].name).toBe('Matchday 2');
-      // expect(tipSeason.matchdays[1].api_groupOrderId).toBe(2);
-      // expect(tipSeason.matchdays[1].orderId).toBe(2);
-      // expect(tipSeason.matchdays[1].api_leagueShortcut).toBe(leagueShortcut);
-      // expect(tipSeason.matchdays[1].matches.length).toBe(1);
-      // expect(tipSeason.matchdays[1].matches[0].api_matchId).toBe(201);
     });
   });
 
