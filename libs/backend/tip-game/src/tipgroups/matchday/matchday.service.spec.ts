@@ -2,15 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ApiService, MatchResponseMock } from '@tippapp/backend/api';
-import { ErrorCodes } from '@tippapp/shared/data-access';
+import { ErrorCodes, GroupResponse, Match, MatchApiResponse } from '@tippapp/shared/data-access';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { MatchdayRepository } from '@tippapp/backend/shared';
+import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
+import { EntityManager } from 'typeorm';
 import { MatchdayService } from './matchday.service';
 
 describe('MatchdayService', () => {
   let service: MatchdayService;
   let apiServiceMock: DeepMocked<ApiService>;
   let matchdayRepositoryMock: DeepMocked<MatchdayRepository>;
+  let matchRepositoryMock: DeepMocked<MatchRepository>;
   let errorManagerServiceMock: DeepMocked<ErrorManagerService>;
 
   beforeEach(async () => {
@@ -20,6 +22,10 @@ describe('MatchdayService', () => {
         {
           provide: MatchdayRepository,
           useValue: createMock<MatchdayRepository>(),
+        },
+        {
+          provide: MatchRepository,
+          useValue: createMock<MatchRepository>(),
         },
         {
           provide: ErrorManagerService,
@@ -34,6 +40,7 @@ describe('MatchdayService', () => {
 
     service = module.get<MatchdayService>(MatchdayService);
     matchdayRepositoryMock = module.get(MatchdayRepository);
+    matchRepositoryMock = module.get(MatchRepository);
     errorManagerServiceMock = module.get(ErrorManagerService);
     apiServiceMock = module.get(ApiService);
   });
@@ -87,6 +94,44 @@ describe('MatchdayService', () => {
       expect(result.matchList.length).toBe(2);
       expect(result.matchList[0]).toStrictEqual(expect.objectContaining({ matchId: 1 }));
       expect(result.matchList[1]).toStrictEqual(expect.objectContaining({ matchId: 2 }));
+    });
+  });
+
+  describe('createMatchdayEntity', () => {
+    it('should create a Matchday entity with correct data', async () => {
+      const mockEntityManager = {
+        upsert: jest.fn(),
+      } as unknown as EntityManager;
+
+      const matchDay: GroupResponse = { groupId: 11, groupName: 'Matchday 1', groupOrderId: 1 };
+      const matches = [
+        { matchId: 101, group: { groupId: 11 } },
+        { matchId: 102, group: { groupId: 11 } },
+        { matchId: 201, group: { groupId: 22 } },
+      ] as unknown as MatchApiResponse[];
+
+      matchRepositoryMock.findAllByApiMatchId.mockResolvedValue([
+        { api_matchId: 101 } as Match,
+        { api_matchId: 102 } as Match,
+      ]);
+
+      const matchdayEntity = await service.createMatchdayEntity(matchDay, matches, 'bl1', mockEntityManager);
+
+      expect(mockEntityManager.upsert).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.arrayContaining([
+          expect.objectContaining({ api_matchId: 101 }),
+          expect.objectContaining({ api_matchId: 102 }),
+        ]),
+        { conflictPaths: ['api_matchId'] }
+      );
+      expect(matchdayEntity.name).toBe('Matchday 1');
+      expect(matchdayEntity.api_groupOrderId).toBe(1);
+      expect(matchdayEntity.orderId).toBe(1);
+      expect(matchdayEntity.api_leagueShortcut).toBe('bl1');
+      expect(matchdayEntity.matches.length).toBe(2);
+      expect(matchdayEntity.matches[0].api_matchId).toBe(101);
+      expect(matchdayEntity.matches[1].api_matchId).toBe(102);
     });
   });
 });

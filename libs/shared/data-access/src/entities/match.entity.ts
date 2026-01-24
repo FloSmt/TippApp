@@ -11,7 +11,7 @@ export class Match {
   @Column()
   api_matchId: number;
 
-  @ManyToMany(() => Matchday, (matchday) => matchday.matches)
+  @ManyToMany(() => Matchday, (matchday) => matchday.matches, { onDelete: 'CASCADE' })
   matchdays: Matchday[];
 
   @OneToMany(() => Tip, (tip) => tip.match)

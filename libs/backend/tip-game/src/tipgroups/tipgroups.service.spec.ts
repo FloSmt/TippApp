@@ -181,7 +181,7 @@ describe('TipgroupsService', () => {
       apiService.getAvailableLeagues.mockResolvedValue(LeaguesResponseMock);
       apiService.getMatchData.mockResolvedValue(MatchResponseMock);
       hashService.hashPassword.mockResolvedValue('hashedPassword');
-      tipSeasonService.createTipSeason.mockReturnValue(mocks.tipSeasonMock);
+      tipSeasonService.createTipSeason.mockResolvedValue(mocks.tipSeasonMock);
       const validateTipgroupNameSpy = jest.spyOn(service as any, 'validateTipgroupName');
       const validateAndGetAvailableLeaguesSpy = jest.spyOn(service as any, 'validateAndGetAvailableLeagues');
 

@@ -9,6 +9,8 @@ export class MatchRepository extends Repository<Match> {
   }
 
   async findAllByApiMatchId(api_matchId: number[], entityManager?: EntityManager): Promise<Match[] | undefined> {
+    if (!api_matchId || api_matchId.length === 0) return [];
+
     const manager = entityManager || this.dataSource.manager;
     return manager
       .createQueryBuilder(Match, 'match')

@@ -12,8 +12,15 @@ export class Factory {
   }
 
   public async clearDatabase() {
-    // Drops all tables and recreates them
-    await this.dataSource.synchronize(true);
+    const entities = this.dataSource.entityMetadatas;
+    await this.dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
+
+    for (const entity of entities) {
+      const repository = this.dataSource.getRepository(entity.name);
+      await repository.query(`TRUNCATE TABLE \`${entity.tableName}\`;`);
+    }
+
+    await this.dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
   }
 
   protected getAgent() {
