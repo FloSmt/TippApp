@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TipSeason } from './tipSeason.entity';
 import { Match } from './match.entity';
 
@@ -26,8 +26,7 @@ export class Matchday {
   @Column({ nullable: true })
   seasonId: number;
 
-  @OneToMany(() => Match, (match) => match.matchday, {
-    cascade: true,
-  })
+  @ManyToMany(() => Match, (match) => match.matchdays, { onDelete: 'CASCADE' })
+  @JoinTable()
   matches: Match[];
 }

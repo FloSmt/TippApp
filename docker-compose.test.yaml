@@ -1,4 +1,3 @@
-version: '2.4'
 services:
   # MockServer for API mocking
   mockserver:
@@ -20,7 +19,6 @@ services:
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${DB_PASS}
-      MYSQL_HOST: ${DB_HOST}
     ports:
       - "3306:3306"
     volumes:

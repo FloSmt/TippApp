@@ -8,17 +8,17 @@
 <div class="selection-container" tabindex="1" aria-modal="true" role="button" (click)="openSelectionDialog()"
      data-testid="matchday-selector">
   <div class="selection">
-    <h3 class="selection-league truncate-one-line-text">
+    <p class="selection-league truncate-one-line-text overline">
       @if (currentMatchday()) {
         {{ currentMatchday()!.league.leagueName }}
       } @else {
         <ion-skeleton-text [animated]="true" style="width: 150px; height: 1em"></ion-skeleton-text>
       }
-    </h3>
-    <p class="selection-name text-small">{{ getMatchdayName() }}</p>
-  </div>
-  <div>
-    <ion-icon name="caret-down"></ion-icon>
+    </p>
+    <div class="selection-name">
+      <h3>{{ getMatchdayName() }}</h3>
+      <ion-icon [class.is-open]="isOpen()" class="open-arrow" name="chevron-down-outline"></ion-icon>
+    </div>
   </div>
 </div>
 <div class="arrow-container right">

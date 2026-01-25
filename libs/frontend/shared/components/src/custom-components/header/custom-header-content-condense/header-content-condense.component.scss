@@ -4,8 +4,13 @@ ion-header {
   ion-title {
     padding-left: 0;
 
-    h1 {
-      margin-top: 0 !important;
+    .title {
+      margin: 0 !important;
+    }
+
+    .subtitle {
+      margin-top: var(--ion-space-m);
+      margin-bottom: 0;
     }
   }
 

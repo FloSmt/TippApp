@@ -2,6 +2,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
+  padding-top: var(--ion-space-xl);
 }
 
 .arrow-container {
@@ -54,8 +55,26 @@
   align-items: center;
   justify-content: center;
 
+  .open-arrow {
+    rotate: 0deg;
+    transition: rotate 0.3s ease-in-out;
+
+    &.is-open {
+      rotate: 180deg;
+      transition: rotate 0.3s ease-in-out;
+    }
+  }
+
   .selection {
     margin-right: var(--ion-space-xl);
+  }
+
+  .selection-name {
+    margin-top: var(--ion-space-l);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ion-space-xl);
   }
 
   .selection-league {

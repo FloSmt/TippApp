@@ -4,13 +4,10 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
   IonItem,
   IonLabel,
   IonSpinner,
-  IonTitle,
-  IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -19,21 +16,19 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { confirmPasswordValidator, TipgroupManagementStore } from '@tippapp/frontend/utils';
 import { CreateTipgroupDto } from '@tippapp/shared/data-access';
 import {
+  BaseDialogHeaderComponent,
   CustomInputComponent,
   CustomSelectComponent,
   ErrorCardTemplateComponent,
+  HeaderContentCondenseComponent,
   SelectOption,
 } from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-create-matchday.dialog',
   imports: [
-    IonHeader,
-    IonToolbar,
     IonButtons,
     IonButton,
-    IonTitle,
-    IonContent,
     IonIcon,
     FormsModule,
     ReactiveFormsModule,
@@ -43,6 +38,9 @@ import {
     CustomInputComponent,
     CustomSelectComponent,
     IonItem,
+    IonContent,
+    HeaderContentCondenseComponent,
+    BaseDialogHeaderComponent,
   ],
   templateUrl: './create-tipgroup.dialog.component.html',
   styleUrl: './create-tipgroup.dialog.component.scss',

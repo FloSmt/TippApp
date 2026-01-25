@@ -1,26 +1,19 @@
-<ion-header>
-  <ion-toolbar class="dialog-toolbar">
-    <ion-buttons slot="start">
-      <ion-button (click)="cancel()" class="close-button">
-        <ion-icon name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Tippgruppe erstellen</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" [disabled]="disableCreateButton()" (click)="createTipgroup()"
-                  data-testid="create-tipgroup-submit-button">
-        <ion-label>
-          @if (isLoadingAvailableLeagues()) {
-            <ion-spinner name="dots"></ion-spinner>
-          } @else {
-            Erstellen
-          }
-        </ion-label>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<lib-base-dialog-header title="Tippgruppe erstellen" (cancelEvent)="cancel()">
+  <ion-buttons slot="buttons">
+    <ion-button fill="clear" [disabled]="disableCreateButton()" (click)="createTipgroup()"
+                data-testid="create-tipgroup-submit-button">
+      <ion-label>
+        @if (isLoadingAvailableLeagues()) {
+          <ion-spinner name="dots"></ion-spinner>
+        } @else {
+          Erstellen
+        }
+      </ion-label>
+    </ion-button>
+  </ion-buttons>
+</lib-base-dialog-header>
 <ion-content class="ion-padding">
+  <custom-header-content-condense title="Tippgruppe erstellen"></custom-header-content-condense>
   @if (isLoadingAvailableLeagues() || availableLeagues.isLoading()) {
     <div class="loading-container" data-testid="spinner">
       <ion-spinner></ion-spinner>

@@ -60,7 +60,7 @@ export class TipgroupsService {
       });
 
       // create TipSeason with Matchdays and Matches
-      const tipSeason: TipSeason = this.tipSeasonService.createTipSeason(
+      const tipSeason: TipSeason = await this.tipSeasonService.createTipSeason(
         createTipgroupDto.currentSeason,
         createTipgroupDto.leagueShortcut,
         matchDays,

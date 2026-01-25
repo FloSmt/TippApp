@@ -126,6 +126,25 @@ describe('TipgroupController (e2e)', () => {
       expect(matches[0].api_matchId).toEqual(MATCHDATA_MOCK[0].matchID);
     });
 
+    it('should create each matchEntry in the database only once', async () => {
+      // create first Tipgroup
+      const response = await tipgroupFactory.createTipGroupWithRest(accessToken, mocks.createTipgroupData[0]);
+      expect(response.status).toBe(201);
+      expect(await matchRepository.count()).toBe(3);
+
+      // delete one match to simulate existing matchs
+      await matchRepository.delete({ api_matchId: MATCHDATA_MOCK[0].matchID });
+      expect(await matchRepository.count()).toBe(2);
+
+      // create second Tipgroup with the same league and season
+      const response2 = await tipgroupFactory.createTipGroupWithRest(accessToken, {
+        ...mocks.createTipgroupData[0],
+        name: 'Another Tipgroup',
+      });
+      expect(response2.status).toBe(201);
+      expect(await matchRepository.count()).toBe(3);
+    });
+
     it('should throw Error 401 if user is not authorized', async () => {
       const response = await tipgroupFactory.createTipGroupWithRest('wrongToken', mocks.createTipgroupData[0]);
 

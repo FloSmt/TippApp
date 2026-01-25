@@ -1,5 +1,5 @@
 <custom-header title="Übersicht" [subTitle]="tipgroupDetails()?.name" [scrollEvent]="scrollData"
-               [enableQuickReveal]="true" [enableSubContent]="true">
+               [enableQuickReveal]="true" [enableSubContent]="true" [showAboveTitle]="true">
   @if (!isLoading().initial) {
     <lib-matchday-selector class="matchday-selector" [allMatchdays]="matchdayOverview()"
                            [currentMatchday]="currentMatchday()"

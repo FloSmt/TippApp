@@ -19,7 +19,32 @@ ion-header {
   }
 
   ion-title {
-    margin-bottom: var(--ion-space-m);
+    padding-top: var(--ion-space-l);
+    padding-bottom: var(--ion-space-s);
+
+    .title {
+      margin: 0 !important;
+    }
+
+    &.above-title {
+      .subtitle {
+        margin-bottom: var(--ion-space-m);
+        margin-top: 0;
+      }
+    }
+
+    &.below-title {
+      .subtitle {
+        margin-top: var(--ion-space-s);
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &.dialog-header {
+    ion-title {
+      padding-left: var(--ion-space-m);
+    }
   }
 
   &.center {
