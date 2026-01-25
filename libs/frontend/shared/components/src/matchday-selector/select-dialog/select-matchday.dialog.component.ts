@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
 import { IonContent, IonItem, IonRadio, IonRadioGroup, ModalController } from '@ionic/angular/standalone';
-import { HeaderContentCondenseComponent } from '@tippapp/frontend/shared-components';
 
 @Component({
   selector: 'lib-select-matchday.dialog',
-  imports: [IonContent, IonItem, IonRadio, IonRadioGroup, HeaderContentCondenseComponent],
+  imports: [IonContent, IonItem, IonRadio, IonRadioGroup],
   templateUrl: './select-matchday.dialog.component.html',
   styleUrl: './select-matchday.dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

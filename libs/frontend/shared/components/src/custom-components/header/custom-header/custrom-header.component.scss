@@ -19,13 +19,25 @@ ion-header {
   }
 
   ion-title {
+    padding-top: var(--ion-space-l);
+    padding-bottom: var(--ion-space-s);
 
-    h1 {
-      margin-bottom: var(--ion-space-m);
+    .title {
+      margin: 0 !important;
     }
 
-    h2 {
-      margin-bottom: 0 !important;
+    &.above-title {
+      .subtitle {
+        margin-bottom: var(--ion-space-m);
+        margin-top: 0;
+      }
+    }
+
+    &.below-title {
+      .subtitle {
+        margin-top: var(--ion-space-s);
+        margin-bottom: 0;
+      }
     }
   }
 

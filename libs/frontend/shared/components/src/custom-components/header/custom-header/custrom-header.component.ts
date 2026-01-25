@@ -23,6 +23,8 @@ export class CustromHeaderComponent implements AfterViewInit, OnDestroy {
 
   title = input<string>();
   subTitle = input<string>();
+  /** show Subtitle above the main title */
+  showAboveTitle = input<boolean>(false);
   showButtonSection = input<boolean>(true);
   centerTitle = input<boolean>(false);
   enableQuickReveal = input<boolean>(false);

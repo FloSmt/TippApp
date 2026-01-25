@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { addIcons } from 'ionicons';
-import { caretBack, caretDown, caretForward } from 'ionicons/icons';
+import { caretBack, caretForward, chevronDownOutline } from 'ionicons/icons';
 import { IonIcon, IonSkeletonText, ModalController } from '@ionic/angular/standalone';
 import { MatchdayDetailsResponseDto, MatchdayOverviewResponseDto } from '@tippapp/shared/data-access';
 import { SelectMatchdayDialogComponent } from './select-dialog/select-matchday.dialog.component';
@@ -21,6 +21,8 @@ export class MatchdaySelectorComponent {
   disableSelection = input<boolean>(false);
 
   sortedMatchdays: MatchdayOverviewResponseDto[] = [];
+
+  isOpen = signal(false);
 
   isFirstSelected = computed(() => {
     if (this.sortedMatchdays.length === 0) {
@@ -46,7 +48,7 @@ export class MatchdaySelectorComponent {
   });
 
   constructor() {
-    addIcons({ caretForward, caretBack, caretDown });
+    addIcons({ caretForward, caretBack, chevronDownOutline });
     effect(() => {
       if (this.allMatchdays() !== null) {
         this.sortedMatchdays = this.allMatchdays()!.sort((a, b) => a.orderId - b.orderId);
@@ -89,12 +91,15 @@ export class MatchdaySelectorComponent {
       initialBreakpoint: 0.75,
     });
 
+    this.isOpen.set(true);
     await modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    modal.onWillDismiss().then(({ role, data }) => {
+      this.isOpen.set(false);
 
-    if (role === 'selected') {
-      this.currentMatchdayId.set(data.selectedMatchdayId);
-    }
+      if (role === 'selected') {
+        this.currentMatchdayId.set(data.selectedMatchdayId);
+      }
+    });
   }
 }

@@ -3,7 +3,10 @@
             [style.transform]="transform"
             [class.quick-reveal]="enableQuickReveal()">
   <ion-toolbar mode="md">
-    <ion-title>
+    <ion-title [class]="showAboveTitle() ? 'above-title' : 'below-title'">
+      @if (subTitle() && showAboveTitle()) {
+        <p class="subtitle truncate-one-line-text">{{ subTitle() }}</p>
+      }
       @if (title()) {
         @if (!isDialogHeader()) {
           <h1 class="title truncate-one-line-text">{{ title() }}</h1>
@@ -11,7 +14,7 @@
           <h2 class="title truncate-one-line-text">{{ title() }}</h2>
         }
       }
-      @if (subTitle()) {
+      @if (subTitle() && !showAboveTitle()) {
         <p class="subtitle truncate-one-line-text">{{ subTitle() }}</p>
       }
     </ion-title>
