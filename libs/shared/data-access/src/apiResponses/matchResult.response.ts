@@ -7,11 +7,11 @@ export class MatchResultResponse {
   resultTypeId: number;
 
   constructor(data: any) {
-    this.resultId = data.resultID;
-    this.resultName = data.resultName;
-    this.pointsTeam1 = data.pointsTeam1;
-    this.pointsTeam2 = data.pointsTeam2;
-    this.resultOrderId = data.resultOrderID;
-    this.resultTypeId = data.resultTypeID;
+    this.resultId = data.resultID ?? data.ResultID;
+    this.resultName = data.resultName ?? data.ResultName;
+    this.pointsTeam1 = data.pointsTeam1 ?? data.PointsTeam1;
+    this.pointsTeam2 = data.pointsTeam2 ?? data.PointsTeam2;
+    this.resultOrderId = data.resultOrderID ?? data.ResultOrderID;
+    this.resultTypeId = data.resultTypeID ?? data.ResultTypeID;
   }
 }

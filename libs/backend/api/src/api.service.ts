@@ -7,6 +7,7 @@ import {
   LeagueOverviewResponseDto,
   LeagueResponse,
   MatchApiResponse,
+  SupportedLeagueShortcuts,
 } from '@tippapp/shared/data-access';
 import { ConfigService } from '@nestjs/config';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
@@ -24,8 +25,6 @@ export class ApiService {
   private fetchedLeagues: LeagueOverviewResponseDto[] | null = null;
   private dateOfLastFetch: number | null = null;
   private cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-  private readonly allowedLeagues = ['bl1', 'bl2', 'pl', 'sa', 'pd', 'fl1', 'ded'];
 
   // Cache for match data with a key based on leagueShortcut, season, and groupId
   // data - contains the response of the api
@@ -143,7 +142,7 @@ export class ApiService {
       const filteredMatches = response.data.filter(
         (league: any) =>
           (league.sport.sportId === 1 || league.sport.sportId === 79) &&
-          this.allowedLeagues.includes(league.leagueShortcut.toLowerCase())
+          SupportedLeagueShortcuts.includes(league.leagueShortcut)
       );
       return filteredMatches.map((league: any) => new LeagueResponse(league));
     } catch (error) {

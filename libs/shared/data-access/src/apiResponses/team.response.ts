@@ -5,9 +5,9 @@ export class TeamResponse {
   teamIconUrl: string;
 
   constructor(data: any) {
-    this.teamId = data.teamId;
-    this.teamName = data.teamName;
-    this.shortName = data.shortName;
-    this.teamIconUrl = data.teamIconUrl;
+    this.teamId = data.teamId ?? data.TeamId;
+    this.teamName = data.teamName ?? data.TeamName;
+    this.shortName = data.shortName ?? data.ShortName;
+    this.teamIconUrl = data.teamIconUrl ?? data.TeamIconUrl;
   }
 }

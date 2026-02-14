@@ -57,7 +57,7 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: |
           node -v
-          npm install
+          npm ci
 
       - uses: nrwl/nx-set-shas@v4
 
