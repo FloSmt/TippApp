@@ -6,11 +6,13 @@ import { ErrorCodes, GroupResponse, Match, MatchApiResponse } from '@tippapp/sha
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
 import { EntityManager } from 'typeorm';
+import { MatchService } from '@tippapp/backend/tip-game';
 import { MatchdayService } from './matchday.service';
 
 describe('MatchdayService', () => {
   let service: MatchdayService;
   let apiServiceMock: DeepMocked<ApiService>;
+  let matchServiceMock: DeepMocked<MatchService>;
   let matchdayRepositoryMock: DeepMocked<MatchdayRepository>;
   let matchRepositoryMock: DeepMocked<MatchRepository>;
   let errorManagerServiceMock: DeepMocked<ErrorManagerService>;
@@ -28,6 +30,10 @@ describe('MatchdayService', () => {
           useValue: createMock<MatchRepository>(),
         },
         {
+          provide: MatchService,
+          useValue: createMock<MatchService>(),
+        },
+        {
           provide: ErrorManagerService,
           useValue: createMock<ErrorManagerService>(),
         },
@@ -43,6 +49,7 @@ describe('MatchdayService', () => {
     matchRepositoryMock = module.get(MatchRepository);
     errorManagerServiceMock = module.get(ErrorManagerService);
     apiServiceMock = module.get(ApiService);
+    matchServiceMock = module.get(MatchService);
   });
 
   it('should be defined', () => {
@@ -105,9 +112,9 @@ describe('MatchdayService', () => {
 
       const matchDay: GroupResponse = { groupId: 11, groupName: 'Matchday 1', groupOrderId: 1 };
       const matches = [
-        { matchId: 101, group: { groupId: 11 } },
-        { matchId: 102, group: { groupId: 11 } },
-        { matchId: 201, group: { groupId: 22 } },
+        { matchId: 101, group: { groupId: 11 }, matchResults: [] },
+        { matchId: 102, group: { groupId: 11 }, matchResults: [{ pointsTeam1: 1, pointsTeam2: 2 }] },
+        { matchId: 201, group: { groupId: 22 }, matchResults: [] },
       ] as unknown as MatchApiResponse[];
 
       matchRepositoryMock.findAllByApiMatchId.mockResolvedValue([
@@ -120,11 +127,12 @@ describe('MatchdayService', () => {
       expect(mockEntityManager.upsert).toHaveBeenCalledWith(
         expect.any(Function),
         expect.arrayContaining([
-          expect.objectContaining({ api_matchId: 101 }),
-          expect.objectContaining({ api_matchId: 102 }),
+          expect.objectContaining({ api_matchId: 101, scoreHome: null, scoreAway: null }),
+          expect.objectContaining({ api_matchId: 102, scoreHome: 1, scoreAway: 2 }),
         ]),
         { conflictPaths: ['api_matchId'] }
       );
+
       expect(matchdayEntity.name).toBe('Matchday 1');
       expect(matchdayEntity.api_groupOrderId).toBe(1);
       expect(matchdayEntity.orderId).toBe(1);
