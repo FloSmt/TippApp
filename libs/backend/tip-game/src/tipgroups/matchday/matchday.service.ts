@@ -11,7 +11,11 @@ import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
 import { EntityManager } from 'typeorm';
-import { mapApiMatchResponsesToMatchDayResponseDto } from '../../helper/responses-mapper';
+import {
+  mapApiMatchResponsesToMatchDayResponseDto,
+  mapApiMatchResponseToMatchEntity,
+} from '../../helper/responses-mapper';
+import { MatchService } from '../match/match.service';
 
 @Injectable()
 export class MatchdayService {
@@ -19,7 +23,8 @@ export class MatchdayService {
     private readonly apiService: ApiService,
     private readonly errorManager: ErrorManagerService,
     private readonly matchdayRepository: MatchdayRepository,
-    private readonly matchRepository: MatchRepository
+    private readonly matchRepository: MatchRepository,
+    private readonly matchService: MatchService
   ) {}
 
   public async getMatchdayDetails(
@@ -45,6 +50,8 @@ export class MatchdayService {
       matchdayFromDb?.matchday.api_leagueSeason || 0,
       matchdayFromDb?.matchday.api_groupOrderId || 0
     );
+
+    this.matchService.updateMatchObjects(matchData);
 
     const matchIds = new Set(matchdayFromDb?.matchday.matches.map((m) => (m.api_matchId ?? '').toString().trim()));
     const filteredMatchData = matchData.filter((match) => matchIds.has(match.matchId.toString().trim()));
@@ -79,12 +86,7 @@ export class MatchdayService {
 
     const matches: Match[] = matchResponse
       .filter((m) => m.group.groupId === group.groupId)
-      .map((match) => {
-        const matchEntity: Match = new Match();
-        matchEntity.api_matchId = match.matchId;
-
-        return matchEntity;
-      });
+      .map((match) => mapApiMatchResponseToMatchEntity(match));
 
     await entityManager.upsert(Match, matches, { conflictPaths: ['api_matchId'] });
     const savedMatches = await this.matchRepository.findAllByApiMatchId(

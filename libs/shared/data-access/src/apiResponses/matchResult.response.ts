@@ -1,8 +1,8 @@
 export class MatchResultResponse {
   resultId: number;
   resultName: string;
-  pointsTeam1: number;
-  pointsTeam2: number;
+  pointsTeam1: number | null;
+  pointsTeam2: number | null;
   resultOrderId: number;
   resultTypeId: number;
 

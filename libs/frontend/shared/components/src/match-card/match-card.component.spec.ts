@@ -29,7 +29,7 @@ describe('MatchCardComponent', () => {
         awayTeamScore: testData.scoreAway === undefined ? 1 : testData.scoreAway,
       },
       matchId: 0,
-      lastUpdatedDateTime: '',
+      lastUpdateDateTime: '',
       homeTeam: new TeamDto(),
       awayTeam: new TeamDto(),
     } satisfies MatchResponseDto);

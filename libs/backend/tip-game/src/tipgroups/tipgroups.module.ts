@@ -19,6 +19,7 @@ import { MatchdayController } from './matchday/matchday.controller';
 import { MatchdayService } from './matchday/matchday.service';
 import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.service';
 import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.service';
+import { MatchService } from './match/match.service';
 
 @Module({
   imports: [
@@ -27,13 +28,14 @@ import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.ser
     forwardRef(() => UserModule),
   ],
   controllers: [TipgroupsController, MatchdayController, SeasonController],
-  exports: [TipgroupsService, MatchdayService, SeasonService],
+  exports: [TipgroupsService, MatchdayService, MatchService, SeasonService],
   providers: [
     TipgroupsService,
     TipgroupMembersService,
     ErrorManagerService,
     HashService,
     MatchdayService,
+    MatchService,
     SeasonService,
     TipgroupRepository,
     TipgroupUserRepository,

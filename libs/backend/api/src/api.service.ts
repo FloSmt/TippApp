@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -51,7 +51,7 @@ export class ApiService {
 
       // If cached data is recent enough, return it
       if (now - cachedData.lastCheck.getTime() < timeout) {
-        console.log('Returning recently cached match data');
+        Logger.debug('Returning recently cached match data');
         return cachedData.data;
       }
 
@@ -59,14 +59,14 @@ export class ApiService {
 
       // If the last updated date matches, return cached data
       if (cachedData.lastUpdate.getTime() === lastUpdatedDate.getTime()) {
-        console.log('Returning cached match data');
+        Logger.debug('Returning cached match data');
         this.matchDataCache[cacheKey] = { data: cachedData.data, lastUpdate: lastUpdatedDate, lastCheck: new Date() };
         return cachedData.data;
       }
     }
 
     // Fetch new data from API
-    console.log('Fetching new match data from API');
+    Logger.debug('Fetching new match data from API');
     const matchData = await this.getMatchDataFromApi(leagueShortcut, season, groupId);
     const lastUpdatedDate = await this.getLastUpdatedMatchdayDate(leagueShortcut, season, groupId);
 
@@ -109,11 +109,11 @@ export class ApiService {
   async getAvailableLeagues(): Promise<LeagueOverviewResponseDto[]> {
     const now = Date.now();
     if (this.fetchedLeagues && this.dateOfLastFetch && now - this.dateOfLastFetch < this.cacheDuration) {
-      console.log('Returning cached leagues');
+      Logger.debug('Returning cached leagues');
       return this.fetchedLeagues;
     }
 
-    console.log('Fetching new leagues from API');
+    Logger.debug('Fetching new leagues from API');
     const leagues = await this.getAvailableLeaguesFromApi();
     this.fetchedLeagues = leagues;
     this.dateOfLastFetch = now;
@@ -128,7 +128,7 @@ export class ApiService {
 
       return response.data;
     } catch (error) {
-      console.warn('Error on calling external API (getlastchangedate)', error);
+      Logger.error('Error on calling external API (getlastchangedate)', error);
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
@@ -146,7 +146,7 @@ export class ApiService {
       );
       return filteredMatches.map((league: any) => new LeagueResponse(league));
     } catch (error) {
-      console.warn('Error on calling external API (getAvailableLeagues)', error);
+      Logger.error('Error on calling external API (getAvailableLeagues)', error);
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
@@ -158,7 +158,7 @@ export class ApiService {
 
       return response.data.map((group: any) => new GroupResponse(group));
     } catch (error) {
-      console.warn('Error on calling external API (getAvailableGroups)', error);
+      Logger.error('Error on calling external API (getAvailableGroups)', error);
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }

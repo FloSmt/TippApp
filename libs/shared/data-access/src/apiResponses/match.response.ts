@@ -11,7 +11,7 @@ export class MatchApiResponse {
   leagueSeason: number;
   leagueShortcut: string;
   matchDateTimeUTC: string;
-  lastUpdatedDateTime: string;
+  lastUpdateDateTime: string;
   group: GroupResponse;
   team1: TeamResponse;
   team2: TeamResponse;
@@ -31,7 +31,7 @@ export class MatchApiResponse {
     this.team1 = new TeamResponse(data.team1 ?? data.Team1);
     this.team2 = new TeamResponse(data.team2 ?? data.Team2);
     this.matchIsFinished = data.matchIsFinished ?? data.MatchIsFinished;
-    this.lastUpdatedDateTime = data.lastUpdatedDateTime ?? data.LastUpdateDateTime;
+    this.lastUpdateDateTime = data.lastUpdateDateTime ?? data.LastUpdateDateTime;
 
     const matchResultsData = data.matchResults ?? data.MatchResults;
     this.matchResults = matchResultsData.map((matchResult: any) => new MatchResultResponse(matchResult)) || null;

@@ -10,7 +10,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule, HttpValidationFilter } from '@tippapp/backend/core';
 import cookieParser from 'cookie-parser';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { logger } from 'nx/src/utils/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -66,11 +65,11 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
 
   try {
-    logger.log('Starting MQTT microservice...');
+    Logger.log('Starting MQTT microservice...');
     await app.startAllMicroservices();
-    logger.log('MQTT microservice started successfully.');
+    Logger.log('MQTT microservice started successfully.');
   } catch (error) {
-    logger.error(('Error starting MQTT microservice: ' + error) as any);
+    Logger.error(('Error starting MQTT microservice: ' + error) as any);
   }
 
   if (process.env.MOBILE_TEST === 'true') {
