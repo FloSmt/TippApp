@@ -6,7 +6,7 @@ import { ErrorCodes, GroupResponse, Match, MatchApiResponse } from '@tippapp/sha
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
 import { EntityManager } from 'typeorm';
-import { MatchService } from '@tippapp/backend/tip-game';
+import { MatchService } from '../match/match.service';
 import { MatchdayService } from './matchday.service';
 
 describe('MatchdayService', () => {
