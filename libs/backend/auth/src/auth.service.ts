@@ -1,9 +1,9 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@tippapp/backend/user';
 import { ErrorCodes, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { ConfigService } from '@nestjs/config';
-import { v4 as uuidv4 } from 'uuid';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { HashService } from '@tippapp/backend/shared';
 
@@ -94,13 +94,13 @@ export class AuthService {
     refreshToken: string;
   } {
     const newAccessToken = this.jwtService.sign(
-      { ...payload, refreshId: uuidv4() },
+      { ...payload, refreshId: randomUUID() },
       {
         expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
       }
     );
     const newRefreshToken = this.jwtService.sign(
-      { ...payload, refreshId: uuidv4() },
+      { ...payload, refreshId: randomUUID() },
       {
         expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
       }
@@ -118,7 +118,7 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
     } catch (error) {
-      console.log('Token verification failed:', error);
+      Logger.warn('Token verification failed:', error);
       return null;
     }
   }
