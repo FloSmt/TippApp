@@ -23,9 +23,8 @@ describe('ApiUpdatesController', () => {
 
   it('should call handleApiUpdate on service', async () => {
     const payload = { some: 'data' };
-    const context = { some: 'context' };
 
-    await controller.handleApiUpdate(payload, context);
+    await controller.handleApiUpdate(payload);
 
     expect(apiUpdatesServiceMock.handleApiUpdate).toHaveBeenCalledWith(payload);
   });

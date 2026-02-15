@@ -1,6 +1,7 @@
 import supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { ApiService } from '@tippapp/backend/api';
 
 export class Factory {
   private readonly app: INestApplication;
@@ -22,6 +23,17 @@ export class Factory {
 
     await this.dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
   }
+
+  clearApiServiceCache = (app: INestApplication) => {
+    try {
+      const apiService = app.get<ApiService>(ApiService as any);
+      if (apiService && apiService['matchDataCache']) {
+        apiService['matchDataCache'] = {};
+      }
+    } catch (err) {
+      console.warn('ApiService not found, skipping cache clear.');
+    }
+  };
 
   protected getAgent() {
     return supertest(this.app.getHttpServer());

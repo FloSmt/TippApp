@@ -30,11 +30,11 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.MQTT,
     options: {
-      url: 'mqtts://broker.hivemq.com:8883',
-      reconnectPeriod: 1000,
+      url: process.env.MQTT_BROKER_URL,
+      reconnectPeriod: 10000,
       keepalive: 60,
       clean: true,
-      rejectUnauthorized: true,
+      rejectUnauthorized: process.env.PRODUCTION === 'true',
       subscribeOptions: {
         qos: 1,
       },

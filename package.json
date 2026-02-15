@@ -10,6 +10,7 @@
     "local:backend:mobile-test": "nx run backend:serve --configuration=mobile-test",
     "build:backend": "nx run backend:build",
     "test:backend:e2e": "set NODE_ENV=test && nx run backend-e2e:e2e -- --runInBand",
+    "test:backend:e2e:single": "set NODE_ENV=test && nx run backend-e2e:e2e",
     "test:backend:unit": "nx run-many --target=test --projects=libs/backend/* --code-coverage",
     "build:mobile-app": "nx run mobile-app:build",
     "build:mobile-app:mobile-test": "nx run mobile-app:build --configuration=mobile-test",

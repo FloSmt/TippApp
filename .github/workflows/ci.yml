@@ -121,9 +121,9 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      - name: 🚀 Start mockserver an database with Docker Compose
+      - name: 🚀 Start mockserver, database and mqtt-broker with Docker Compose
         run: |
-          docker compose -f docker-compose.test.yaml --env-file ./environments/.env.test up -d db-test mockserver
+          npm run env:test
 
       - name: 🧪 Run Backend E2E Tests
         env:

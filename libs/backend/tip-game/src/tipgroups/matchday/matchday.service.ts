@@ -51,7 +51,7 @@ export class MatchdayService {
       matchdayFromDb?.matchday.api_groupOrderId || 0
     );
 
-    this.matchService.updateMatchObjects(matchData);
+    await this.matchService.updateMatchObjects(matchData);
 
     const matchIds = new Set(matchdayFromDb?.matchday.matches.map((m) => (m.api_matchId ?? '').toString().trim()));
     const filteredMatchData = matchData.filter((match) => matchIds.has(match.matchId.toString().trim()));
