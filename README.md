@@ -19,4 +19,4 @@ For Frontend-UI-tests the project uses **Playwright**.
 - For **Unit-tests** you can run ``npm run test:all:unit``
 - **UI-Tests** in the Frontend can be run with ``npm run test:mobile-app:e2e``
 - **Backend-Tests** are runable with ``npm run test:backend:e2e``
-  - to setup the test-environment with database and mockserver run first ``npm run env:test``
+  - to setup the test-environment with database, mockserver and mqtt-broker run ``npm run env:test`` first

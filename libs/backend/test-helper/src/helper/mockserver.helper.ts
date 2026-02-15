@@ -14,15 +14,7 @@ export const resetMockApi = async () => {
   await client.reset();
 };
 
-export const setupMockApi = async (
-  options: MockApiOptions = {
-    matchDataResponse: MATCHDATA_MOCK,
-    availableGroupsResponse: AVAILABLE_GROUPS_MOCK,
-    availableLeaguesResponse: AVAILABLE_LEAGUES_MOCK,
-    lastChangeDateResponse: '2024-01-01T00:00:00Z',
-    errorCode: 200,
-  }
-) => {
+export const setupMockApi = async (options: MockApiOptions = {}) => {
   const optionsWithDefaults: MockApiOptions = {
     matchDataResponse: options.matchDataResponse || MATCHDATA_MOCK,
     availableGroupsResponse: options.availableGroupsResponse || AVAILABLE_GROUPS_MOCK,

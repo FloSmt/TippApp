@@ -38,7 +38,7 @@ export const matchdayDetailsMockResponse: MatchdayDetailsResponseDto[] = [
     matchList: [
       {
         matchId: 0,
-        lastUpdatedDateTime: '2025-02-10T12:00:00',
+        lastUpdateDateTime: '2025-02-10T12:00:00',
         scheduledDateTime: '2025-02-10T12:00:00',
         isFinished: false,
         homeTeam: {
@@ -74,7 +74,7 @@ export const matchdayDetailsMockResponse: MatchdayDetailsResponseDto[] = [
     matchList: [
       {
         matchId: 0,
-        lastUpdatedDateTime: '2025-02-10T12:00:00',
+        lastUpdateDateTime: '2025-02-10T12:00:00',
         scheduledDateTime: '2025-02-10T12:00:00',
         isFinished: false,
         homeTeam: {

@@ -11,7 +11,7 @@ export class MatchApiResponse {
   leagueSeason: number;
   leagueShortcut: string;
   matchDateTimeUTC: string;
-  lastUpdatedDateTime: string;
+  lastUpdateDateTime: string;
   group: GroupResponse;
   team1: TeamResponse;
   team2: TeamResponse;
@@ -19,19 +19,21 @@ export class MatchApiResponse {
   matchResults: MatchResultResponse[];
 
   constructor(data: any) {
-    this.matchId = data.matchID;
-    this.matchDateTime = data.matchDateTime;
-    this.timeZoneId = data.timeZoneID;
-    this.leagueId = data.leagueId;
-    this.leagueName = data.leagueName;
-    this.leagueSeason = data.leagueSeason;
-    this.leagueShortcut = data.leagueShortcut;
-    this.matchDateTimeUTC = data.matchDateTimeUTC;
-    this.group = new GroupResponse(data.group);
-    this.team1 = new TeamResponse(data.team1);
-    this.team2 = new TeamResponse(data.team2);
-    this.matchIsFinished = data.matchIsFinished;
-    this.lastUpdatedDateTime = data.lastUpdatedDateTime;
-    this.matchResults = data.matchResults.map((matchResult: any) => new MatchResultResponse(matchResult)) || null;
+    this.matchId = data.matchID ?? data.MatchID;
+    this.matchDateTime = data.matchDateTime ?? data.MatchDateTime;
+    this.timeZoneId = data.timeZoneID ?? data.TimeZoneID;
+    this.leagueId = data.leagueId ?? data.LeagueId;
+    this.leagueName = data.leagueName ?? data.LeagueName;
+    this.leagueSeason = data.leagueSeason ?? data.LeagueSeason;
+    this.leagueShortcut = data.leagueShortcut ?? data.LeagueShortcut;
+    this.matchDateTimeUTC = data.matchDateTimeUTC ?? data.MatchDateTimeUTC;
+    this.group = new GroupResponse(data.group ?? data.Group);
+    this.team1 = new TeamResponse(data.team1 ?? data.Team1);
+    this.team2 = new TeamResponse(data.team2 ?? data.Team2);
+    this.matchIsFinished = data.matchIsFinished ?? data.MatchIsFinished;
+    this.lastUpdateDateTime = data.lastUpdateDateTime ?? data.LastUpdateDateTime;
+
+    const matchResultsData = data.matchResults ?? data.MatchResults;
+    this.matchResults = matchResultsData.map((matchResult: any) => new MatchResultResponse(matchResult)) || null;
   }
 }

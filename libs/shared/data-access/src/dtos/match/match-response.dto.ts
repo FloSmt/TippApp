@@ -7,7 +7,7 @@ export class MatchResponseDto {
   matchId: number;
 
   @ApiProperty()
-  lastUpdatedDateTime: string;
+  lastUpdateDateTime: string;
 
   @ApiProperty()
   scheduledDateTime: string;
