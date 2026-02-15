@@ -103,7 +103,7 @@
     "@playwright/test": "^1.58.2",
     "@schematics/angular": "^21.0.0",
     "@swc-node/register": "~1.11.1",
-    "@swc/core": "~1.15.11",
+    "@swc/core": "~1.15.3",
     "@swc/helpers": "~0.5.11",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.9",
