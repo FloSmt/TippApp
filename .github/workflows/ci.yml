@@ -123,13 +123,7 @@ jobs:
 
       - name: 🚀 Start mockserver, database and mqtt-broker with Docker Compose
         run: |
-          npm run env:test
-      - name: ⏳ Wait for services healthy
-        run: |
-          bash .github/scripts/wait-for-services.sh mqtt_test_broker test-mysql-database mockserver-external-api
-        env:
-          TIMEOUT: 180
-          INTERVAL: 5
+          docker compose -f docker-compose.test.yaml --env-file ./environments/.env.test up -d
       - name: 🧪 Run Backend E2E Tests
         env:
           NODE_ENV: test
