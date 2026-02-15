@@ -1,4 +1,3 @@
-/* eslint-disable */
 import axios from 'axios';
 
 module.exports = async function () {
@@ -7,4 +6,3 @@ module.exports = async function () {
   const port = process.env.PORT ?? '3000';
   axios.defaults.baseURL = `http://${host}:${port}`;
 };
-

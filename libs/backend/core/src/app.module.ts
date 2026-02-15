@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiModule } from '@tippapp/backend/api';
 import { dbConfigDev, dbConfigProduction, dbConfigTest } from '@tippapp/backend/database';
 import { HttpModule } from '@nestjs/axios';
-import { TipgroupsModule } from '@tippapp/backend/tip-game';
+import { ApiUpdatesModule, TipgroupsModule } from '@tippapp/backend/tip-game';
 
 @Module({
   imports: [
@@ -31,6 +31,7 @@ import { TipgroupsModule } from '@tippapp/backend/tip-game';
     HttpModule,
     TipgroupsModule,
     ApiModule,
+    ApiUpdatesModule,
   ],
   controllers: [],
   providers: [],

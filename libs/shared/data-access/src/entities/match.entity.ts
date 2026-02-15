@@ -16,4 +16,16 @@ export class Match {
 
   @OneToMany(() => Tip, (tip) => tip.match)
   tips: Tip[];
+
+  @Column()
+  kickoffDate: Date;
+
+  @Column({ nullable: true })
+  scoreHome: number | null;
+
+  @Column({ nullable: true })
+  scoreAway: number | null;
+
+  @Column()
+  lastApiUpdateDate: Date;
 }
