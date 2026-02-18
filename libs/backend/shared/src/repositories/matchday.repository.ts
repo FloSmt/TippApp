@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Matchday, Tipgroup } from '@tippapp/shared/data-access';
 
@@ -49,5 +49,35 @@ export class MatchdayRepository extends Repository<Matchday> {
       .addGroupBy('matchday.api_groupOrderId')
       .addGroupBy('matchday.api_leagueShortcut')
       .getRawOne();
+  }
+
+  async recalculateMatchdayStats(matchId: number) {
+    const sql = `
+    UPDATE matchdays md
+    INNER JOIN (
+    -- Subquery: Calculate Stats for all affected Matchdays
+    SELECT
+    m2m.matchdaysId,
+    MIN(m.kickoffDate) AS startDate,
+    MAX(m.kickoffDate) AS endDate,
+    MIN(m.isFinished) AS isFinished
+    FROM matchdays_matches_matches m2m
+    INNER JOIN matches m ON m.id = m2m.matchesId
+    WHERE m2m.matchdaysId IN (
+    -- Only Matchdays that are associated with the updated Match
+    SELECT matchdaysId FROM matchdays_matches_matches WHERE matchesId = ?
+    )
+    GROUP BY m2m.matchdaysId
+    ) stats ON md.id = stats.matchdaysId
+    SET
+    md.startDate = stats.startDate,
+      md.endDate = stats.endDate,
+      md.isFinished = stats.isFinished`;
+
+    try {
+      await this.dataSource.query(sql, [matchId]);
+    } catch (error) {
+      Logger.error('Error on executing Bulk update for Matchdays', error);
+    }
   }
 }

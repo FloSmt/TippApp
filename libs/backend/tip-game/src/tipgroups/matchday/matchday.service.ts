@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import {
   ErrorCodes,
   GroupResponse,
@@ -11,6 +11,7 @@ import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
 import { EntityManager } from 'typeorm';
+import { OnEvent } from '@nestjs/event-emitter';
 import {
   mapApiMatchResponsesToMatchDayResponseDto,
   mapApiMatchResponseToMatchEntity,
@@ -88,7 +89,8 @@ export class MatchdayService {
       .filter((m) => m.group.groupId === group.groupId)
       .map((match) => mapApiMatchResponseToMatchEntity(match));
 
-    await entityManager.upsert(Match, matches, { conflictPaths: ['api_matchId'] });
+    await this.matchRepository.updateOrInsertMatches(matches, entityManager);
+
     const savedMatches = await this.matchRepository.findAllByApiMatchId(
       matches.map((m) => m.api_matchId),
       entityManager
@@ -97,5 +99,15 @@ export class MatchdayService {
     matchday.matches = savedMatches ?? [];
 
     return matchday;
+  }
+
+  /**
+   * Handler for the 'matchday.recalculate' event. This method is triggered when a matchday needs to be recalculated,
+   * typically after a match's results have been updated.
+   */
+  @OnEvent('matchday.recalculate', { async: true })
+  async handleMatchdayRecalculation(payload: { matchId: number }) {
+    Logger.log("Received event 'matchday.recalculate' for matchId: " + payload.matchId, 'MatchdayService');
+    await this.matchdayRepository.recalculateMatchdayStats(payload.matchId);
   }
 }

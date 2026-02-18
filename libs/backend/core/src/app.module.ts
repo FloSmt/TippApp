@@ -9,6 +9,7 @@ import { ApiModule } from '@tippapp/backend/api';
 import { dbConfigDev, dbConfigProduction, dbConfigTest } from '@tippapp/backend/database';
 import { HttpModule } from '@nestjs/axios';
 import { ApiUpdatesModule, TipgroupsModule } from '@tippapp/backend/tip-game';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ApiUpdatesModule, TipgroupsModule } from '@tippapp/backend/tip-game';
           ? dbConfigTest
           : dbConfigDev,
     }),
+    EventEmitterModule.forRoot(),
     UserModule,
     AuthModule,
     HttpModule,

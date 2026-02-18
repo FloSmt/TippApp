@@ -19,14 +19,23 @@ export class Matchday {
   @Column()
   api_leagueShortcut: string;
 
-  @ManyToOne(() => TipSeason, (tipSeason) => tipSeason.matchdays, { onDelete: 'CASCADE' })
+  @ManyToOne(() => TipSeason, (tipSeason) => tipSeason.matchdays, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'seasonId' })
   season: TipSeason;
 
   @Column({ nullable: true })
   seasonId: number;
 
-  @ManyToMany(() => Match, (match) => match.matchdays, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Match, (match) => match.matchdays, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinTable()
   matches: Match[];
+
+  @Column({ nullable: true, default: null })
+  startDate: Date | null;
+
+  @Column({ nullable: true, default: null })
+  endDate: Date | null;
+
+  @Column({ default: false })
+  isFinished: boolean;
 }

@@ -20,6 +20,7 @@ import { MatchdayService } from './matchday/matchday.service';
 import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.service';
 import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.service';
 import { MatchService } from './match/match.service';
+import { MatchSubscriber } from './match/match.subscriber';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MatchService } from './match/match.service';
     HashService,
     MatchdayService,
     MatchService,
+    MatchSubscriber,
     SeasonService,
     TipgroupRepository,
     TipgroupUserRepository,
