@@ -43,7 +43,7 @@ export class SeasonService {
 
     tipSeason.matchdays = await Promise.all(
       matchDays.map(
-        async (group) => await this.matchdayService.createMatchdayEntity(group, matches, leagueShortcut, entityManager)
+        async (group) => await this.matchdayService.generateMatchday(group, matches, leagueShortcut, entityManager)
       )
     );
     return tipSeason;

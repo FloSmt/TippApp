@@ -104,7 +104,7 @@ describe('MatchdayService', () => {
     });
   });
 
-  describe('createMatchdayEntity', () => {
+  describe('generateMatchday', () => {
     it('should create a Matchday entity with correct data', async () => {
       const mockEntityManager = {
         upsert: jest.fn(),
@@ -122,7 +122,7 @@ describe('MatchdayService', () => {
         { api_matchId: 102 } as Match,
       ]);
 
-      const matchdayEntity = await service.createMatchdayEntity(matchDay, matches, 'bl1', mockEntityManager);
+      const matchdayEntity = await service.generateMatchday(matchDay, matches, 'bl1', mockEntityManager);
 
       expect(mockEntityManager.upsert).toHaveBeenCalledWith(
         expect.any(Function),

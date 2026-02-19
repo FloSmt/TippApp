@@ -1,5 +1,5 @@
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Match } from '@tippapp/shared/data-access';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -30,7 +30,6 @@ export class MatchSubscriber implements EntitySubscriberInterface<Match> {
       return;
     }
 
-    Logger.debug('Trigger matchday recalculation for new matchId: ' + updatedMatches.id, 'MatchSubscriber');
     this.eventEmitter.emit('matchday.recalculate', { matchId: updatedMatches.id });
   }
 
@@ -47,7 +46,6 @@ export class MatchSubscriber implements EntitySubscriberInterface<Match> {
 
     if (statusChangedToFinished || kickoffDateChanged) {
       const matchId = oldMatch.id || newMatch['id'];
-      Logger.debug('Trigger matchday recalculation for matchId: ' + matchId, 'MatchSubscriber');
       this.eventEmitter.emit('matchday.recalculate', { matchId });
     }
   }

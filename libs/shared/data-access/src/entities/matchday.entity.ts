@@ -26,7 +26,7 @@ export class Matchday {
   @Column({ nullable: true })
   seasonId: number;
 
-  @ManyToMany(() => Match, (match) => match.matchdays, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToMany(() => Match, (match) => match.matchdays, { onDelete: 'CASCADE', onUpdate: 'CASCADE', cascade: true })
   @JoinTable()
   matches: Match[];
 
