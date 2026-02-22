@@ -13,11 +13,17 @@ describe('SeasonService', () => {
 
   const matchdayServiceMock = {
     getMatchdayDetails: jest.fn(),
-    createMatchdayEntity: jest.fn(),
+    generateMatchday: jest.fn(),
   };
 
   const seasonRepositoryMock = {
     getAllMatchdays: jest.fn(),
+    getCurrentMatchday: jest.fn(),
+  };
+
+  const cacheMock = {
+    get: jest.fn(),
+    set: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -35,6 +41,10 @@ describe('SeasonService', () => {
         {
           provide: ErrorManagerService,
           useValue: createMock(ErrorManagerService),
+        },
+        {
+          provide: 'CACHE_MANAGER',
+          useValue: cacheMock,
         },
       ],
     }).compile();
@@ -71,7 +81,7 @@ describe('SeasonService', () => {
         { matchId: 201, group: { groupId: 22 } },
       ] as unknown as MatchApiResponse[];
 
-      matchdayServiceMock.createMatchdayEntity.mockResolvedValue('generated matchday');
+      matchdayServiceMock.generateMatchday.mockResolvedValue('generated matchday');
 
       const tipSeason = await service.createTipSeason(season, leagueShortcut, matchDays, matches, mockEntityManager);
 
@@ -101,16 +111,36 @@ describe('SeasonService', () => {
         { id: 2, name: 'Spieltag 2' },
       ];
       seasonRepositoryMock.getAllMatchdays.mockResolvedValue(mockMatchdays);
+      seasonRepositoryMock.getCurrentMatchday.mockResolvedValue(mockMatchdays[0]);
 
       const result = await service.getAllMatchdays(1, 10);
 
-      expect(result).toEqual(mockMatchdays);
+      expect(result).toEqual({
+        matchdays: mockMatchdays,
+        currentMatchdayId: mockMatchdays[0].id,
+      });
       expect(seasonRepositoryMock.getAllMatchdays).toHaveBeenCalledWith(1, 10);
       expect(errorManagerServiceMock.createError).not.toHaveBeenCalled();
     });
   });
 
   describe('getCurrentMatchday', () => {
+    let mockAllMatchdays: { id: number; matchdayId: number; name: string; orderId: number }[];
+    let currentMatchday: { id: any; matchdayId?: number; name?: string; orderId?: number };
+    let resolvedMatchday: { id: number; matchdayId: number; name: string; orderId: number };
+    const tipgroupId = 1;
+    const seasonId = 1;
+
+    beforeEach(() => {
+      mockAllMatchdays = [
+        { id: 1, matchdayId: 1, name: 'Spieltag 1', orderId: 1 },
+        { id: 2, matchdayId: 2, name: 'Spieltag 2', orderId: 2 },
+        { id: 3, matchdayId: 3, name: 'Spieltag 3', orderId: 3 },
+      ];
+
+      currentMatchday = mockAllMatchdays[1];
+      resolvedMatchday = mockAllMatchdays[1];
+    });
     it('should throw an error if seasonId is null, undefined or not an integer', async () => {
       const invalidIds = [null, undefined, 'abc', 1.5];
 
@@ -123,21 +153,29 @@ describe('SeasonService', () => {
       }
     });
     it('should return the current Matchday of the Season', async () => {
-      const mockMatchdays = [
-        { matchdayId: 1, name: 'Spieltag 1' },
-        { matchdayId: 2, name: 'Spieltag 2' },
-      ];
-
-      const resolvedMatchday = { matchdayId: 1, name: 'Spieltag 1', orderId: 1 };
-
-      seasonRepositoryMock.getAllMatchdays.mockResolvedValue(mockMatchdays);
+      seasonRepositoryMock.getAllMatchdays.mockResolvedValue(mockAllMatchdays);
+      seasonRepositoryMock.getCurrentMatchday.mockResolvedValue(currentMatchday);
       matchdayServiceMock.getMatchdayDetails.mockResolvedValue(resolvedMatchday);
 
-      const result = await service.getCurrentMatchday(1, 1);
+      const result = await service.getCurrentMatchday(tipgroupId, seasonId);
 
       expect(result).toBe(resolvedMatchday);
-      expect(seasonRepositoryMock.getAllMatchdays).toHaveBeenCalledWith(1, 1);
-      expect(matchdayServiceMock.getMatchdayDetails).toHaveBeenCalledWith(1, 1, mockMatchdays[0].matchdayId);
+      expect(seasonRepositoryMock.getCurrentMatchday).toHaveBeenCalledWith(seasonId);
+      expect(matchdayServiceMock.getMatchdayDetails).toHaveBeenCalledWith(tipgroupId, seasonId, currentMatchday.id);
+      expect(seasonRepositoryMock.getAllMatchdays).not.toHaveBeenCalled();
+    });
+
+    it('should return the the first Matchday of the Season if no currentMatchday returned', async () => {
+      seasonRepositoryMock.getAllMatchdays.mockResolvedValue(mockAllMatchdays);
+      seasonRepositoryMock.getCurrentMatchday.mockResolvedValue(null);
+      matchdayServiceMock.getMatchdayDetails.mockResolvedValue(resolvedMatchday);
+
+      const result = await service.getCurrentMatchday(tipgroupId, seasonId);
+
+      expect(result).toBe(resolvedMatchday);
+      expect(seasonRepositoryMock.getCurrentMatchday).toHaveBeenCalledWith(seasonId);
+      expect(matchdayServiceMock.getMatchdayDetails).toHaveBeenCalledWith(tipgroupId, seasonId, mockAllMatchdays[0].id);
+      expect(seasonRepositoryMock.getAllMatchdays).toHaveBeenCalledWith(tipgroupId, seasonId);
     });
   });
 

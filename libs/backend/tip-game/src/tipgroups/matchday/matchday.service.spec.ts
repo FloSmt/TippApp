@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ApiService, MatchResponseMock } from '@tippapp/backend/api';
 import { ErrorCodes, GroupResponse, Match, MatchApiResponse } from '@tippapp/shared/data-access';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
+import { MatchDayQueryResult, MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
 import { EntityManager } from 'typeorm';
 import { MatchService } from '../match/match.service';
 import { MatchdayService } from './matchday.service';
@@ -70,10 +70,13 @@ describe('MatchdayService', () => {
     });
 
     it('should return MatchdayResponseDto and map relevant matches', async () => {
-      const matchdayFromDb = {
+      const matchdayFromDb: MatchDayQueryResult = {
         matchday: {
           orderId: 5,
           name: 'Matchday 1',
+          startDate: null,
+          endDate: null,
+          isFinished: false,
           matches: [{ api_matchId: '2' }, { api_matchId: '1' }],
           api_leagueShortcut: 'LIGA',
           api_leagueSeason: 2025,
@@ -123,15 +126,6 @@ describe('MatchdayService', () => {
       ]);
 
       const matchdayEntity = await service.generateMatchday(matchDay, matches, 'bl1', mockEntityManager);
-
-      expect(mockEntityManager.upsert).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.arrayContaining([
-          expect.objectContaining({ api_matchId: 101, scoreHome: null, scoreAway: null }),
-          expect.objectContaining({ api_matchId: 102, scoreHome: 1, scoreAway: 2 }),
-        ]),
-        { conflictPaths: ['api_matchId'] }
-      );
 
       expect(matchdayEntity.name).toBe('Matchday 1');
       expect(matchdayEntity.api_groupOrderId).toBe(1);

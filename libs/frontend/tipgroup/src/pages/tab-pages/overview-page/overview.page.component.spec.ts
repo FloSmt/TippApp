@@ -55,7 +55,8 @@ describe('OverviewPageComponent', () => {
   beforeEach(async () => {
     storeMock = {
       isLoading: signal({ initial: false, matchday: false, tipgroupDetails: false }),
-      getCurrentMatchday: signal(matchdayMock),
+      getSelectedMatchday: signal(matchdayMock),
+      getCurrentMatchdayId: signal(1),
       hasError: signal(false),
       isReloadingMatchday: signal(false),
       getTipgroupDetails: signal({ id: 1, name: 'Test Group' }),

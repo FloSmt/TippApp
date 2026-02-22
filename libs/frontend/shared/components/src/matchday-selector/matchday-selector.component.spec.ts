@@ -49,19 +49,19 @@ describe('MatchdaySelectorComponent', () => {
     });
 
     it('isFirstSelected should be true if first matchday is selected', () => {
-      fixture.componentRef.setInput('currentMatchdayId', 1);
+      fixture.componentRef.setInput('selectedMatchdayId', 1);
       expect(component.isFirstSelected()).toBe(true);
       expect(component.isLastSelected()).toBe(false);
     });
 
     it('isLastSelected should be true if last matchday is selected', () => {
-      fixture.componentRef.setInput('currentMatchdayId', 3);
+      fixture.componentRef.setInput('selectedMatchdayId', 3);
       expect(component.isLastSelected()).toBe(true);
       expect(component.isFirstSelected()).toBe(false);
     });
 
     it('getMatchdayName should return the correct name', () => {
-      fixture.componentRef.setInput('currentMatchdayId', 2);
+      fixture.componentRef.setInput('selectedMatchdayId', 2);
       expect(component.getMatchdayName()).toBe('Spieltag 2');
     });
   });
@@ -69,7 +69,7 @@ describe('MatchdaySelectorComponent', () => {
   describe('Navigation methods', () => {
     beforeEach(() => {
       fixture.componentRef.setInput('allMatchdays', mockMatchdays);
-      fixture.componentRef.setInput('currentMatchdayId', 2);
+      fixture.componentRef.setInput('selectedMatchdayId', 2);
       fixture.detectChanges();
     });
 
@@ -86,7 +86,7 @@ describe('MatchdaySelectorComponent', () => {
     });
 
     it('selectNextEntry should do nothing if its the last matchday', async () => {
-      fixture.componentRef.setInput('currentMatchdayId', 3);
+      fixture.componentRef.setInput('selectedMatchdayId', 3);
       const setSpy = jest.spyOn(component.selectedMatchdayId, 'set');
       await component.selectNextEntry();
       expect(setSpy).not.toHaveBeenCalled();
