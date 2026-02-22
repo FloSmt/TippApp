@@ -74,20 +74,20 @@ describe('MatchdaySelectorComponent', () => {
     });
 
     it('selectNextEntry should set id to the next matchday', async () => {
-      const setSpy = jest.spyOn(component.currentMatchdayId, 'set');
+      const setSpy = jest.spyOn(component.selectedMatchdayId, 'set');
       await component.selectNextEntry();
       expect(setSpy).toHaveBeenCalledWith(3);
     });
 
     it('selectPreviousEntry should set id to previous matchday', async () => {
-      const setSpy = jest.spyOn(component.currentMatchdayId, 'set');
+      const setSpy = jest.spyOn(component.selectedMatchdayId, 'set');
       await component.selectPreviousEntry();
       expect(setSpy).toHaveBeenCalledWith(1);
     });
 
     it('selectNextEntry should do nothing if its the last matchday', async () => {
       fixture.componentRef.setInput('currentMatchdayId', 3);
-      const setSpy = jest.spyOn(component.currentMatchdayId, 'set');
+      const setSpy = jest.spyOn(component.selectedMatchdayId, 'set');
       await component.selectNextEntry();
       expect(setSpy).not.toHaveBeenCalled();
     });
@@ -104,7 +104,7 @@ describe('MatchdaySelectorComponent', () => {
       fixture.componentRef.setInput('allMatchdays', mockMatchdays);
       fixture.componentRef.setInput('currentMatchdayId', 1);
 
-      const setSpy = jest.spyOn(component.currentMatchdayId, 'set');
+      const setSpy = jest.spyOn(component.selectedMatchdayId, 'set');
 
       await component.openSelectionDialog();
 

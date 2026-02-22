@@ -12,4 +12,13 @@ export class MatchdayOverviewResponseDto {
 
   @ApiProperty()
   matchCount: number;
+
+  @ApiProperty()
+  startDate: Date | null;
+
+  @ApiProperty()
+  endDate: Date | null;
+
+  @ApiProperty()
+  isFinished: boolean;
 }

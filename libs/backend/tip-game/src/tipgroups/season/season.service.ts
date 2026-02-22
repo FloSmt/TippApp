@@ -1,15 +1,17 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import {
   ErrorCodes,
   GroupResponse,
   MatchApiResponse,
   MatchdayDetailsResponseDto,
-  MatchdayOverviewResponseDto,
+  MatchdayListResponseDto,
   TipSeason,
 } from '@tippapp/shared/data-access';
 import { EntityManager } from 'typeorm';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { SeasonRepository } from '@tippapp/backend/shared';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheManagerStore } from 'cache-manager';
 import { MatchdayService } from '../matchday/matchday.service';
 
 @Injectable()
@@ -17,7 +19,8 @@ export class SeasonService {
   constructor(
     private readonly seasonRepository: SeasonRepository,
     private readonly errorManager: ErrorManagerService,
-    private readonly matchdayService: MatchdayService
+    private readonly matchdayService: MatchdayService,
+    @Inject(CACHE_MANAGER) private cacheManager: CacheManagerStore
   ) {}
 
   /**
@@ -54,17 +57,22 @@ export class SeasonService {
    *
    * @param tipgroupId
    * @param seasonId
-   * @returns A promise that resolves to an array of MatchdayOverviewResponseDto objects.
+   * @returns A promise that resolves to an array of MatchdayListResponseDto objects.
    */
-  async getAllMatchdays(
-    tipgroupId: number,
-    seasonId: number | null | undefined
-  ): Promise<MatchdayOverviewResponseDto[]> {
+  async getAllMatchdays(tipgroupId: number, seasonId: number | null | undefined): Promise<MatchdayListResponseDto> {
     if (!seasonId || !Number.isInteger(Number(seasonId))) {
       throw this.errorManager.createError(ErrorCodes.Tipgroup.SEASON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    return this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
+    Logger.log('Fetching all matchdays for tipgroupId: ' + tipgroupId + ' and seasonId: ' + seasonId, 'SeasonService');
+
+    const matchdayList = await this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
+    const currentMatchdayId = await this.getCurrentMatchdayId(tipgroupId, seasonId);
+
+    return {
+      matchdays: matchdayList,
+      currentMatchdayId: currentMatchdayId,
+    };
   }
 
   async getCurrentMatchday(
@@ -75,9 +83,37 @@ export class SeasonService {
       throw this.errorManager.createError(ErrorCodes.Tipgroup.SEASON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    // Now it returns the first Matchday. Later it will be returning a calculated Matchday.
-    const allMatchdays = await this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
+    Logger.log(
+      'Fetching current matchday for tipgroupId: ' + tipgroupId + ' and seasonId: ' + seasonId,
+      'SeasonService'
+    );
 
-    return this.matchdayService.getMatchdayDetails(tipgroupId, seasonId, allMatchdays[0].matchdayId);
+    const currentMatchdayId = await this.getCurrentMatchdayId(tipgroupId, seasonId);
+    return await this.matchdayService.getMatchdayDetails(tipgroupId, seasonId, currentMatchdayId);
+  }
+
+  private async getCurrentMatchdayId(tipgroupId: number, seasonId: number): Promise<number> {
+    const cacheKey = `${tipgroupId}_${seasonId}`;
+    const cachedMatchdayId = await this.cacheManager.get(cacheKey);
+
+    if (cachedMatchdayId) {
+      Logger.debug('Returning cached current matchdayId: ' + cachedMatchdayId, 'SeasonService');
+      return cachedMatchdayId;
+    }
+
+    const currentMatchday = await this.seasonRepository.getCurrentMatchday(seasonId);
+    let matchdayId;
+
+    if (!currentMatchday) {
+      Logger.debug('No current matchday found, defaulting to first matchday of the season', 'SeasonService');
+      const allMatchdays = await this.seasonRepository.getAllMatchdays(tipgroupId, seasonId);
+      matchdayId = allMatchdays[0].matchdayId;
+    } else {
+      await this.cacheManager.set(cacheKey, currentMatchday.id, 60 * 60); // Cache for 1 hour
+      matchdayId = currentMatchday.id;
+    }
+
+    Logger.debug('Calculate Current MatchdayId: ' + matchdayId, 'SeasonService');
+    return matchdayId;
   }
 }

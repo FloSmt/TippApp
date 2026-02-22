@@ -30,12 +30,12 @@ export class Matchday {
   @JoinTable()
   matches: Match[];
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true, default: null, type: 'date' })
   startDate: Date | null;
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true, default: null, type: 'date' })
   endDate: Date | null;
 
-  @Column({ default: false })
+  @Column({ default: false, type: 'boolean' })
   isFinished: boolean;
 }

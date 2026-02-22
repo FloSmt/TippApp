@@ -7,6 +7,9 @@ export interface MatchDayQueryResult {
     api_leagueSeason: number;
     api_groupOrderId: number;
     api_leagueShortcut: string;
+    startDate: Date | null;
+    endDate: Date | null;
+    isFinished: boolean;
     name: string;
     orderId: number;
     matches: { api_matchId: string }[];
@@ -37,6 +40,9 @@ export class MatchdayRepository extends Repository<Matchday> {
       'api_leagueShortcut', matchday.api_leagueShortcut,
       'name', matchday.name,
       'orderId', matchday.orderId,
+      'startDate', matchday.startDate,
+      'endDate', matchday.endDate,
+      'isFinished', matchday.isFinished,
       'matches', COALESCE(
         JSON_ARRAYAGG(JSON_OBJECT('api_matchId', match.api_matchId)),
         JSON_ARRAY()

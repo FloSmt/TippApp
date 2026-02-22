@@ -9,8 +9,8 @@
      data-testid="matchday-selector">
   <div class="selection">
     <p class="selection-league truncate-one-line-text overline">
-      @if (currentMatchday()) {
-        {{ currentMatchday()!.league.leagueName }}
+      @if (selectedMatchday()) {
+        {{ selectedMatchday()!.league.leagueName }}
       } @else {
         <ion-skeleton-text [animated]="true" style="width: 150px; height: 1em"></ion-skeleton-text>
       }

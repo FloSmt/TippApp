@@ -16,8 +16,9 @@ export class MatchdaySelectorComponent {
   readonly modalController = inject(ModalController);
 
   allMatchdays = input<MatchdayOverviewResponseDto[] | null>(null);
-  currentMatchday = input<MatchdayDetailsResponseDto | null>(null);
-  currentMatchdayId = model<number | null>(null);
+  selectedMatchday = input<MatchdayDetailsResponseDto | null>(null);
+  currentMatchdayId = input<number | null>(null);
+  selectedMatchdayId = model<number | null>(null);
   disableSelection = input<boolean>(false);
 
   sortedMatchdays: MatchdayOverviewResponseDto[] = [];
@@ -29,7 +30,7 @@ export class MatchdaySelectorComponent {
       return true;
     }
 
-    return this.currentMatchdayId() === this.sortedMatchdays[0].matchdayId;
+    return this.selectedMatchdayId() === this.sortedMatchdays[0].matchdayId;
   });
 
   isLastSelected = computed(() => {
@@ -37,12 +38,12 @@ export class MatchdaySelectorComponent {
       return true;
     }
 
-    return this.currentMatchdayId() === this.sortedMatchdays[this.sortedMatchdays.length - 1].matchdayId;
+    return this.selectedMatchdayId() === this.sortedMatchdays[this.sortedMatchdays.length - 1].matchdayId;
   });
 
   getMatchdayName = computed(() => {
     const matchdayObject = this.sortedMatchdays.find(
-      (matchday) => matchday.matchdayId.toString() === this.currentMatchdayId()?.toString()
+      (matchday) => matchday.matchdayId.toString() === this.selectedMatchdayId()?.toString()
     );
     return matchdayObject?.name;
   });
@@ -62,10 +63,10 @@ export class MatchdaySelectorComponent {
     }
 
     const currentIndex = this.sortedMatchdays.findIndex(
-      (t) => t.matchdayId.toString() === this.currentMatchdayId()?.toString()
+      (t) => t.matchdayId.toString() === this.selectedMatchdayId()?.toString()
     );
     const nextId = this.sortedMatchdays[currentIndex + 1].matchdayId;
-    this.currentMatchdayId.set(nextId);
+    this.selectedMatchdayId.set(nextId);
   }
 
   async selectPreviousEntry() {
@@ -74,9 +75,9 @@ export class MatchdaySelectorComponent {
     }
 
     const currentIndex = this.sortedMatchdays.findIndex(
-      (t) => t.matchdayId.toString() === this.currentMatchdayId()?.toString()
+      (t) => t.matchdayId.toString() === this.selectedMatchdayId()?.toString()
     );
-    this.currentMatchdayId.set(this.sortedMatchdays[currentIndex - 1].matchdayId);
+    this.selectedMatchdayId.set(this.sortedMatchdays[currentIndex - 1].matchdayId);
   }
 
   async openSelectionDialog() {
@@ -86,7 +87,11 @@ export class MatchdaySelectorComponent {
 
     const modal = await this.modalController.create({
       component: SelectMatchdayDialogComponent,
-      componentProps: { allMatchdays: this.sortedMatchdays, currentSelectedId: this.currentMatchdayId() },
+      componentProps: {
+        allMatchdays: this.sortedMatchdays,
+        selectedMatchdayId: this.selectedMatchdayId(),
+        currentMatchdayId: this.currentMatchdayId(),
+      },
       breakpoints: [0, 0.75, 1],
       initialBreakpoint: 0.75,
     });
@@ -98,7 +103,7 @@ export class MatchdaySelectorComponent {
       this.isOpen.set(false);
 
       if (role === 'selected') {
-        this.currentMatchdayId.set(data.selectedMatchdayId);
+        this.selectedMatchdayId.set(data.selectedMatchdayId);
       }
     });
   }

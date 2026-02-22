@@ -61,6 +61,9 @@ export class MatchdayService {
       orderId: matchdayFromDb?.matchday.orderId || 0,
       name: matchdayFromDb?.matchday.name || '',
       matchCount: matchdayFromDb?.matchday.matches.length || 0,
+      startDate: matchdayFromDb?.matchday.startDate,
+      endDate: matchdayFromDb?.matchday.endDate,
+      isFinished: matchdayFromDb?.matchday.isFinished,
       matchdayId: Number(matchdayId),
       league: {
         leagueId: matchData[0]?.leagueId || 0,

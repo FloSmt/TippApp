@@ -44,11 +44,12 @@ export class OverviewPageComponent {
 
   isLoading = this.tipgroupDetailsStore.isLoading;
 
-  currentMatchday = this.tipgroupDetailsStore.getCurrentMatchday;
+  selectedMatchday = this.tipgroupDetailsStore.getSelectedMatchday;
   hasError = this.tipgroupDetailsStore.hasError;
   isReloadingMatchday$ = toObservable(this.tipgroupDetailsStore.isReloadingMatchday);
   tipgroupDetails = this.tipgroupDetailsStore.getTipgroupDetails;
-  currentMatchdayId = this.tipgroupDetailsStore.getSelectedMatchdayId;
+  selectedMatchdayId = this.tipgroupDetailsStore.getSelectedMatchdayId;
+  currentMatchdayId = this.tipgroupDetailsStore.getCurrentMatchdayId;
   matchdayOverview = this.tipgroupDetailsStore.getMatchdayOverview;
 
   groupedMatchdays: { live: MatchResponseDto[]; upcoming: DateGroup[]; finished: DateGroup[] };
@@ -63,14 +64,14 @@ export class OverviewPageComponent {
   constructor() {
     addIcons({ today });
     effect(() => {
-      if (this.currentMatchday() !== null && this.currentMatchday()?.matchList) {
-        this.groupedMatchdays = this.groupMatches(this.currentMatchday()!.matchList);
+      if (this.selectedMatchday() !== null && this.selectedMatchday()?.matchList) {
+        this.groupedMatchdays = this.groupMatches(this.selectedMatchday()!.matchList);
       }
     });
   }
 
   refreshMatchday(event: any) {
-    this.tipgroupDetailsStore.loadMatchdayDetails({ matchdayId: this.currentMatchdayId(), reload: true });
+    this.tipgroupDetailsStore.loadMatchdayDetails({ matchdayId: this.selectedMatchdayId(), reload: true });
 
     this.isReloadingMatchday$
       .pipe(

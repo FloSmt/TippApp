@@ -11,6 +11,7 @@ import {
 } from '@tippapp/shared/data-access';
 import { ConfigService } from '@nestjs/config';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
+import { isAxiosError } from 'axios';
 
 @Injectable()
 export class ApiService {
@@ -97,11 +98,12 @@ export class ApiService {
         url = `${this.apiUrl}/getmatchdata/${leagueShortcut}/${season}`;
       }
 
+      Logger.log('Call external API with URL: ' + url, 'ApiService');
       const response = await firstValueFrom(this.httpService.get(url));
 
       return response.data.map((match: any) => new MatchApiResponse(match));
     } catch (error) {
-      console.warn('Error on calling external API (getMatchData)', error);
+      Logger.error('Error on calling external API (getMatchData): ' + error, 'ApiService');
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
@@ -124,11 +126,21 @@ export class ApiService {
   protected async getLastUpdatedMatchdayDate(leagueShortcut: string, season: number, groupId: number): Promise<string> {
     try {
       const url = `${this.apiUrl}/getlastchangedate/${leagueShortcut}/${season}/${groupId}`;
+
+      Logger.log('Call external API with URL: ' + url, 'ApiService');
       const response = await firstValueFrom(this.httpService.get(url));
 
       return response.data;
     } catch (error) {
-      Logger.error('Error on calling external API (getlastchangedate)', error);
+      if (isAxiosError(error) && error.response && error.response.status === 404) {
+        Logger.warn(
+          `No last updated date found for leagueShortcut: ${leagueShortcut}, season: ${season}, groupId: ${groupId}. Returning current date as fallback.`,
+          'ApiService'
+        );
+        return new Date().toISOString();
+      }
+
+      Logger.error('Error on calling external API (getlastchangedate): ' + error, 'ApiService');
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
@@ -136,6 +148,7 @@ export class ApiService {
   protected async getAvailableLeaguesFromApi(): Promise<LeagueResponse[]> {
     try {
       const url = `${this.apiUrl}/getavailableleagues/`;
+      Logger.log('Call external API with URL: ' + url, 'ApiService');
       const response = await firstValueFrom(this.httpService.get(url));
 
       // Filters only Men/Women football with the targeted Season
@@ -146,7 +159,7 @@ export class ApiService {
       );
       return filteredMatches.map((league: any) => new LeagueResponse(league));
     } catch (error) {
-      Logger.error('Error on calling external API (getAvailableLeagues)', error);
+      Logger.error('Error on calling external API (getAvailableLeagues): ' + error, 'ApiService');
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
@@ -154,11 +167,12 @@ export class ApiService {
   async getAvailableGroups(leagueShortcut: string, season: number): Promise<GroupResponse[]> {
     try {
       const url = `${this.apiUrl}/getavailablegroups/${leagueShortcut}/${season}`;
+      Logger.log('Call external API with URL: ' + url, 'ApiService');
       const response = await firstValueFrom(this.httpService.get(url));
 
       return response.data.map((group: any) => new GroupResponse(group));
     } catch (error) {
-      Logger.error('Error on calling external API (getAvailableGroups)', error);
+      Logger.error('Error on calling external API (getAvailableGroups): ' + error, 'ApiService');
       throw this.errorManager.createError(ErrorCodes.CreateTipgroup.API_DATA_UNAVAILABLE, HttpStatus.BAD_REQUEST);
     }
   }
