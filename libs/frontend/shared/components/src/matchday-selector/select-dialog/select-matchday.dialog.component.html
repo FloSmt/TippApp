@@ -3,12 +3,22 @@
     <h1>Spieltag auswählen</h1>
   </div>
   @if (allMatchdays.length > 0) {
-    <ion-radio-group class="item-group" [value]="currentSelectedId">
+    <ion-radio-group class="item-group" [value]="selectedMatchdayId">
       @for (matchday of allMatchdays; track matchday.matchdayId) {
-        <ion-item [class.active]="matchday.matchdayId === currentSelectedId"
+        <ion-item [class.active]="matchday.matchdayId === selectedMatchdayId"
+                  [class.disabled]="matchday.isFinished"
+                  [class.current]="matchday.matchdayId === currentMatchdayId"
                   (click)="handleSelection(matchday.matchdayId)" data-testid="matchday-select">
-          <ion-radio [value]="matchday.matchdayId" slot="start"></ion-radio>
-          <h3>{{ matchday.name }}</h3>
+          @if (matchday.isFinished) {
+            <ion-badge slot="end" color="secondary">BEENDET</ion-badge>
+          } @else if (matchday.matchdayId === currentMatchdayId) {
+            <ion-badge slot="end" color="primary">AKTUELL</ion-badge>
+          }
+          <ion-radio [value]="matchday.matchdayId" slot="end"></ion-radio>
+          <div class="radio-content">
+            <h3 class="truncate-one-line-text">{{ matchday.name }}</h3>
+            <p class="text-small">{{ getMatchdayDate(matchday) }}</p>
+          </div>
         </ion-item>
       }
     </ion-radio-group>

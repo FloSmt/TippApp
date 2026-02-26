@@ -33,6 +33,7 @@ export function mapApiMatchResponseToMatchEntity(matchFromApi: MatchApiResponse)
   matchEntity.api_matchId = matchFromApi.matchId;
   matchEntity.kickoffDate = new Date(matchFromApi.matchDateTime);
   matchEntity.lastApiUpdateDate = new Date(matchFromApi.lastUpdateDateTime);
+  matchEntity.isFinished = matchFromApi.matchIsFinished;
   matchEntity.scoreHome =
     matchFromApi.matchResults.length > 0
       ? matchFromApi.matchResults[matchFromApi.matchResults.length - 1].pointsTeam1

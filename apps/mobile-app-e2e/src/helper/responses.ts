@@ -63,6 +63,9 @@ export const matchdayDetailsMockResponse: MatchdayDetailsResponseDto[] = [
     name: '1. Spieltag',
     orderId: 1,
     matchCount: 2,
+    startDate: new Date('2024-08-23T18:30:00Z'),
+    endDate: new Date('2024-08-25T18:30:00Z'),
+    isFinished: false,
   },
   {
     league: {
@@ -99,5 +102,8 @@ export const matchdayDetailsMockResponse: MatchdayDetailsResponseDto[] = [
     name: '2. Spieltag',
     orderId: 2,
     matchCount: 2,
+    startDate: new Date('2024-09-23T18:30:00Z'),
+    endDate: new Date('2024-09-25T18:30:00Z'),
+    isFinished: false,
   },
 ];

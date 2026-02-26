@@ -4,7 +4,7 @@ import { CreateTipgroupDto, TipgroupOverviewResponseDto } from '@tippapp/shared/
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TipgroupService } from './tipgroup.service';
-import { ENVIRONMENT } from '../environments/environment.token';
+import { ENVIRONMENT } from '../../environments/environment.token';
 
 describe('TipgroupService', () => {
   let service: TipgroupService;

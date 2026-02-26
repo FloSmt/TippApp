@@ -1,14 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { MatchdayListResponseDto } from '@tippapp/shared/data-access';
 import { TipgroupDetailsStore } from './tipgroup-details.store';
-import { TipgroupService } from '../tipgroup.service';
+import { TipgroupService } from '../../services/tipgroup/tipgroup.service';
 
 describe('TipgroupDetailsStore', () => {
   let store: any;
 
   const mockTipgroupDetails = { id: 1, currentSeasonId: 2024 };
   const mockMatchday = { matchdayId: 5, name: 'Spieltag 5' };
-  const mockOverview = [{ matchdayId: 5, name: 'Spieltag 5', orderId: 1 }];
+  const mockOverview = {
+    currentMatchdayId: 5,
+    matchdays: [{ matchdayId: 5, name: 'Spieltag 5', orderId: 1 }],
+  } as unknown as MatchdayListResponseDto;
 
   const tipgroupServiceMock = {
     getTipgroupDetails: jest.fn(),
@@ -41,8 +45,8 @@ describe('TipgroupDetailsStore', () => {
 
       expect(store.getTipgroupDetails()).toEqual(mockTipgroupDetails);
       expect(store.getSelectedMatchdayId()).toBe(5);
-      expect(store.getMatchdayOverview()).toEqual(mockOverview);
-      expect(store.getCurrentMatchday()).toEqual(mockMatchday);
+      expect(store.getMatchdayOverview()).toEqual(mockOverview.matchdays);
+      expect(store.getSelectedMatchday()).toEqual(mockMatchday);
       expect(store.isLoading().initial).toBe(false);
     });
 
@@ -71,7 +75,7 @@ describe('TipgroupDetailsStore', () => {
       store.loadMatchdayDetails({ matchdayId: 6, reload: false });
 
       expect(tipgroupServiceMock.getMatchdayDetails).toHaveBeenCalledWith(1, 2024, 6);
-      expect(store.getCurrentMatchday()).toEqual(newMatchday);
+      expect(store.getSelectedMatchday()).toEqual(newMatchday);
     });
 
     it('should use cache data if last call is less than 30 seconds ago', () => {
@@ -85,7 +89,7 @@ describe('TipgroupDetailsStore', () => {
       store.loadMatchdayDetails({ matchdayId: 10, reload: false });
 
       expect(tipgroupServiceMock.getMatchdayDetails).not.toHaveBeenCalled();
-      expect(store.getCurrentMatchday()).toEqual(cachedData);
+      expect(store.getSelectedMatchday()).toEqual(cachedData);
     });
   });
 
@@ -93,7 +97,7 @@ describe('TipgroupDetailsStore', () => {
     it('getCurrentMatchday should return null if matchday not exists', () => {
       import('@ngrx/signals').then((m) => {
         m.patchState(store, { _selectedMatchdayId: 999 });
-        expect(store.getCurrentMatchday()).toBeNull();
+        expect(store.getSelectedMatchday()).toBeNull();
       });
     });
   });

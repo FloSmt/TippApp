@@ -4,12 +4,12 @@ import {
   CreateTipgroupDto,
   LeagueOverviewResponseDto,
   MatchdayDetailsResponseDto,
-  MatchdayOverviewResponseDto,
+  MatchdayListResponseDto,
   TipgroupDetailsResponseDto,
   TipgroupOverviewResponseDto,
 } from '@tippapp/shared/data-access';
 import { HttpClient } from '@angular/common/http';
-import { ENVIRONMENT } from '../environments/environment.token';
+import { ENVIRONMENT } from '../../environments/environment.token';
 
 @Injectable({
   providedIn: 'root',
@@ -44,8 +44,8 @@ export class TipgroupService {
     );
   }
 
-  getMatchdayOverview(tipgroupId: number, seasonId: number): Observable<MatchdayOverviewResponseDto[]> {
-    return this.httpClient.get<MatchdayOverviewResponseDto[]>(
+  getMatchdayOverview(tipgroupId: number, seasonId: number): Observable<MatchdayListResponseDto> {
+    return this.httpClient.get<MatchdayListResponseDto>(
       this.BACKEND_URL + `tipgroups/${tipgroupId}/seasons/${seasonId}/getAllMatchdays`
     );
   }

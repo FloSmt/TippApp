@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import {
   ErrorCodes,
   GroupResponse,
@@ -11,6 +11,7 @@ import { ApiService } from '@tippapp/backend/api';
 import { ErrorManagerService } from '@tippapp/backend/error-handling';
 import { MatchdayRepository, MatchRepository } from '@tippapp/backend/shared';
 import { EntityManager } from 'typeorm';
+import { OnEvent } from '@nestjs/event-emitter';
 import {
   mapApiMatchResponsesToMatchDayResponseDto,
   mapApiMatchResponseToMatchEntity,
@@ -60,6 +61,9 @@ export class MatchdayService {
       orderId: matchdayFromDb?.matchday.orderId || 0,
       name: matchdayFromDb?.matchday.name || '',
       matchCount: matchdayFromDb?.matchday.matches.length || 0,
+      startDate: matchdayFromDb?.matchday.startDate,
+      endDate: matchdayFromDb?.matchday.endDate,
+      isFinished: matchdayFromDb?.matchday.isFinished,
       matchdayId: Number(matchdayId),
       league: {
         leagueId: matchData[0]?.leagueId || 0,
@@ -71,7 +75,17 @@ export class MatchdayService {
     } satisfies MatchdayDetailsResponseDto;
   }
 
-  async createMatchdayEntity(
+  /**
+   * Generates a Matchday entity based on the provided GroupResponse and MatchApiResponse data.
+   * This method is typically used when creating or updating a TipSeason,
+   * where matchdays need to be generated based on API data.
+   * @param group - The GroupResponse object containing information about the matchday group.
+   * @param matchResponse - An array of MatchApiResponse objects containing match data for the season.
+   * @param leagueShortcut - The shortcut identifier for the league, used to associate the matchday with the correct league.
+   * @param entityManager - The TypeORM EntityManager for database operations
+   * @return A Promise that resolves to a Matchday entity populated with the relevant matches based on the provided API data.
+   */
+  async generateMatchday(
     group: GroupResponse,
     matchResponse: MatchApiResponse[],
     leagueShortcut: string,
@@ -84,18 +98,55 @@ export class MatchdayService {
     matchday.orderId = group.groupOrderId;
     matchday.api_leagueShortcut = leagueShortcut;
 
-    const matches: Match[] = matchResponse
-      .filter((m) => m.group.groupId === group.groupId)
-      .map((match) => mapApiMatchResponseToMatchEntity(match));
+    const apiMatchesData = matchResponse.filter((m) => m.group.groupId === group.groupId);
 
-    await entityManager.upsert(Match, matches, { conflictPaths: ['api_matchId'] });
-    const savedMatches = await this.matchRepository.findAllByApiMatchId(
-      matches.map((m) => m.api_matchId),
-      entityManager
-    );
+    return this.fillMatchdayWithMatches(matchday, apiMatchesData, entityManager);
+  }
 
-    matchday.matches = savedMatches ?? [];
+  /**
+   * Updates an existing Match entity with new data from a MatchApiResponse.
+   * This method is used to ensure that the Match entity in the database
+   * @param entity - The existing Match entity that needs to be updated with new data.
+   * @param apiData - The MatchApiResponse object containing the latest data for the match, typically retrieved from an external API.
+   * @return A new Match entity that combines the existing data with the updated data from the API response.
+   * The method uses object spread syntax to create a new object that merges the properties of the existing entity with the new data mapped from the API response.
+   */
+  updateMatchEntity(entity: Match, apiData: MatchApiResponse): Match {
+    return { ...entity, ...mapApiMatchResponseToMatchEntity(apiData) };
+  }
 
+  private async fillMatchdayWithMatches(
+    matchday: Matchday,
+    matches: MatchApiResponse[],
+    entityManager: EntityManager
+  ): Promise<Matchday> {
+    const savedMatches =
+      (await this.matchRepository.findAllByApiMatchId(
+        matches.map((m) => m.matchId),
+        entityManager
+      )) ?? [];
+
+    const savedMatchesMap = new Map(savedMatches.map((m) => [m.api_matchId, m]));
+
+    matchday.matches = matches.map((apiData) => {
+      const existingMatch = savedMatchesMap.get(apiData.matchId);
+
+      if (existingMatch) {
+        return this.updateMatchEntity(existingMatch, apiData);
+      } else {
+        return mapApiMatchResponseToMatchEntity(apiData);
+      }
+    });
     return matchday;
+  }
+
+  /**
+   * Handler for the 'matchday.recalculate' event. This method is triggered when a matchday needs to be recalculated,
+   * typically after a match's results have been updated.
+   */
+  @OnEvent('matchday.recalculate', { async: true })
+  async handleMatchdayRecalculation(payload: { matchId: number }) {
+    Logger.log("Received event 'matchday.recalculate' for matchId: " + payload.matchId, 'MatchdayService');
+    await this.matchdayRepository.recalculateMatchdayStats(payload.matchId);
   }
 }

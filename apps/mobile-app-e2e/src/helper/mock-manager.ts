@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import {
   AuthResponseDto,
-  MatchdayOverviewResponseDto,
+  MatchdayListResponseDto,
   TipgroupDetailsResponseDto,
   TipgroupOverviewResponseDto,
 } from '@tippapp/shared/data-access';
@@ -75,20 +75,29 @@ export const DEFAULT_RESPONSES = {
   },
   getAllMatchdaysResponseSuccess: {
     status: 200,
-    body: [
-      {
-        matchdayId: 1,
-        name: '1. Spieltag',
-        orderId: 1,
-        matchCount: 9,
-      },
-      {
-        matchdayId: 2,
-        name: '2. Spieltag',
-        orderId: 2,
-        matchCount: 9,
-      },
-    ] satisfies MatchdayOverviewResponseDto[],
+    body: {
+      currentMatchdayId: 1,
+      matchdays: [
+        {
+          matchdayId: 1,
+          name: '1. Spieltag',
+          startDate: new Date('2024-08-23T18:30:00Z'),
+          endDate: new Date('2024-08-25T18:30:00Z'),
+          isFinished: true,
+          orderId: 1,
+          matchCount: 9,
+        },
+        {
+          matchdayId: 2,
+          name: '2. Spieltag',
+          startDate: new Date('2024-09-23T18:30:00Z'),
+          endDate: new Date('2024-09-25T18:30:00Z'),
+          isFinished: false,
+          orderId: 2,
+          matchCount: 9,
+        },
+      ],
+    } satisfies MatchdayListResponseDto,
   },
   getCurrentMatchdayResponseSuccess: {
     status: 200,

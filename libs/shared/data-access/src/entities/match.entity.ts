@@ -11,7 +11,7 @@ export class Match {
   @Column()
   api_matchId: number;
 
-  @ManyToMany(() => Matchday, (matchday) => matchday.matches, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Matchday, (matchday) => matchday.matches, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   matchdays: Matchday[];
 
   @OneToMany(() => Tip, (tip) => tip.match)
@@ -25,6 +25,9 @@ export class Match {
 
   @Column({ nullable: true })
   scoreAway: number | null;
+
+  @Column({ default: false })
+  isFinished: boolean;
 
   @Column()
   lastApiUpdateDate: Date;

@@ -1,1 +1,1 @@
-export * from './transform-league-name.pipe';
+export { TransformLeagueNamePipe } from './transform-league-name.pipe';

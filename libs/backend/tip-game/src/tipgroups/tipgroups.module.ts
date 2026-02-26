@@ -12,6 +12,7 @@ import {
   TipgroupRepository,
   TipgroupUserRepository,
 } from '@tippapp/backend/shared';
+import { CacheModule } from '@nestjs/cache-manager';
 import { SeasonController, SeasonService } from './season';
 import { TipgroupsController } from './tipgroups.controller';
 import { TipgroupsService } from './tipgroups.service';
@@ -20,9 +21,11 @@ import { MatchdayService } from './matchday/matchday.service';
 import { IsTipgroupMemberGuard } from '../guards/is-tipgroup-member.guard.service';
 import { TipgroupMembersService } from '../tipgroup-members/tipgroup-members.service';
 import { MatchService } from './match/match.service';
+import { MatchSubscriber } from './match/match.subscriber';
 
 @Module({
   imports: [
+    CacheModule.register(),
     TypeOrmModule.forFeature([Tipgroup, TipSeason, Matchday, Match, TipgroupUser]),
     ApiModule,
     forwardRef(() => UserModule),
@@ -36,6 +39,7 @@ import { MatchService } from './match/match.service';
     HashService,
     MatchdayService,
     MatchService,
+    MatchSubscriber,
     SeasonService,
     TipgroupRepository,
     TipgroupUserRepository,

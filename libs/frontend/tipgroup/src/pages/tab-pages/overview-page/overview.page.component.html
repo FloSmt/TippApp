@@ -2,10 +2,11 @@
                [enableQuickReveal]="true" [enableSubContent]="true" [showAboveTitle]="true">
   @if (!isLoading().initial) {
     <lib-matchday-selector class="matchday-selector" [allMatchdays]="matchdayOverview()"
-                           [currentMatchday]="currentMatchday()"
+                           [selectedMatchday]="selectedMatchday()"
+                           [selectedMatchdayId]="selectedMatchdayId()"
                            [currentMatchdayId]="currentMatchdayId()"
                            [disableSelection]="isLoading().matchday"
-                           (currentMatchdayIdChange)="handleMatchdayIdChange($event)">
+                           (selectedMatchdayIdChange)="handleMatchdayIdChange($event)">
     </lib-matchday-selector>
   }
 </custom-header>
@@ -22,7 +23,7 @@
     </div>
   } @else {
     <section class="match-section">
-      @if (isLoading().matchday || !this.currentMatchday()) {
+      @if (isLoading().matchday || !this.selectedMatchday()) {
         <ng-container *ngTemplateOutlet="skeletonMatchList"></ng-container>
       } @else {
         <div class="matches-container">

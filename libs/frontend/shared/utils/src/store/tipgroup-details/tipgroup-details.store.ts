@@ -2,12 +2,13 @@ import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import {
   MatchdayDetailsResponseDto,
+  MatchdayListResponseDto,
   MatchdayOverviewResponseDto,
   TipgroupDetailsResponseDto,
 } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, filter, forkJoin, of, pipe, switchMap, tap } from 'rxjs';
-import { TipgroupService } from '../tipgroup.service';
+import { TipgroupService } from '../../services/tipgroup/tipgroup.service';
 
 export interface MatchdayCache {
   data: MatchdayDetailsResponseDto;
@@ -22,6 +23,7 @@ type TipgroupDetailsState = {
   _selectedMatchdayId: number | null;
   _loadedMatchdays: Map<number, MatchdayCache>;
   _matchdayOverview: MatchdayOverviewResponseDto[] | null;
+  _currentMatchdayId: number | null;
   _tipgroupDetails: TipgroupDetailsResponseDto | null;
   _hasError: boolean;
   _isReloading: boolean;
@@ -35,6 +37,7 @@ type TipgroupDetailsState = {
 const initialState: TipgroupDetailsState = {
   _selectedTipgroupId: null,
   _selectedSeasonId: null,
+  _currentMatchdayId: null,
   _selectedMatchdayId: null,
   _loadedMatchdays: new Map<number, MatchdayCache>(),
   _matchdayOverview: null,
@@ -52,7 +55,7 @@ export const TipgroupDetailsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => ({
-    getCurrentMatchday: computed(() => {
+    getSelectedMatchday: computed(() => {
       const id = store._selectedMatchdayId();
       const cache = store._loadedMatchdays();
 
@@ -65,6 +68,7 @@ export const TipgroupDetailsStore = signalStore(
     }),
 
     getSelectedMatchdayId: computed(() => store._selectedMatchdayId()),
+    getCurrentMatchdayId: computed(() => store._currentMatchdayId()),
     getTipgroupDetails: computed(() => store._tipgroupDetails()),
     getMatchdayOverview: computed(() => store._matchdayOverview()),
     isLoading: computed(() => store._isLoading()),
@@ -114,16 +118,14 @@ export const TipgroupDetailsStore = signalStore(
       });
     },
 
-    loadInitialDataSuccess: (
-      currentMatchday: MatchdayDetailsResponseDto,
-      allMatchdays: MatchdayOverviewResponseDto[]
-    ) => {
+    loadInitialDataSuccess: (currentMatchday: MatchdayDetailsResponseDto, allMatchdays: MatchdayListResponseDto) => {
       patchState(store, {
         _loadedMatchdays: new Map(store._loadedMatchdays()).set(currentMatchday.matchdayId, {
           data: currentMatchday,
           ttl: Date.now(),
         }),
-        _matchdayOverview: allMatchdays,
+        _matchdayOverview: allMatchdays.matchdays,
+        _currentMatchdayId: allMatchdays.currentMatchdayId,
         _selectedMatchdayId: currentMatchday.matchdayId,
         _isLoading: { ...store._isLoading(), initial: false },
       });

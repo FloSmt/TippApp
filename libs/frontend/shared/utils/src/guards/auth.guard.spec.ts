@@ -1,10 +1,10 @@
-import {TestBed} from '@angular/core/testing';
-import {ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot} from '@angular/router';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot } from '@angular/router';
 
-import {lastValueFrom} from "rxjs";
-import {signal} from "@angular/core";
-import {authGuard} from './auth.guard';
-import {AuthStore} from '../store/auth.store';
+import { lastValueFrom } from 'rxjs';
+import { signal } from '@angular/core';
+import { authGuard } from './auth.guard';
+import { AuthStore } from '../store/auth/auth.store';
 
 describe('authGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
@@ -15,7 +15,7 @@ describe('authGuard', () => {
     isLoading: signal(false),
     refreshAccessToken: jest.fn(),
     logoutAndRedirect: jest.fn(),
-  }
+  };
 
   const dummyRoute = {} as ActivatedRouteSnapshot;
   const dummyState = {} as RouterStateSnapshot;
@@ -25,15 +25,15 @@ describe('authGuard', () => {
       providers: [
         {
           provide: AuthStore,
-          useValue: authStoreMock
-        }
-      ]
+          useValue: authStoreMock,
+        },
+      ],
     });
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-  })
+  });
 
   it('should be created', () => {
     expect(executeGuard).toBeTruthy();

@@ -1,26 +1,26 @@
-import {TestBed} from '@angular/core/testing';
-import {ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot} from '@angular/router';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 
-import {signal} from "@angular/core";
-import {TokenStorageService} from "../token-storage.service";
-import {AuthStore} from "../store/auth.store";
-import {publicAuthGuard} from './public-auth.guard';
+import { signal } from '@angular/core';
+import { TokenStorageService } from '../services/auth/token-storage.service';
+import { AuthStore } from '../store/auth/auth.store';
+import { publicAuthGuard } from './public-auth.guard';
 
 describe('publicAuthGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
     TestBed.runInInjectionContext(() => publicAuthGuard(...guardParameters));
 
   const authStoreMock = {
-    isAuthenticated: signal(false)
-  }
+    isAuthenticated: signal(false),
+  };
 
   const routerMock = {
-    navigate: jest.fn()
-  }
+    navigate: jest.fn(),
+  };
 
   const tokenStorageServiceMock = {
-    getRefreshToken: jest.fn()
-  }
+    getRefreshToken: jest.fn(),
+  };
 
   const dummyRoute = {} as ActivatedRouteSnapshot;
   const dummyState = {} as RouterStateSnapshot;
@@ -30,23 +30,23 @@ describe('publicAuthGuard', () => {
       providers: [
         {
           provide: AuthStore,
-          useValue: authStoreMock
+          useValue: authStoreMock,
         },
         {
           provide: Router,
-          useValue: routerMock
+          useValue: routerMock,
         },
         {
           provide: TokenStorageService,
-          useValue: tokenStorageServiceMock
-        }
-      ]
+          useValue: tokenStorageServiceMock,
+        },
+      ],
     });
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-  })
+  });
 
   it('should be created', () => {
     expect(executeGuard).toBeTruthy();

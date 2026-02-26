@@ -2,9 +2,9 @@ import { TestBed } from '@angular/core/testing';
 import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupOverviewResponseDto } from '@tippapp/shared/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import { delay, of, throwError } from 'rxjs';
-import { NotificationService, NotificationType } from '../../notifications/notification.service';
-import { TipgroupService } from '../tipgroup.service';
-import { ErrorManagementService } from '../../error-management/error-management.service';
+import { NotificationService, NotificationType } from '../../services/notifications/notification.service';
+import { TipgroupService } from '../../services/tipgroup/tipgroup.service';
+import { ErrorManagementService } from '../../services/error-management/error-management.service';
 import { LoadingState, TipgroupManagementStore } from './tipgroup-management.store';
 
 describe('TipgroupManagementStore', () => {

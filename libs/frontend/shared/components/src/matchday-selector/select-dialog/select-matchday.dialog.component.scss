@@ -5,3 +5,20 @@
 .title {
   margin-bottom: var(--ion-space-xl);
 }
+
+.radio-content {
+  display: flex;
+  padding: var(--ion-space-l);
+  flex-direction: column;
+
+  h3 {
+    max-width: 100%;
+    padding-right: var(--ion-space-m);
+  }
+}
+
+.disabled {
+  h3 {
+    color: var(--ion-text-color-step-250);
+  }
+}

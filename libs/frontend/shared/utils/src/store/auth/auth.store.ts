@@ -4,9 +4,9 @@ import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { ApiValidationErrorMessage, AuthResponseDto, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService, TokenStorageService } from '../index';
-import { ErrorManagementService } from '../../error-management/error-management.service';
-import { NotificationService, NotificationType } from '../../notifications/notification.service';
+import { AuthService, TokenStorageService } from '../auth';
+import { ErrorManagementService } from '../../services/error-management/error-management.service';
+import { NotificationService, NotificationType } from '../../services/notifications/notification.service';
 
 type AuthState = {
   isLoading: boolean;
