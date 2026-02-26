@@ -1,8 +1,7 @@
-import {TestBed} from '@angular/core/testing';
-import {Platform} from "@ionic/angular";
-import {Preferences} from "@capacitor/preferences";
-import {TokenStorageService} from './token-storage.service';
-
+import { TestBed } from '@angular/core/testing';
+import { Platform } from '@ionic/angular';
+import { Preferences } from '@capacitor/preferences';
+import { TokenStorageService } from './token-storage.service';
 
 jest.mock('@capacitor/preferences', () => ({
   Preferences: {
@@ -18,22 +17,19 @@ describe('TokenStorageService', () => {
   const localStorageMock = {
     getItem: jest.fn(),
     setItem: jest.fn(),
-    removeItem: jest.fn()
-  }
+    removeItem: jest.fn(),
+  };
 
   const platformMock = {
-    is: jest.fn()
-  }
+    is: jest.fn(),
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        TokenStorageService,
-        {provide: Platform, useValue: platformMock},
-      ]
+      providers: [TokenStorageService, { provide: Platform, useValue: platformMock }],
     });
 
-    Object.defineProperty(window, 'localStorage', {value: localStorageMock});
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
     service = TestBed.inject(TokenStorageService);
   });
@@ -56,7 +52,7 @@ describe('TokenStorageService', () => {
     it('should store the refresh token in preferences if platform is native', async () => {
       platformMock.is.mockReturnValue(true);
       await service.setRefreshToken('testToken');
-      expect(Preferences.set).toHaveBeenCalledWith({key: 'refreshToken', value: 'testToken'});
+      expect(Preferences.set).toHaveBeenCalledWith({ key: 'refreshToken', value: 'testToken' });
     });
   });
 
@@ -72,12 +68,12 @@ describe('TokenStorageService', () => {
     });
 
     it('should store the refresh token in preferences if platform is native', async () => {
-      (Preferences.get as jest.Mock).mockReturnValue({value: 'testToken'});
+      (Preferences.get as jest.Mock).mockReturnValue({ value: 'testToken' });
       platformMock.is.mockReturnValue(true);
 
       const result = await service.getRefreshToken();
 
-      expect(Preferences.get).toHaveBeenCalledWith({key: 'refreshToken'});
+      expect(Preferences.get).toHaveBeenCalledWith({ key: 'refreshToken' });
       expect(result).toBe('testToken');
     });
   });
@@ -92,7 +88,7 @@ describe('TokenStorageService', () => {
     it('should remove the refresh token from preferences if platform is native', async () => {
       platformMock.is.mockReturnValue(true);
       await service.clearTokens();
-      expect(Preferences.remove).toHaveBeenCalledWith({key: 'refreshToken'});
+      expect(Preferences.remove).toHaveBeenCalledWith({ key: 'refreshToken' });
     });
-  })
+  });
 });

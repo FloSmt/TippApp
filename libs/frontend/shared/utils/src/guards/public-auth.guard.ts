@@ -1,7 +1,7 @@
-import {CanActivateFn, Router} from '@angular/router';
-import {inject} from "@angular/core";
-import {AuthStore} from "../store/auth.store";
-import {TokenStorageService} from "../token-storage.service";
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthStore } from '../store/auth/auth.store';
+import { TokenStorageService } from '../services/auth/token-storage.service';
 
 export const publicAuthGuard: CanActivateFn = (route, state) => {
   const authStore = inject(AuthStore);
@@ -12,9 +12,7 @@ export const publicAuthGuard: CanActivateFn = (route, state) => {
   if (authenticated) {
     router.navigate(['/']);
     return false;
-
   } else {
-
     return tokenStorageService.getRefreshToken().then((token) => {
       if (token) {
         router.navigate(['/']);

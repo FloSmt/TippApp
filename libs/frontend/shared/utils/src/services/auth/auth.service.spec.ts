@@ -6,7 +6,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { AuthResponseDto, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { NotificationService, NotificationType } from '../notifications/notification.service';
 import { AuthService } from './auth.service';
-import { ENVIRONMENT } from '../environments/environment.token';
+import { ENVIRONMENT } from '../../environments/environment.token';
 import { TokenStorageService } from './token-storage.service';
 import { ErrorManagementService } from '../error-management/error-management.service';
 

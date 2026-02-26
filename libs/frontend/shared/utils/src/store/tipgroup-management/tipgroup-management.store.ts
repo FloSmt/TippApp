@@ -4,8 +4,8 @@ import { CreateTipgroupDto, LeagueOverviewResponseDto, TipgroupOverviewResponseD
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TipgroupService } from '../tipgroup.service';
-import { NotificationService, NotificationType } from '../../notifications/notification.service';
+import { TipgroupService } from '../../services/tipgroup/tipgroup.service';
+import { NotificationService, NotificationType } from '../../services/notifications/notification.service';
 
 export enum LoadingState {
   LOADING = 'LOADING',

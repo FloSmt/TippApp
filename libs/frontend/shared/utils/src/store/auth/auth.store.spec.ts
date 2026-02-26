@@ -2,8 +2,8 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ApiValidationErrorMessage, AuthResponseDto, LoginDto, RegisterDto } from '@tippapp/shared/data-access';
 import { delay, of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorManagementService } from '../../error-management/error-management.service';
-import { AuthService, TokenStorageService } from '../index';
+import { ErrorManagementService } from '../../services/error-management/error-management.service';
+import { AuthService, TokenStorageService } from '../auth';
 import { AuthStore } from './auth.store';
 
 describe('AuthStore', () => {

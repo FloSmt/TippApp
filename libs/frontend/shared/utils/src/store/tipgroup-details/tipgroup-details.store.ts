@@ -8,7 +8,7 @@ import {
 } from '@tippapp/shared/data-access';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, EMPTY, filter, forkJoin, of, pipe, switchMap, tap } from 'rxjs';
-import { TipgroupService } from '../tipgroup.service';
+import { TipgroupService } from '../../services/tipgroup/tipgroup.service';
 
 export interface MatchdayCache {
   data: MatchdayDetailsResponseDto;

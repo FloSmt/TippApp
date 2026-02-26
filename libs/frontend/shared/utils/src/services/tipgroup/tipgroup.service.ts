@@ -9,7 +9,7 @@ import {
   TipgroupOverviewResponseDto,
 } from '@tippapp/shared/data-access';
 import { HttpClient } from '@angular/common/http';
-import { ENVIRONMENT } from '../environments/environment.token';
+import { ENVIRONMENT } from '../../environments/environment.token';
 
 @Injectable({
   providedIn: 'root',

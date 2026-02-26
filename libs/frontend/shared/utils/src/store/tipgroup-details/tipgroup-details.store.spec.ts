@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { MatchdayListResponseDto } from '@tippapp/shared/data-access';
 import { TipgroupDetailsStore } from './tipgroup-details.store';
-import { TipgroupService } from '../tipgroup.service';
+import { TipgroupService } from '../../services/tipgroup/tipgroup.service';
 
 describe('TipgroupDetailsStore', () => {
   let store: any;
